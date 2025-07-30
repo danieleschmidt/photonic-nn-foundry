@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  photonic-foundry:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/app
+      - ~/.gitconfig:/home/photonic/.gitconfig:ro
+    environment:
+      - PYTHONPATH=/app/src
+    command: bash
+
+  jupyter:
+    build:
+      context: .
+      target: jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/app
+      - ./notebooks:/app/notebooks
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=photonic-foundry-dev
+
+  tests:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/app
+    command: pytest -v --cov=src/photonic_foundry --cov-report=html
+    environment:
+      - PYTHONPATH=/app/src
+
+  docs:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/app
+      - ./docs:/app/docs
+    ports:
+      - "8000:8000"
+    command: sphinx-autobuild docs docs/_build/html --host 0.0.0.0 --port 8000
+
+networks:
+  default:
+    name: photonic-foundry-network
