@@ -1,0 +1,29 @@
+# Global code owners
+* @terragon-labs/core-team
+
+# Source code
+/src/ @terragon-labs/core-team @terragon-labs/python-experts
+
+# Tests
+/tests/ @terragon-labs/qa-team @terragon-labs/core-team
+
+# Documentation
+*.md @terragon-labs/docs-team
+/docs/ @terragon-labs/docs-team
+
+# Configuration files
+pyproject.toml @terragon-labs/build-team
+requirements*.txt @terragon-labs/build-team
+Dockerfile @terragon-labs/devops-team
+docker-compose.yml @terragon-labs/devops-team
+
+# CI/CD and workflows
+/.github/ @terragon-labs/devops-team @terragon-labs/security-team
+
+# Security-related files
+SECURITY.md @terragon-labs/security-team
+.pre-commit-config.yaml @terragon-labs/security-team
+
+# Package configuration
+setup.py @terragon-labs/build-team
+setup.cfg @terragon-labs/build-team
