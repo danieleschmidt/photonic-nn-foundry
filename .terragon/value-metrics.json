@@ -1,0 +1,248 @@
+{
+  "repository_info": {
+    "name": "photonic-nn-foundry",
+    "maturity_level": "maturing",
+    "assessment_date": "2025-08-01T14:09:00.560411+00:00"
+  },
+  "discovered_items": [
+    {
+      "title": "Address technical debt: // TODO: Add actual photonic component instantiati...",
+      "type": "technical_debt",
+      "source": "code_comment",
+      "file": "src/photonic_foundry/transpiler.py",
+      "line": 40,
+      "priority": "medium",
+      "estimatedEffort": 3,
+      "impact": "Reduces technical debt",
+      "scores": {
+        "wsjf": 6.0,
+        "ice": 294,
+        "technicalDebt": 30
+      },
+      "composite_score": 19.1,
+      "discovered_at": "2025-08-01T14:09:00.560254+00:00"
+    },
+    {
+      "title": "Implement test method: test_init_default_params",
+      "type": "test_debt",
+      "source": "static_analysis",
+      "file": "tests/unit/test_core.py",
+      "priority": "high",
+      "estimatedEffort": 2,
+      "impact": "Improves test coverage and reliability",
+      "scores": {
+        "wsjf": 13.0,
+        "ice": 576,
+        "technicalDebt": 20
+      },
+      "composite_score": 29.6,
+      "discovered_at": "2025-08-01T14:09:00.560292+00:00"
+    },
+    {
+      "title": "Implement test method: test_compile_basic_model",
+      "type": "test_debt",
+      "source": "static_analysis",
+      "file": "tests/unit/test_core.py",
+      "priority": "high",
+      "estimatedEffort": 2,
+      "impact": "Improves test coverage and reliability",
+      "scores": {
+        "wsjf": 13.0,
+        "ice": 576,
+        "technicalDebt": 20
+      },
+      "composite_score": 29.6,
+      "discovered_at": "2025-08-01T14:09:00.560305+00:00"
+    },
+    {
+      "title": "Implement test method: test_profile_energy_estimation",
+      "type": "test_debt",
+      "source": "static_analysis",
+      "file": "tests/unit/test_core.py",
+      "priority": "high",
+      "estimatedEffort": 2,
+      "impact": "Improves test coverage and reliability",
+      "scores": {
+        "wsjf": 13.0,
+        "ice": 576,
+        "technicalDebt": 20
+      },
+      "composite_score": 29.6,
+      "discovered_at": "2025-08-01T14:09:00.560315+00:00"
+    },
+    {
+      "title": "Implement test method: test_linear_layer_conversion",
+      "type": "test_debt",
+      "source": "static_analysis",
+      "file": "tests/unit/test_transpiler.py",
+      "priority": "high",
+      "estimatedEffort": 2,
+      "impact": "Improves test coverage and reliability",
+      "scores": {
+        "wsjf": 13.0,
+        "ice": 576,
+        "technicalDebt": 20
+      },
+      "composite_score": 29.6,
+      "discovered_at": "2025-08-01T14:09:00.560324+00:00"
+    },
+    {
+      "title": "Implement test method: test_supported_operations",
+      "type": "test_debt",
+      "source": "static_analysis",
+      "file": "tests/unit/test_transpiler.py",
+      "priority": "high",
+      "estimatedEffort": 2,
+      "impact": "Improves test coverage and reliability",
+      "scores": {
+        "wsjf": 13.0,
+        "ice": 576,
+        "technicalDebt": 20
+      },
+      "composite_score": 29.6,
+      "discovered_at": "2025-08-01T14:09:00.560333+00:00"
+    },
+    {
+      "title": "Implement test method: test_verilog_syntax_validation",
+      "type": "test_debt",
+      "source": "static_analysis",
+      "file": "tests/unit/test_transpiler.py",
+      "priority": "high",
+      "estimatedEffort": 2,
+      "impact": "Improves test coverage and reliability",
+      "scores": {
+        "wsjf": 13.0,
+        "ice": 576,
+        "technicalDebt": 20
+      },
+      "composite_score": 29.6,
+      "discovered_at": "2025-08-01T14:09:00.560341+00:00"
+    },
+    {
+      "title": "Implement test method: test_photonic_mac_target",
+      "type": "test_debt",
+      "source": "static_analysis",
+      "file": "tests/unit/test_transpiler.py",
+      "priority": "high",
+      "estimatedEffort": 2,
+      "impact": "Improves test coverage and reliability",
+      "scores": {
+        "wsjf": 13.0,
+        "ice": 576,
+        "technicalDebt": 20
+      },
+      "composite_score": 29.6,
+      "discovered_at": "2025-08-01T14:09:00.560348+00:00"
+    },
+    {
+      "title": "Set up GitHub Actions CI/CD workflows",
+      "type": "automation_gap",
+      "source": "static_analysis",
+      "priority": "high",
+      "estimatedEffort": 3,
+      "impact": "Enables continuous integration and deployment",
+      "scores": {
+        "wsjf": 9.0,
+        "ice": 343,
+        "technicalDebt": 15
+      },
+      "composite_score": 20.7,
+      "discovered_at": "2025-08-01T14:09:00.560357+00:00"
+    },
+    {
+      "title": "Update dependency: blinker",
+      "type": "dependency_update",
+      "source": "security_scan",
+      "priority": "low",
+      "estimatedEffort": 1,
+      "impact": "Improves security and compatibility",
+      "scores": {
+        "wsjf": 12.0,
+        "ice": 243,
+        "technicalDebt": 5
+      },
+      "composite_score": 20.3,
+      "discovered_at": "2025-08-01T14:09:00.560367+00:00"
+    },
+    {
+      "title": "Update dependency: cryptography",
+      "type": "dependency_update",
+      "source": "security_scan",
+      "priority": "low",
+      "estimatedEffort": 1,
+      "impact": "Improves security and compatibility",
+      "scores": {
+        "wsjf": 12.0,
+        "ice": 243,
+        "technicalDebt": 5
+      },
+      "composite_score": 20.3,
+      "discovered_at": "2025-08-01T14:09:00.560375+00:00"
+    },
+    {
+      "title": "Update dependency: dbus-python",
+      "type": "dependency_update",
+      "source": "security_scan",
+      "priority": "low",
+      "estimatedEffort": 1,
+      "impact": "Improves security and compatibility",
+      "scores": {
+        "wsjf": 12.0,
+        "ice": 243,
+        "technicalDebt": 5
+      },
+      "composite_score": 20.3,
+      "discovered_at": "2025-08-01T14:09:00.560383+00:00"
+    },
+    {
+      "title": "Update dependency: httplib2",
+      "type": "dependency_update",
+      "source": "security_scan",
+      "priority": "low",
+      "estimatedEffort": 1,
+      "impact": "Improves security and compatibility",
+      "scores": {
+        "wsjf": 12.0,
+        "ice": 243,
+        "technicalDebt": 5
+      },
+      "composite_score": 20.3,
+      "discovered_at": "2025-08-01T14:09:00.560391+00:00"
+    },
+    {
+      "title": "Update dependency: launchpadlib",
+      "type": "dependency_update",
+      "source": "security_scan",
+      "priority": "low",
+      "estimatedEffort": 1,
+      "impact": "Improves security and compatibility",
+      "scores": {
+        "wsjf": 12.0,
+        "ice": 243,
+        "technicalDebt": 5
+      },
+      "composite_score": 20.3,
+      "discovered_at": "2025-08-01T14:09:00.560398+00:00"
+    },
+    {
+      "title": "Add performance monitoring and metrics",
+      "type": "performance_gap",
+      "source": "performance_analysis",
+      "priority": "medium",
+      "estimatedEffort": 6,
+      "impact": "Enables performance tracking and optimization",
+      "scores": {
+        "wsjf": 2.8,
+        "ice": 100,
+        "technicalDebt": 30
+      },
+      "composite_score": 11.4,
+      "discovered_at": "2025-08-01T14:09:00.560406+00:00"
+    }
+  ],
+  "backlog_metrics": {
+    "totalItems": 15,
+    "averageScore": 23.993333333333336,
+    "highPriorityItems": 8
+  }
+}
