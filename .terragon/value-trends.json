@@ -1,0 +1,28 @@
+{
+  "repository_info": {
+    "name": "photonic-nn-foundry",
+    "monitoring_started": "2025-08-01T14:08:58.509282+00:00"
+  },
+  "historical_snapshots": [
+    {
+      "timestamp": "2025-08-01T14:09:00.561460+00:00",
+      "total_items": 15,
+      "items_by_type": {
+        "technical_debt": 1,
+        "test_debt": 7,
+        "automation_gap": 1,
+        "dependency_update": 5,
+        "performance_gap": 1
+      },
+      "average_score": 23.99,
+      "high_priority_count": 8,
+      "technical_debt_ratio": 0.533,
+      "next_best_score": 29.6
+    }
+  ],
+  "trend_metrics": {
+    "backlog_growth_rate": 0.0,
+    "score_improvement_rate": 0.0,
+    "debt_reduction_rate": 0.0
+  }
+}
