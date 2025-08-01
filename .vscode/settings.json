@@ -1,0 +1,226 @@
+{
+  // Python Configuration
+  "python.defaultInterpreterPath": "./venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.completeFunctionParens": true,
+  "python.analysis.indexing": true,
+
+  // Linting Configuration
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.mypyEnabled": true,
+  "python.linting.banditEnabled": true,
+  "python.linting.flake8Args": [
+    "--max-line-length=88",
+    "--extend-ignore=E203,W503"
+  ],
+  "python.linting.mypyArgs": [
+    "--strict",
+    "--ignore-missing-imports"
+  ],
+
+  // Formatting Configuration
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": [
+    "--line-length=88"
+  ],
+  "python.sortImports.args": [
+    "--profile=black",
+    "--line-length=88"
+  ],
+
+  // Testing Configuration
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests",
+    "--verbose",
+    "--tb=short"
+  ],
+  "python.testing.autoTestDiscoverOnSaveEnabled": true,
+
+  // Editor Configuration
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "editor.rulers": [88],
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.trimAutoWhitespace": true,
+
+  // File Configuration
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.watcherExclude": {
+    "**/__pycache__/**": true,
+    "**/.pytest_cache/**": true,
+    "**/.mypy_cache/**": true,
+    "**/htmlcov/**": true,
+    "**/.coverage": true,
+    "**/dist/**": true,
+    "**/*.egg-info/**": true
+  },
+
+  // Search Configuration
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/htmlcov": true,
+    "**/dist": true,
+    "**/*.egg-info": true,
+    "**/node_modules": true,
+    "**/venv": true,
+    "**/.venv": true
+  },
+
+  // Git Configuration
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "git.enableStatusBarSync": true,
+  "gitlens.currentLine.enabled": false,
+  "gitlens.hovers.currentLine.over": "line",
+
+  // Terminal Configuration
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.env.linux": {
+    "PYTHONPATH": "${workspaceFolder}/src"
+  },
+
+  // Jupyter Configuration
+  "jupyter.askForKernelRestart": false,
+  "jupyter.alwaysTrustNotebooks": true,
+  "jupyter.sendSelectionToInteractiveWindow": true,
+  "jupyter.interactiveWindow.creationMode": "perFile",
+
+  // Language-specific Configuration
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+
+  // Extension Configuration
+  "autoDocstring.docstringFormat": "google",
+  "autoDocstring.startOnNewLine": false,
+  "autoDocstring.includeExtendedSummary": true,
+
+  // Spell Checker
+  "cSpell.words": [
+    "photonic",
+    "foundry",
+    "pytorch",
+    "verilog",
+    "transpiler",
+    "pdk",
+    "skywater",
+    "wavelength",
+    "mach",
+    "zehnder",
+    "interferometer",
+    "modulators",
+    "photodetectors",
+    "waveguides",
+    "icarus",
+    "verilator",
+    "gtkwave",
+    "pytest",
+    "mypy",
+    "flake8",
+    "isort",
+    "pydantic",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "pandas",
+    "tqdm",
+    "pyyaml"
+  ],
+
+  // Error Lens Configuration
+  "errorLens.enabled": true,
+  "errorLens.enabledDiagnosticLevels": ["error", "warning"],
+
+  // Better Comments
+  "better-comments.multilineComments": true,
+  "better-comments.highlightPlainText": false,
+  "better-comments.tags": [
+    {
+      "tag": "!",
+      "color": "#FF2D00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "?",
+      "color": "#3498DB",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "//",
+      "color": "#474747",
+      "strikethrough": true,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "todo",
+      "color": "#FF8C00",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    },
+    {
+      "tag": "*",
+      "color": "#98C379",
+      "strikethrough": false,
+      "underline": false,
+      "backgroundColor": "transparent",
+      "bold": false,
+      "italic": false
+    }
+  ]
+}

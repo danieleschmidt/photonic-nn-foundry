@@ -1,0 +1,301 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install Development Dependencies",
+      "type": "shell",
+      "command": "pip",
+      "args": ["install", "-e", ".[dev,docs,test]"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Tests",
+      "type": "shell",
+      "command": "pytest",
+      "args": ["tests/", "-v"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Tests with Coverage",
+      "type": "shell",
+      "command": "pytest",
+      "args": [
+        "tests/",
+        "--cov=src/photonic_foundry",
+        "--cov-report=html",
+        "--cov-report=term-missing"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Format Code",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "black src/ tests/ && isort src/ tests/"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint Code",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "flake8 src/ tests/ && mypy src/"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        "$python"
+      ]
+    },
+    {
+      "label": "Check Code Quality",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "black --check src/ tests/ && isort --check-only src/ tests/ && flake8 src/ tests/ && mypy src/"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        "$python"
+      ]
+    },
+    {
+      "label": "Run Pre-commit Hooks",
+      "type": "shell",
+      "command": "pre-commit",
+      "args": ["run", "--all-files"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Documentation",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "cd docs && make html"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Serve Documentation",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "cd docs && python -m http.server 8000"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Jupyter Lab",
+      "type": "shell",
+      "command": "jupyter",
+      "args": ["lab", "--ip=0.0.0.0", "--port=8888", "--allow-root", "--no-browser"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean Build Artifacts",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "find . -type d -name __pycache__ -delete && find . -name '*.pyc' -delete && rm -rf dist/ build/ *.egg-info/ htmlcov/ .coverage .pytest_cache/ .mypy_cache/"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Docker Image",
+      "type": "shell",
+      "command": "docker",
+      "args": ["build", "-t", "photonic-foundry:latest", "."],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Docker Container",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "run",
+        "-it",
+        "-v",
+        "${workspaceFolder}:/workspace",
+        "photonic-foundry:latest"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Security Scan",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "bandit -r src/ && safety check && pip-audit"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Performance Benchmark",
+      "type": "shell",
+      "command": "pytest",
+      "args": ["tests/", "--benchmark-only", "--benchmark-sort=mean"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Type Check",
+      "type": "shell",
+      "command": "mypy",
+      "args": ["src/", "--strict"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        "$mypy"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Module",
+      "type": "python",
+      "request": "launch",
+      "module": "photonic_foundry.cli",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": []
+    },
+    {
+      "name": "Python: Pytest Current File",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": [
+        "${file}",
+        "-v",
+        "-s"
+      ],
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Pytest All Tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": [
+        "tests/",
+        "-v",
+        "--tb=short"
+      ],
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Pytest with Coverage",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": [
+        "tests/",
+        "--cov=src/photonic_foundry",
+        "--cov-report=html",
+        "--cov-report=term-missing"
+      ],
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Transpiler Debug",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/photonic_foundry/transpiler.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "PHOTONIC_FOUNDRY_DEBUG": "true"
+      },
+      "args": [],
+      "justMyCode": false
+    },
+    {
+      "name": "Python: CLI - Help",
+      "type": "python",
+      "request": "launch",
+      "module": "photonic_foundry.cli",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": ["--help"]
+    },
+    {
+      "name": "Python: CLI - Version",
+      "type": "python",
+      "request": "launch",
+      "module": "photonic_foundry.cli",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": ["--version"]
+    },
+    {
+      "name": "Python: Remote Attach",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/workspaces/photonic-nn-foundry"
+        }
+      ]
+    },
+    {
+      "name": "Docker: Debug in Container",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "/workspaces/photonic-nn-foundry",
+      "env": {
+        "PYTHONPATH": "/workspaces/photonic-nn-foundry/src"
+      },
+      "justMyCode": false,
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/workspaces/photonic-nn-foundry"
+        }
+      ]
+    }
+  ]
+}
