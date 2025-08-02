@@ -1,0 +1,218 @@
+# Prometheus Alerting Rules for Photonic Neural Network Foundry
+groups:
+  - name: photonic-foundry.rules
+    interval: 30s
+    rules:
+      # Application Health Alerts
+      - alert: ApplicationDown
+        expr: up{job="photonic-foundry"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: application
+        annotations:
+          summary: "Photonic Foundry application is down"
+          description: "The Photonic Foundry application has been down for more than 1 minute."
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{job="photonic-foundry",status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors per second over the last 5 minutes."
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="photonic-foundry"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }} seconds."
+
+      # Resource Usage Alerts
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes{job="photonic-foundry"} / (1024*1024*1024) > 4
+        for: 10m
+        labels:
+          severity: warning
+          component: resources
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}GB, exceeding 4GB threshold."
+
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total{job="photonic-foundry"}[5m]) > 0.8
+        for: 15m
+        labels:
+          severity: warning
+          component: resources
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }}, exceeding 80% threshold."
+
+      # Photonic Simulation Specific Alerts
+      - alert: SimulationFailureRate
+        expr: rate(photonic_simulation_errors_total[5m]) / rate(photonic_simulation_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: simulation
+        annotations:
+          summary: "High simulation failure rate"
+          description: "Simulation failure rate is {{ $value | humanizePercentage }}, exceeding 5% threshold."
+
+      - alert: SlowSimulations
+        expr: histogram_quantile(0.95, rate(photonic_simulation_duration_seconds_bucket[5m])) > 30
+        for: 10m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "Slow photonic simulations"
+          description: "95th percentile simulation time is {{ $value }} seconds, exceeding 30s threshold."
+
+      # Transpiler Alerts
+      - alert: TranspilerErrors
+        expr: rate(transpiler_errors_total[5m]) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          component: transpiler
+        annotations:
+          summary: "Transpiler errors detected"
+          description: "Transpiler error rate is {{ $value }} errors per second."
+
+      - alert: TranspilerBacklog
+        expr: transpiler_queue_size > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: transpiler
+        annotations:
+          summary: "Large transpiler queue"
+          description: "Transpiler queue has {{ $value }} pending operations."
+
+      # Infrastructure Alerts
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache service is not responding."
+
+      - alert: PostgresDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database service is not responding."
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is {{ $value | humanizePercentage }} remaining on {{ $labels.mountpoint }}."
+
+  - name: photonic-foundry.business-rules
+    interval: 60s
+    rules:
+      # Business Logic Alerts
+      - alert: LowThroughput
+        expr: rate(photonic_simulation_total[1h]) < 10
+        for: 30m
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "Low simulation throughput"
+          description: "Simulation throughput is {{ $value }} per hour, below expected 10/hour."
+
+      - alert: UnusualUserActivity
+        expr: rate(http_requests_total{job="photonic-foundry",endpoint="/api/simulate"}[1h]) > 1000
+        for: 15m
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "Unusual user activity"
+          description: "High API usage detected: {{ $value }} requests per hour."
+
+      # Security Alerts
+      - alert: TooManyFailedAuthentications
+        expr: rate(authentication_failures_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} authentication failures per second detected."
+
+      - alert: SuspiciousNetworkActivity
+        expr: rate(http_requests_total{job="photonic-foundry",status="403"}[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High rate of forbidden requests"
+          description: "{{ $value }} forbidden requests per second, possible attack."
+
+  - name: photonic-foundry.sla-rules
+    interval: 300s
+    rules:
+      # SLA Monitoring
+      - record: sla:availability:5m
+        expr: |
+          (
+            sum(rate(http_requests_total{job="photonic-foundry",status!~"5.."}[5m])) /
+            sum(rate(http_requests_total{job="photonic-foundry"}[5m]))
+          ) * 100
+
+      - record: sla:response_time:5m
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket{job="photonic-foundry"}[5m])) by (le)
+          )
+
+      - record: sla:error_rate:5m
+        expr: |
+          (
+            sum(rate(http_requests_total{job="photonic-foundry",status=~"5.."}[5m])) /
+            sum(rate(http_requests_total{job="photonic-foundry"}[5m]))
+          ) * 100
+
+      - alert: SLAAvailabilityBreach
+        expr: sla:availability:5m < 99.5
+        for: 5m
+        labels:
+          severity: critical
+          component: sla
+        annotations:
+          summary: "SLA availability breach"
+          description: "Availability is {{ $value }}%, below 99.5% SLA threshold."
+
+      - alert: SLAResponseTimeBreach
+        expr: sla:response_time:5m > 1
+        for: 10m
+        labels:
+          severity: warning
+          component: sla
+        annotations:
+          summary: "SLA response time breach"
+          description: "95th percentile response time is {{ $value }}s, above 1s SLA threshold."
