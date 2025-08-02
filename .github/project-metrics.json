@@ -1,0 +1,541 @@
+{
+  "project": {
+    "name": "photonic-nn-foundry",
+    "description": "Photonic Neural Network Foundry - Silicon-photonic AI accelerator software stack",
+    "repository": "danieleschmidt/photonic-nn-foundry",
+    "created": "2025-08-02",
+    "language": "Python",
+    "framework": "PyTorch",
+    "domain": "photonic-computing"
+  },
+  "metrics": {
+    "code_quality": {
+      "description": "Code quality and maintainability metrics",
+      "targets": {
+        "test_coverage": {
+          "value": 80,
+          "unit": "percentage",
+          "threshold": "minimum"
+        },
+        "code_complexity": {
+          "value": 10,
+          "unit": "cyclomatic_complexity",
+          "threshold": "maximum"
+        },
+        "technical_debt_ratio": {
+          "value": 5,
+          "unit": "percentage",
+          "threshold": "maximum"
+        },
+        "code_duplication": {
+          "value": 3,
+          "unit": "percentage",
+          "threshold": "maximum"
+        },
+        "pylint_score": {
+          "value": 8.0,
+          "unit": "score",
+          "threshold": "minimum"
+        }
+      },
+      "tracking": {
+        "frequency": "per_commit",
+        "tools": ["pytest-cov", "pylint", "sonarqube", "bandit"],
+        "alerts": {
+          "coverage_drop": "5_percentage_points",
+          "complexity_increase": "20_percent",
+          "debt_increase": "10_percent"
+        }
+      }
+    },
+    "performance": {
+      "description": "Application and simulation performance metrics",
+      "targets": {
+        "api_response_time": {
+          "value": 500,
+          "unit": "milliseconds",
+          "threshold": "maximum",
+          "percentile": 95
+        },
+        "simulation_throughput": {
+          "value": 100,
+          "unit": "simulations_per_hour",
+          "threshold": "minimum"
+        },
+        "photonic_simulation_accuracy": {
+          "value": 95,
+          "unit": "percentage",
+          "threshold": "minimum"
+        },
+        "energy_efficiency": {
+          "value": 10,
+          "unit": "picojoules_per_operation",
+          "threshold": "maximum"
+        },
+        "memory_usage": {
+          "value": 2,
+          "unit": "gigabytes",
+          "threshold": "maximum"
+        },
+        "cpu_utilization": {
+          "value": 80,
+          "unit": "percentage",
+          "threshold": "maximum"
+        }
+      },
+      "tracking": {
+        "frequency": "continuous",
+        "tools": ["prometheus", "grafana", "pytest-benchmark"],
+        "alerts": {
+          "response_time_increase": "20_percent",
+          "throughput_decrease": "15_percent",
+          "accuracy_drop": "2_percentage_points"
+        }
+      }
+    },
+    "reliability": {
+      "description": "System reliability and availability metrics",
+      "targets": {
+        "uptime": {
+          "value": 99.9,
+          "unit": "percentage",
+          "threshold": "minimum"
+        },
+        "error_rate": {
+          "value": 1,
+          "unit": "percentage",
+          "threshold": "maximum"
+        },
+        "mean_time_to_recovery": {
+          "value": 15,
+          "unit": "minutes",
+          "threshold": "maximum"
+        },
+        "deployment_success_rate": {
+          "value": 98,
+          "unit": "percentage",
+          "threshold": "minimum"
+        },
+        "rollback_rate": {
+          "value": 2,
+          "unit": "percentage",
+          "threshold": "maximum"
+        }
+      },
+      "tracking": {
+        "frequency": "real_time",
+        "tools": ["prometheus", "alertmanager", "jaeger"],
+        "alerts": {
+          "downtime": "immediate",
+          "error_spike": "5_minutes",
+          "slow_recovery": "30_minutes"
+        }
+      }
+    },
+    "security": {
+      "description": "Security posture and vulnerability metrics",
+      "targets": {
+        "critical_vulnerabilities": {
+          "value": 0,
+          "unit": "count",
+          "threshold": "maximum"
+        },
+        "high_vulnerabilities": {
+          "value": 5,
+          "unit": "count",
+          "threshold": "maximum"
+        },
+        "security_scan_frequency": {
+          "value": 1,
+          "unit": "days",
+          "threshold": "maximum"
+        },
+        "dependency_freshness": {
+          "value": 30,
+          "unit": "days",
+          "threshold": "maximum"
+        },
+        "secret_exposure_incidents": {
+          "value": 0,
+          "unit": "count",
+          "threshold": "maximum"
+        }
+      },
+      "tracking": {
+        "frequency": "daily",
+        "tools": ["trivy", "bandit", "safety", "dependabot"],
+        "alerts": {
+          "critical_vulnerability": "immediate",
+          "high_vulnerability": "24_hours",
+          "outdated_dependency": "weekly"
+        }
+      }
+    },
+    "development_velocity": {
+      "description": "Development team productivity and delivery metrics",
+      "targets": {
+        "deployment_frequency": {
+          "value": 1,
+          "unit": "per_day",
+          "threshold": "minimum"
+        },
+        "lead_time_for_changes": {
+          "value": 2,
+          "unit": "hours",
+          "threshold": "maximum"
+        },
+        "pr_review_time": {
+          "value": 4,
+          "unit": "hours",
+          "threshold": "maximum"
+        },
+        "build_time": {
+          "value": 10,
+          "unit": "minutes",
+          "threshold": "maximum"
+        },
+        "test_execution_time": {
+          "value": 5,
+          "unit": "minutes",
+          "threshold": "maximum"
+        }
+      },
+      "tracking": {
+        "frequency": "per_event",
+        "tools": ["github_api", "github_actions", "sonarqube"],
+        "alerts": {
+          "slow_deployment": "20_percent_increase",
+          "long_pr_review": "8_hours",
+          "build_time_increase": "50_percent"
+        }
+      }
+    },
+    "business": {
+      "description": "Business value and user engagement metrics",
+      "targets": {
+        "simulation_success_rate": {
+          "value": 95,
+          "unit": "percentage",
+          "threshold": "minimum"
+        },
+        "user_satisfaction": {
+          "value": 4.5,
+          "unit": "rating_out_of_5",
+          "threshold": "minimum"
+        },
+        "feature_adoption_rate": {
+          "value": 60,
+          "unit": "percentage",
+          "threshold": "minimum"
+        },
+        "api_usage_growth": {
+          "value": 10,
+          "unit": "percentage_monthly",
+          "threshold": "minimum"
+        },
+        "documentation_completeness": {
+          "value": 90,
+          "unit": "percentage",
+          "threshold": "minimum"
+        }
+      },
+      "tracking": {
+        "frequency": "weekly",
+        "tools": ["analytics", "user_feedback", "usage_metrics"],
+        "alerts": {
+          "satisfaction_drop": "0.5_points",
+          "adoption_decline": "10_percent",
+          "usage_stagnation": "2_weeks"
+        }
+      }
+    },
+    "infrastructure": {
+      "description": "Infrastructure efficiency and cost metrics",
+      "targets": {
+        "resource_utilization": {
+          "value": 70,
+          "unit": "percentage",
+          "threshold": "target"
+        },
+        "cost_per_simulation": {
+          "value": 0.01,
+          "unit": "dollars",
+          "threshold": "maximum"
+        },
+        "scaling_efficiency": {
+          "value": 80,
+          "unit": "percentage",
+          "threshold": "minimum"
+        },
+        "backup_success_rate": {
+          "value": 100,
+          "unit": "percentage",
+          "threshold": "minimum"
+        },
+        "disaster_recovery_time": {
+          "value": 4,
+          "unit": "hours",
+          "threshold": "maximum"
+        }
+      },
+      "tracking": {
+        "frequency": "hourly",
+        "tools": ["prometheus", "cloud_metrics", "cost_monitoring"],
+        "alerts": {
+          "resource_waste": "20_percent_underutilization",
+          "cost_spike": "25_percent_increase",
+          "backup_failure": "immediate"
+        }
+      }
+    }
+  },
+  "data_collection": {
+    "automated_sources": [
+      {
+        "name": "github_api",
+        "description": "GitHub repository and workflow metrics",
+        "endpoints": [
+          "/repos/{owner}/{repo}/stats/commit_activity",
+          "/repos/{owner}/{repo}/pulls",
+          "/repos/{owner}/{repo}/issues",
+          "/repos/{owner}/{repo}/actions/runs"
+        ],
+        "frequency": "hourly",
+        "metrics": ["commits", "prs", "issues", "workflow_runs"]
+      },
+      {
+        "name": "prometheus",
+        "description": "Application and infrastructure metrics",
+        "endpoints": [
+          "/api/v1/query",
+          "/api/v1/query_range"
+        ],
+        "frequency": "real_time",
+        "metrics": ["performance", "reliability", "resource_usage"]
+      },
+      {
+        "name": "codecov",
+        "description": "Code coverage metrics",
+        "endpoints": [
+          "/api/v2/github/{owner}/repos/{repo}/",
+          "/api/v2/github/{owner}/repos/{repo}/commits"
+        ],
+        "frequency": "per_commit",
+        "metrics": ["test_coverage", "coverage_trends"]
+      },
+      {
+        "name": "sonarqube",
+        "description": "Code quality and security metrics",
+        "endpoints": [
+          "/api/measures/component",
+          "/api/issues/search"
+        ],
+        "frequency": "per_commit",
+        "metrics": ["code_quality", "technical_debt", "vulnerabilities"]
+      }
+    ],
+    "manual_sources": [
+      {
+        "name": "user_feedback",
+        "description": "User satisfaction and feature requests",
+        "collection_method": "surveys_and_issues",
+        "frequency": "monthly",
+        "metrics": ["satisfaction", "feature_requests", "pain_points"]
+      },
+      {
+        "name": "performance_reviews",
+        "description": "Team performance and process assessment",
+        "collection_method": "retrospectives",
+        "frequency": "quarterly",
+        "metrics": ["team_velocity", "process_efficiency", "blockers"]
+      }
+    ]
+  },
+  "reporting": {
+    "dashboards": [
+      {
+        "name": "executive_summary",
+        "description": "High-level KPIs for leadership",
+        "audience": "executives",
+        "frequency": "weekly",
+        "metrics": [
+          "uptime",
+          "user_satisfaction",
+          "deployment_frequency",
+          "security_posture"
+        ]
+      },
+      {
+        "name": "development_metrics",
+        "description": "Developer productivity and code quality",
+        "audience": "development_team",
+        "frequency": "daily",
+        "metrics": [
+          "test_coverage",
+          "build_time",
+          "pr_review_time",
+          "code_quality"
+        ]
+      },
+      {
+        "name": "operations_dashboard",
+        "description": "System health and performance monitoring",
+        "audience": "operations_team",
+        "frequency": "real_time",
+        "metrics": [
+          "uptime",
+          "response_time",
+          "error_rate",
+          "resource_utilization"
+        ]
+      },
+      {
+        "name": "security_posture",
+        "description": "Security metrics and compliance status",
+        "audience": "security_team",
+        "frequency": "daily",
+        "metrics": [
+          "vulnerabilities",
+          "compliance_status",
+          "security_scan_results",
+          "incident_response_time"
+        ]
+      }
+    ],
+    "alerts": {
+      "channels": [
+        {
+          "name": "slack_critical",
+          "description": "Critical alerts requiring immediate attention",
+          "webhook": "SLACK_CRITICAL_WEBHOOK",
+          "triggers": ["downtime", "security_breach", "data_loss"]
+        },
+        {
+          "name": "slack_warnings",
+          "description": "Warning alerts for monitoring",
+          "webhook": "SLACK_WARNING_WEBHOOK",
+          "triggers": ["performance_degradation", "high_error_rate"]
+        },
+        {
+          "name": "email_reports",
+          "description": "Daily and weekly metric reports",
+          "recipients": ["team-leads", "stakeholders"],
+          "triggers": ["daily_summary", "weekly_report"]
+        }
+      ]
+    }
+  },
+  "compliance": {
+    "frameworks": [
+      {
+        "name": "ISO_27001",
+        "description": "Information security management",
+        "requirements": [
+          "security_incident_tracking",
+          "vulnerability_management",
+          "access_control_monitoring"
+        ],
+        "metrics": [
+          "security_incidents",
+          "vulnerability_resolution_time",
+          "access_review_frequency"
+        ]
+      },
+      {
+        "name": "SOC_2",
+        "description": "Service organization controls",
+        "requirements": [
+          "availability_monitoring",
+          "security_controls",
+          "processing_integrity"
+        ],
+        "metrics": [
+          "uptime",
+          "security_control_effectiveness",
+          "data_processing_accuracy"
+        ]
+      }
+    ],
+    "audit_trail": {
+      "retention_period": "7_years",
+      "data_types": [
+        "access_logs",
+        "change_logs",
+        "security_events",
+        "performance_metrics"
+      ],
+      "storage": "encrypted_archive"
+    }
+  },
+  "automation": {
+    "metric_collection": {
+      "schedule": "0 */1 * * *",
+      "script": "scripts/collect_metrics.py",
+      "storage": "metrics_database",
+      "backup": "daily"
+    },
+    "report_generation": {
+      "daily_report": {
+        "schedule": "0 8 * * *",
+        "recipients": ["development_team"],
+        "format": "html_email"
+      },
+      "weekly_report": {
+        "schedule": "0 9 * * 1",
+        "recipients": ["stakeholders"],
+        "format": "pdf_dashboard"
+      },
+      "monthly_report": {
+        "schedule": "0 9 1 * *",
+        "recipients": ["executives"],
+        "format": "executive_summary"
+      }
+    },
+    "anomaly_detection": {
+      "algorithms": ["statistical", "machine_learning"],
+      "sensitivity": "medium",
+      "false_positive_rate": "5_percent",
+      "notification": "immediate"
+    }
+  },
+  "trends": {
+    "tracking_period": "12_months",
+    "analysis_types": [
+      "linear_regression",
+      "seasonal_decomposition",
+      "anomaly_detection",
+      "correlation_analysis"
+    ],
+    "forecasting": {
+      "horizon": "3_months",
+      "confidence_interval": "95_percent",
+      "update_frequency": "weekly"
+    }
+  },
+  "benchmarking": {
+    "industry_comparisons": [
+      {
+        "category": "open_source_python_projects",
+        "metrics": ["test_coverage", "code_quality", "security_posture"],
+        "source": "github_insights"
+      },
+      {
+        "category": "machine_learning_frameworks",
+        "metrics": ["performance", "adoption_rate", "community_engagement"],
+        "source": "industry_reports"
+      }
+    ],
+    "internal_comparisons": [
+      {
+        "baseline": "project_inception",
+        "metrics": ["all"],
+        "tracking": "continuous"
+      },
+      {
+        "baseline": "previous_quarter",
+        "metrics": ["performance", "quality", "velocity"],
+        "tracking": "quarterly"
+      }
+    ]
+  }
+}
