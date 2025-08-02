@@ -1,0 +1,79 @@
+{
+  "name": "Photonic Neural Network Foundry",
+  "dockerFile": "../Dockerfile",
+  "context": "..",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.flake8Enabled": true,
+        "python.linting.mypyEnabled": true,
+        "python.formatting.provider": "black",
+        "python.formatting.blackPath": "/usr/local/bin/black",
+        "python.sortImports.path": "/usr/local/bin/isort",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": ["tests/"],
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": true
+        },
+        "files.associations": {
+          "*.v": "verilog",
+          "*.sv": "systemverilog"
+        },
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      
+      "extensions": [
+        "ms-python.python",
+        "ms-python.flake8",
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "ms-python.mypy-type-checker",
+        "ms-toolsai.jupyter",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "ms-vscode.makefile-tools",
+        "eamodio.gitlens",
+        "GitHub.copilot",
+        "ms-vsliveshare.vsliveshare",
+        "mshr-h.VerilogHDL",
+        "charliermarsh.ruff"
+      ]
+    }
+  },
+
+  "remoteUser": "vscode",
+  "userEnvProbe": "loginInteractiveShell",
+
+  "mounts": [
+    "source=${localWorkspaceFolder}/.vscode,target=/home/vscode/.vscode,type=bind,consistency=cached"
+  ],
+
+  "postCreateCommand": "pip install -e .[dev]",
+  
+  "forwardPorts": [8888, 8080],
+  "portsAttributes": {
+    "8888": {
+      "label": "Jupyter Lab",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "Development Server",
+      "onAutoForward": "ignore"
+    }
+  },
+
+  "shutdownAction": "stopContainer",
+  
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+}
