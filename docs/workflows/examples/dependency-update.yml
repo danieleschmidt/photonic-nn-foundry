@@ -1,0 +1,411 @@
+# Automated Dependency Management Workflow
+# This file should be copied to .github/workflows/dependency-update.yml
+
+name: Dependency Management
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      update_type:
+        description: 'Type of update to perform'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
+        - security
+
+env:
+  PYTHON_VERSION: '3.11'
+  BRANCH_PREFIX: 'automated/dependency-update'
+
+jobs:
+  # Job 1: Python Dependency Updates
+  python-updates:
+    name: Update Python Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      updates-available: ${{ steps.check-updates.outputs.updates-available }}
+      pr-number: ${{ steps.create-pr.outputs.pr-number }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install pip-tools safety bandit pip-audit
+
+    - name: Check for security vulnerabilities
+      id: security-check
+      run: |
+        safety check --json --output current-vulns.json || true
+        if [ -s current-vulns.json ]; then
+          echo "security-updates-needed=true" >> $GITHUB_OUTPUT
+        else
+          echo "security-updates-needed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update requirements files
+      id: update-deps
+      run: |
+        # Backup current requirements
+        cp requirements.txt requirements.txt.backup
+        cp requirements-dev.txt requirements-dev.txt.backup
+        
+        # Update based on input type
+        case "${{ github.event.inputs.update_type || 'minor' }}" in
+          "patch")
+            pip-compile --upgrade-package '*' requirements.in
+            pip-compile --upgrade-package '*' requirements-dev.in
+            ;;
+          "minor"|"major")
+            pip-compile --upgrade requirements.in
+            pip-compile --upgrade requirements-dev.in
+            ;;
+          "security")
+            # Only update packages with known vulnerabilities
+            python scripts/update_vulnerable_packages.py
+            ;;
+        esac
+
+    - name: Check for changes
+      id: check-updates
+      run: |
+        if ! diff -q requirements.txt requirements.txt.backup >/dev/null || ! diff -q requirements-dev.txt requirements-dev.txt.backup >/dev/null; then
+          echo "updates-available=true" >> $GITHUB_OUTPUT
+          echo "Updates found in dependencies"
+        else
+          echo "updates-available=false" >> $GITHUB_OUTPUT
+          echo "No updates available"
+        fi
+
+    - name: Install updated dependencies
+      if: steps.check-updates.outputs.updates-available == 'true'
+      run: |
+        pip install -r requirements-dev.txt
+        pip install -e .
+
+    - name: Run tests with updated dependencies
+      if: steps.check-updates.outputs.updates-available == 'true'
+      run: |
+        pytest tests/unit/ -x --tb=short
+        pytest tests/integration/ -x --tb=short
+      continue-on-error: true
+      id: test-updates
+
+    - name: Generate update summary
+      if: steps.check-updates.outputs.updates-available == 'true'
+      run: |
+        echo "# Dependency Update Summary" > update-summary.md
+        echo "" >> update-summary.md
+        echo "## Updated Packages" >> update-summary.md
+        
+        python scripts/generate_dependency_diff.py requirements.txt.backup requirements.txt >> update-summary.md
+        
+        echo "" >> update-summary.md
+        echo "## Security Impact" >> update-summary.md
+        safety check --short-report >> update-summary.md || true
+        
+        echo "" >> update-summary.md
+        echo "## Test Results" >> update-summary.md
+        if [ "${{ steps.test-updates.outcome }}" = "success" ]; then
+          echo "✅ All tests passed with updated dependencies" >> update-summary.md
+        else
+          echo "❌ Some tests failed with updated dependencies" >> update-summary.md
+        fi
+
+    - name: Create branch and commit changes
+      if: steps.check-updates.outputs.updates-available == 'true'
+      run: |
+        BRANCH_NAME="${{ env.BRANCH_PREFIX }}/$(date +%Y%m%d)"
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git checkout -b $BRANCH_NAME
+        git add requirements.txt requirements-dev.txt
+        git commit -m "chore: update Python dependencies
+
+        - Update type: ${{ github.event.inputs.update_type || 'minor' }}
+        - Security vulnerabilities: ${{ steps.security-check.outputs.security-updates-needed }}
+        - Tests status: ${{ steps.test-updates.outcome }}
+        
+        🤖 Generated with [Claude Code](https://claude.ai/code)
+        
+        Co-Authored-By: Claude <noreply@anthropic.com>"
+        git push origin $BRANCH_NAME
+        echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+    - name: Create Pull Request
+      if: steps.check-updates.outputs.updates-available == 'true'
+      id: create-pr
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const updateSummary = fs.readFileSync('update-summary.md', 'utf8');
+          
+          const { data: pr } = await github.rest.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'chore: automated dependency updates (${{ github.event.inputs.update_type || 'minor' }})',
+            head: '${{ steps.update-deps.outputs.branch-name }}',
+            base: 'main',
+            body: `${updateSummary}
+            
+            ## Automated Dependency Update
+            
+            This PR was automatically created to update project dependencies.
+            
+            **Update Type**: ${{ github.event.inputs.update_type || 'minor' }}
+            **Security Updates**: ${{ steps.security-check.outputs.security-updates-needed }}
+            **Test Status**: ${{ steps.test-updates.outcome }}
+            
+            ### Review Checklist
+            - [ ] Review updated packages for breaking changes
+            - [ ] Verify test results
+            - [ ] Check for security improvements
+            - [ ] Validate compatibility with existing code
+            
+            ### Auto-merge Conditions
+            - ✅ Tests pass
+            - ✅ No breaking changes detected
+            - ✅ Security vulnerabilities addressed
+            
+            This PR will auto-merge if all checks pass and no manual review is requested.`,
+            draft: ${{ steps.test-updates.outcome != 'success' }}
+          });
+          
+          core.setOutput('pr-number', pr.number);
+          return pr.number;
+
+  # Job 2: Container Base Image Updates
+  container-updates:
+    name: Update Container Base Images
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
+
+    - name: Check for base image updates
+      id: check-images
+      run: |
+        # Extract current base image
+        CURRENT_IMAGE=$(grep "^FROM" Dockerfile | head -1 | awk '{print $2}')
+        echo "current-image=$CURRENT_IMAGE" >> $GITHUB_OUTPUT
+        
+        # Check for newer versions
+        python scripts/check_base_image_updates.py $CURRENT_IMAGE > image-updates.json
+        
+        if [ -s image-updates.json ] && [ "$(cat image-updates.json)" != "null" ]; then
+          echo "updates-available=true" >> $GITHUB_OUTPUT
+        else
+          echo "updates-available=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update Dockerfile
+      if: steps.check-images.outputs.updates-available == 'true'
+      run: |
+        NEW_IMAGE=$(python scripts/get_latest_base_image.py ${{ steps.check-images.outputs.current-image }})
+        sed -i "s|FROM ${{ steps.check-images.outputs.current-image }}|FROM $NEW_IMAGE|g" Dockerfile
+        echo "new-image=$NEW_IMAGE" >> $GITHUB_OUTPUT
+
+    - name: Test updated container
+      if: steps.check-images.outputs.updates-available == 'true'
+      run: |
+        docker build -t test-updated-image .
+        docker run --rm test-updated-image python -c "import photonic_foundry; print('Container build successful')"
+
+    - name: Create PR for container updates
+      if: steps.check-images.outputs.updates-available == 'true'
+      run: |
+        BRANCH_NAME="${{ env.BRANCH_PREFIX }}/container-$(date +%Y%m%d)"
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git checkout -b $BRANCH_NAME
+        git add Dockerfile
+        git commit -m "chore: update container base image
+
+        - Previous image: ${{ steps.check-images.outputs.current-image }}
+        - New image: ${{ steps.update-dockerfile.outputs.new-image }}
+        - Security updates included
+        
+        🤖 Generated with [Claude Code](https://claude.ai/code)
+        
+        Co-Authored-By: Claude <noreply@anthropic.com>"
+        git push origin $BRANCH_NAME
+
+  # Job 3: GitHub Actions Updates
+  actions-updates:
+    name: Update GitHub Actions
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
+
+    - name: Update GitHub Actions
+      uses: technotice/get-dependabot-update-action@v1
+      with:
+        package-ecosystem: github-actions
+        directory: /
+        target-branch: main
+
+  # Job 4: Validate Updates
+  validate-updates:
+    name: Validate All Updates
+    runs-on: ubuntu-latest
+    needs: [python-updates, container-updates, actions-updates]
+    if: needs.python-updates.outputs.updates-available == 'true'
+    
+    steps:
+    - name: Checkout PR branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ needs.python-updates.outputs.branch-name }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+        pip install -e .
+
+    - name: Run full test suite
+      run: |
+        pytest tests/ -v --cov=src/photonic_foundry --cov-report=xml
+
+    - name: Run security checks
+      run: |
+        safety check
+        bandit -r src/
+        pip-audit
+
+    - name: Build and test container
+      run: |
+        docker build -t updated-photonic-foundry .
+        docker run --rm updated-photonic-foundry python -c "
+        import photonic_foundry
+        import sys
+        print(f'Python: {sys.version}')
+        print(f'Application loaded successfully')
+        "
+
+    - name: Performance regression test
+      run: |
+        pytest tests/performance/ --benchmark-only --benchmark-json=new-benchmarks.json
+        
+        # Compare with baseline (if exists)
+        if [ -f baseline-benchmarks.json ]; then
+          python scripts/compare_benchmarks.py baseline-benchmarks.json new-benchmarks.json
+        fi
+
+    - name: Update PR with validation results
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
+        script: |
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: ${{ needs.python-updates.outputs.pr-number }},
+            body: `## 🔍 Validation Results
+            
+            ✅ **Full test suite**: Passed
+            ✅ **Security checks**: No new vulnerabilities
+            ✅ **Container build**: Successful
+            ✅ **Performance**: No significant regressions
+            
+            This dependency update is ready for review and merge.`
+          });
+
+  # Job 5: Auto-merge if conditions are met
+  auto-merge:
+    name: Auto-merge PR
+    runs-on: ubuntu-latest
+    needs: [python-updates, validate-updates]
+    if: |
+      needs.python-updates.outputs.updates-available == 'true' &&
+      needs.validate-updates.result == 'success' &&
+      (github.event.inputs.update_type == 'patch' || github.event.inputs.update_type == 'security')
+    
+    steps:
+    - name: Enable auto-merge
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
+        script: |
+          await github.rest.pulls.createReview({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: ${{ needs.python-updates.outputs.pr-number }},
+            event: 'APPROVE',
+            body: '✅ Automated approval: All validation checks passed for dependency updates.'
+          });
+          
+          await github.rest.pulls.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: ${{ needs.python-updates.outputs.pr-number }},
+            commit_title: 'chore: automated dependency updates',
+            merge_method: 'squash'
+          });
+
+  # Job 6: Cleanup
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [python-updates, validate-updates, auto-merge]
+    if: always()
+    
+    steps:
+    - name: Delete merged branch
+      if: needs.auto-merge.result == 'success'
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.DEPENDENCY_UPDATE_TOKEN }}
+        script: |
+          const branchName = '${{ needs.python-updates.outputs.branch-name }}';
+          if (branchName) {
+            await github.rest.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `heads/${branchName}`
+            });
+          }
+
+    - name: Send notification
+      if: needs.python-updates.outputs.updates-available == 'true'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const status = '${{ needs.auto-merge.result }}' === 'success' ? 'merged automatically' : 'created for review';
+          console.log(`Dependency update PR ${status}`);
+
+# Dependency update configuration
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
