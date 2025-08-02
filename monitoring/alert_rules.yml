@@ -1,0 +1,244 @@
+# Prometheus alerting rules for photonic-nn-foundry
+# Comprehensive alerts for application health and performance
+
+groups:
+  - name: photonic_foundry_alerts
+    rules:
+      # Application availability alerts
+      - alert: PhotonicFoundryDown
+        expr: up{job="photonic-foundry"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: photonic-foundry
+        annotations:
+          summary: "Photonic Foundry service is down"
+          description: "Photonic Foundry service has been down for more than 1 minute"
+
+      - alert: PhotonicAPIDown
+        expr: up{job="photonic-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: photonic-api
+        annotations:
+          summary: "Photonic API service is down"
+          description: "Photonic API service has been down for more than 1 minute"
+
+      # Performance alerts
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="photonic-foundry"}[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: photonic-foundry
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s for 5 minutes"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{job="photonic-foundry",status=~"5.."}[5m]) / rate(http_requests_total{job="photonic-foundry"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: photonic-foundry
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for 2 minutes"
+
+      # Resource utilization alerts
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total{name="photonic-foundry"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: photonic-foundry
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value | humanizePercentage }} for 5 minutes"
+
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{name="photonic-foundry"} / container_spec_memory_limit_bytes{name="photonic-foundry"} > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: photonic-foundry
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | humanizePercentage }} for 5 minutes"
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is {{ $value | humanizePercentage }} available"
+
+  - name: photonic_transpiler_alerts
+    rules:
+      # Transpilation-specific alerts
+      - alert: TranspilationFailureRate
+        expr: rate(photonic_transpilation_failures_total[5m]) / rate(photonic_transpilation_attempts_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: transpiler
+        annotations:
+          summary: "High transpilation failure rate"
+          description: "Transpilation failure rate is {{ $value | humanizePercentage }} for 2 minutes"
+
+      - alert: LongTranspilationTime
+        expr: histogram_quantile(0.95, rate(photonic_transpilation_duration_seconds_bucket[5m])) > 300
+        for: 5m
+        labels:
+          severity: warning
+          component: transpiler
+        annotations:
+          summary: "Long transpilation time detected"
+          description: "95th percentile transpilation time is {{ $value }}s"
+
+      - alert: HighTranspilationQueueSize
+        expr: photonic_transpilation_queue_size > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: transpiler
+        annotations:
+          summary: "High transpilation queue size"
+          description: "Transpilation queue size is {{ $value }} for 5 minutes"
+
+  - name: photonic_simulation_alerts
+    rules:
+      # Simulation-specific alerts
+      - alert: SimulationFailureRate
+        expr: rate(photonic_simulation_failures_total[5m]) / rate(photonic_simulation_attempts_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          component: simulation
+        annotations:
+          summary: "High simulation failure rate"
+          description: "Simulation failure rate is {{ $value | humanizePercentage }} for 2 minutes"
+
+      - alert: EnergyEfficiencyDegradation
+        expr: avg_over_time(photonic_energy_per_operation_pj[10m]) > 2.0
+        for: 10m
+        labels:
+          severity: warning
+          component: simulation
+        annotations:
+          summary: "Energy efficiency degradation detected"
+          description: "Average energy per operation is {{ $value }}pJ over 10 minutes"
+
+      - alert: LatencyTargetMissed
+        expr: avg_over_time(photonic_latency_seconds[10m]) > 1e-6
+        for: 10m
+        labels:
+          severity: warning
+          component: simulation
+        annotations:
+          summary: "Latency target missed"
+          description: "Average latency is {{ $value }}s over 10 minutes"
+
+  - name: infrastructure_alerts
+    rules:
+      # Redis alerts
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis service is down"
+          description: "Redis has been down for more than 1 minute"
+
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is {{ $value | humanizePercentage }}"
+
+      # Container alerts
+      - alert: ContainerRestarting
+        expr: increase(container_restart_count{name=~"photonic.*"}[5m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+          service: container
+        annotations:
+          summary: "Container restarting"
+          description: "Container {{ $labels.name }} has restarted {{ $value }} times in 5 minutes"
+
+      - alert: ContainerOOMKilled
+        expr: increase(container_oom_kills_total{name=~"photonic.*"}[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: container
+        annotations:
+          summary: "Container OOM killed"
+          description: "Container {{ $labels.name }} was OOM killed"
+
+  - name: security_alerts
+    rules:
+      # Security-related alerts
+      - alert: UnauthorizedAccess
+        expr: rate(http_requests_total{status="401"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "High rate of unauthorized access attempts"
+          description: "{{ $value }} unauthorized requests per second for 2 minutes"
+
+      - alert: SecurityScanFailure
+        expr: photonic_security_scan_failures_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Security scan failure detected"
+          description: "Security scan has failed {{ $value }} times"
+
+  - name: business_logic_alerts
+    rules:
+      # Business logic and performance alerts
+      - alert: ModelAccuracyDegradation
+        expr: avg_over_time(photonic_model_accuracy_percentage[30m]) < 95
+        for: 30m
+        labels:
+          severity: warning
+          category: quality
+        annotations:
+          summary: "Model accuracy degradation"
+          description: "Average model accuracy is {{ $value }}% over 30 minutes"
+
+      - alert: ThroughputBelowTarget
+        expr: rate(photonic_operations_completed_total[5m]) < 1000
+        for: 10m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "Throughput below target"
+          description: "Operations throughput is {{ $value }} ops/sec for 10 minutes"
+
+      - alert: UserSessionSpike
+        expr: increase(photonic_active_sessions[5m]) > 100
+        for: 2m
+        labels:
+          severity: info
+          category: usage
+        annotations:
+          summary: "User session spike detected"
+          description: "Active sessions increased by {{ $value }} in 5 minutes"

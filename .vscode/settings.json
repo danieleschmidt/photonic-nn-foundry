@@ -1,0 +1,175 @@
+{
+  "python.defaultInterpreterPath": "./venv/bin/python",
+  
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.linting.mypyEnabled": true,
+  "python.linting.banditEnabled": true,
+  "python.linting.flake8Args": ["--max-line-length=88", "--extend-ignore=E203,W503"],
+  "python.linting.mypyArgs": ["--strict", "--ignore-missing-imports"],
+  
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length=88"],
+  
+  "python.sortImports.args": [
+    "--profile=black",
+    "--line-length=88",
+    "--multi-line=3",
+    "--trailing-comma"
+  ],
+  
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests/",
+    "-v",
+    "--tb=short",
+    "--strict-markers"
+  ],
+  
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true,
+    "source.fixAll.ruff": true
+  },
+  
+  "editor.rulers": [88],
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  
+  "files.associations": {
+    "*.v": "verilog",
+    "*.sv": "systemverilog",
+    "*.vh": "verilog",
+    "*.svh": "systemverilog",
+    "Dockerfile*": "dockerfile",
+    "*.yml": "yaml",
+    "*.yaml": "yaml"
+  },
+  
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/*.pyo": true,
+    "**/*.egg-info": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.coverage": true,
+    "**/htmlcov": true,
+    "**/.tox": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.env": true,
+    "**/node_modules": true
+  },
+  
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.venv/**": true,
+    "**/venv/**": true,
+    "**/__pycache__/**": true,
+    "**/.pytest_cache/**": true,
+    "**/.mypy_cache/**": true,
+    "**/.tox/**": true
+  },
+  
+  "search.exclude": {
+    "**/.venv": true,
+    "**/venv": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.tox": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/htmlcov": true,
+    "**/.coverage": true
+  },
+  
+  "terminal.integrated.env.linux": {
+    "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}"
+  },
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}"
+  },
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}/src;${env:PYTHONPATH}"
+  },
+  
+  "jupyter.jupyterServerType": "local",
+  "jupyter.notebookFileRoot": "${workspaceFolder}",
+  "jupyter.defaultKernel": "Python 3",
+  
+  "verilog.linting.linter": "verilator",
+  "verilog.linting.verilator.arguments": "-Wall --lint-only",
+  "verilog.formatting.verilogHDL.formatter": "verible",
+  
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": [
+      ".github/workflows/*.yml",
+      ".github/workflows/*.yaml"
+    ],
+    "https://json.schemastore.org/docker-compose.yml": [
+      "docker-compose*.yml",
+      "docker-compose*.yaml"
+    ]
+  },
+  
+  "markdown.preview.breaks": true,
+  "markdown.preview.linkify": true,
+  
+  "git.ignoreLimitWarning": true,
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  
+  "todo-tree.general.tags": [
+    "TODO",
+    "FIXME",
+    "HACK",
+    "NOTE",
+    "BUG",
+    "XXX",
+    "OPTIMIZE",
+    "PERF"
+  ],
+  "todo-tree.highlights.defaultHighlight": {
+    "icon": "alert",
+    "type": "text",
+    "foreground": "red",
+    "background": "white",
+    "opacity": 50,
+    "iconColour": "blue"
+  },
+  
+  "coverage-gutters.coverageFileNames": [
+    "coverage.xml",
+    "coverage.lcov",
+    ".coverage"
+  ],
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
+  
+  "ruff.args": ["--config=pyproject.toml"],
+  "ruff.fixAll": true,
+  "ruff.organizeImports": true,
+  
+  "mypy-type-checker.args": [
+    "--config-file=pyproject.toml"
+  ],
+  
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.py": "${capture}.pyi",
+    "requirements.txt": "requirements-*.txt",
+    "pyproject.toml": "setup.py,setup.cfg,requirements*.txt,MANIFEST.in",
+    "Dockerfile": "Dockerfile*,.dockerignore,docker-compose*.yml",
+    ".gitignore": ".gitattributes,.gitmodules,.gitmessage,.mailmap,.gitkeep",
+    "README.md": "AUTHORS,CONTRIBUTORS,CHANGELOG*,CHANGES*,HISTORY*,LICENSE*,NOTICE,CREDITS"
+  }
+}

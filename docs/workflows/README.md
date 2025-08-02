@@ -1,6 +1,10 @@
-# GitHub Actions Workflows Documentation
+# GitHub Actions Workflow Documentation
 
-This directory contains documentation for recommended GitHub Actions workflows for photonic-nn-foundry.
+## Overview
+
+This directory contains comprehensive documentation and templates for GitHub Actions workflows. Due to GitHub App permission limitations, these workflows must be manually created by repository maintainers.
+
+**⚠️ MANUAL SETUP REQUIRED:** Repository maintainers must manually copy workflow templates from `docs/workflows/examples/` to `.github/workflows/` to enable automated CI/CD.
 
 ## Required Workflows
 

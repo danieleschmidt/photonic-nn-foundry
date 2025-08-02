@@ -1,0 +1,127 @@
+# Prometheus configuration for photonic-nn-foundry
+# Comprehensive monitoring setup with service discovery and alerting
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'photonic-foundry'
+    environment: 'production'
+
+# Rule files for alerting
+rule_files:
+  - "alert_rules.yml"
+  - "recording_rules.yml"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+    metrics_path: /metrics
+
+  # Photonic Foundry application metrics
+  - job_name: 'photonic-foundry'
+    static_configs:
+      - targets: ['photonic-foundry:8080']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    honor_labels: true
+    scrape_timeout: 10s
+
+  # Photonic API metrics
+  - job_name: 'photonic-api'
+    static_configs:
+      - targets: ['photonic-api:5000']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    honor_labels: true
+
+  # Redis metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Container metrics (cAdvisor)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # Nginx metrics
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:9113']
+    scrape_interval: 15s
+
+  # Custom photonic hardware metrics (if available)
+  - job_name: 'photonic-hardware'
+    static_configs:
+      - targets: ['hardware-exporter:9200']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    honor_labels: true
+
+  # Blackbox exporter for endpoint monitoring
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://photonic-foundry:8080/health
+        - http://photonic-api:5000/health
+        - http://nginx/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Application-specific metrics
+  - job_name: 'photonic-transpiler'
+    static_configs:
+      - targets: ['photonic-foundry:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics/transpiler
+    honor_labels: true
+
+  - job_name: 'photonic-simulation'
+    static_configs:
+      - targets: ['photonic-foundry:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics/simulation
+    honor_labels: true
+
+# Remote write configuration (for long-term storage)
+remote_write:
+  - url: "http://cortex:9009/api/v1/push"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500
+
+# Remote read configuration
+remote_read:
+  - url: "http://cortex:9009/api/v1/read"
+    read_recent: true

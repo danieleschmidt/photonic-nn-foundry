@@ -1,0 +1,286 @@
+# Production-ready Docker Compose configuration
+# Optimized for deployment with proper security and monitoring
+
+version: '3.8'
+
+x-common-variables: &common-variables
+  PYTHONPATH: /app/src
+  ENVIRONMENT: production
+  LOG_LEVEL: INFO
+  TZ: UTC
+
+x-common-config: &common-config
+  restart: unless-stopped
+  networks:
+    - photonic-network
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  # Main application service
+  photonic-foundry:
+    <<: *common-config
+    build:
+      context: .
+      dockerfile: Dockerfile.multi-arch
+      target: production
+      args:
+        PYTHON_VERSION: "3.11"
+    image: photonic-foundry:production
+    container_name: photonic-foundry-prod
+    environment:
+      <<: *common-variables
+      WORKER_PROCESSES: 4
+    volumes:
+      - photonic-data:/app/data
+      - photonic-logs:/app/logs
+      - photonic-cache:/app/.cache
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+      - /var/tmp:noexec,nosuid,size=50m
+
+  # API service (if applicable)
+  photonic-api:
+    <<: *common-config
+    build:
+      context: .
+      dockerfile: Dockerfile.multi-arch
+      target: production
+    image: photonic-foundry:production
+    container_name: photonic-api-prod
+    environment:
+      <<: *common-variables
+      SERVICE_TYPE: api
+    volumes:
+      - photonic-data:/app/data:ro
+      - photonic-logs:/app/logs
+    ports:
+      - "5000:5000"
+    command: ["python", "-m", "photonic_foundry.api"]
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+  # Redis for caching and task queues
+  redis:
+    <<: *common-config
+    image: redis:7-alpine
+    container_name: photonic-redis-prod
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    volumes:
+      - photonic-redis:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  # Nginx reverse proxy
+  nginx:
+    <<: *common-config
+    image: nginx:alpine
+    container_name: photonic-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/ssl:ro
+      - photonic-logs:/var/log/nginx
+    depends_on:
+      - photonic-foundry
+      - photonic-api
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+  # Monitoring with Prometheus
+  prometheus:
+    <<: *common-config
+    image: prom/prometheus:latest
+    container_name: photonic-prometheus-prod
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - photonic-prometheus:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+
+  # Grafana for visualization
+  grafana:
+    <<: *common-config
+    image: grafana/grafana:latest
+    container_name: photonic-grafana-prod
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=changeme123
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - photonic-grafana:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+
+  # Log aggregation with Filebeat
+  filebeat:
+    <<: *common-config
+    image: elastic/filebeat:8.11.0
+    container_name: photonic-filebeat-prod
+    user: root
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - ./monitoring/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - photonic-logs:/var/log/photonic:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch:9200
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+volumes:
+  photonic-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/photonic-foundry/data
+  photonic-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/photonic-foundry/logs
+  photonic-cache:
+    driver: local
+  photonic-redis:
+    driver: local
+  photonic-prometheus:
+    driver: local
+  photonic-grafana:
+    driver: local
+
+networks:
+  photonic-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: photonic-br0
