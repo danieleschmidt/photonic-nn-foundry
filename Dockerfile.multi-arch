@@ -1,0 +1,210 @@
+# Multi-architecture, multi-stage build for photonic-nn-foundry
+# Supports AMD64, ARM64 architectures with optimizations
+
+ARG PYTHON_VERSION=3.11
+ARG UBUNTU_VERSION=22.04
+
+# Base stage with security hardening
+FROM python:${PYTHON_VERSION}-slim as base
+
+# Build arguments
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+
+# Metadata
+LABEL org.opencontainers.image.title="Photonic Neural Network Foundry"
+LABEL org.opencontainers.image.description="Silicon-photonic AI accelerator software stack"
+LABEL org.opencontainers.image.vendor="Terragon Labs"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.source="https://github.com/danieleschmidt/photonic-nn-foundry"
+
+# Security: Create non-root user early
+RUN groupadd --gid 1000 photonic && \
+    useradd --uid 1000 --gid photonic --shell /bin/bash --create-home photonic
+
+# Security: Update packages and install with minimal attack surface
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+    # Essential build tools
+    build-essential \
+    cmake \
+    ninja-build \
+    pkg-config \
+    # Version control
+    git \
+    # Network tools
+    curl \
+    wget \
+    ca-certificates \
+    gnupg \
+    # Verilog simulation tools (architecture-specific)
+    $(if [ "${TARGETARCH}" = "amd64" ]; then echo "verilator iverilog gtkwave"; fi) \
+    # Cleanup
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean \
+    && rm -rf /tmp/* /var/tmp/*
+
+# Security: Set secure file permissions
+RUN chmod 755 /usr/bin/* && \
+    chmod 755 /bin/* && \
+    chmod -R 755 /usr/local/
+
+# Python environment setup with security
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_DEFAULT_TIMEOUT=100
+
+# Performance: Enable Python optimizations
+ENV PYTHONOPTIMIZE=1
+
+# Security: Set secure working directory
+WORKDIR /app
+RUN chown photonic:photonic /app
+
+# Health check script
+COPY --chown=photonic:photonic scripts/healthcheck.sh /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
+
+# Development stage
+FROM base as development
+
+# Install development dependencies
+COPY requirements-dev.txt pyproject.toml ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+# Copy source code with proper ownership
+COPY --chown=photonic:photonic . .
+
+# Install package in editable mode
+RUN pip install --no-cache-dir -e .[dev,test,docs]
+
+# Setup git for development (as photonic user)
+USER photonic
+RUN git config --global --add safe.directory /app && \
+    git config --global user.name "Photonic Developer" && \
+    git config --global user.email "developer@photonic-foundry.local"
+
+# Development tools setup
+RUN pre-commit install || true
+
+# Expose development ports
+EXPOSE 8888 8080 5000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh
+
+CMD ["bash"]
+
+# Production stage with minimal footprint
+FROM base as production
+
+# Copy only production dependencies
+COPY requirements.txt pyproject.toml ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code
+COPY --chown=photonic:photonic src/ src/
+COPY --chown=photonic:photonic pyproject.toml README.md LICENSE ./
+
+# Install package
+RUN pip install --no-cache-dir . && \
+    # Cleanup
+    pip cache purge && \
+    rm -rf /tmp/* /var/tmp/* && \
+    # Security: Remove unnecessary packages
+    apt-get autoremove -y && \
+    apt-get clean
+
+# Switch to non-root user
+USER photonic
+
+# Security: Run with minimal privileges
+RUN chmod 444 /app/src/photonic_foundry/*.py
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh
+
+CMD ["photonic-foundry", "--help"]
+
+# Jupyter development stage
+FROM development as jupyter
+
+USER root
+RUN pip install --no-cache-dir \
+    jupyterlab \
+    jupyter-server-proxy \
+    jupyterlab-git \
+    jupyterlab-code-formatter
+
+USER photonic
+
+# Jupyter configuration
+RUN mkdir -p /home/photonic/.jupyter && \
+    echo "c.ServerApp.token = ''" > /home/photonic/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.password = ''" >> /home/photonic/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.open_browser = False" >> /home/photonic/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.allow_root = True" >> /home/photonic/.jupyter/jupyter_lab_config.py
+
+EXPOSE 8888
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8888/ || exit 1
+
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+
+# Testing stage
+FROM development as testing
+
+USER photonic
+
+# Run tests by default
+CMD ["pytest", "tests/", "-v", "--cov=src", "--cov-report=html", "--cov-report=term"]
+
+# Documentation stage
+FROM development as docs
+
+USER root
+RUN pip install --no-cache-dir \
+    sphinx \
+    sphinx-rtd-theme \
+    sphinx-autobuild \
+    myst-parser
+
+USER photonic
+
+EXPOSE 8000
+
+CMD ["sphinx-autobuild", "docs", "docs/_build/html", "--host", "0.0.0.0", "--port", "8000"]
+
+# Benchmark stage for performance testing
+FROM development as benchmark
+
+USER photonic
+
+# Install additional benchmarking tools
+USER root
+RUN pip install --no-cache-dir \
+    pytest-benchmark \
+    memory-profiler \
+    py-spy
+
+USER photonic
+
+CMD ["pytest", "tests/performance/", "-v", "--benchmark-only", "--benchmark-sort=mean"]
+
+# Security scanning stage
+FROM development as security
+
+USER root
+RUN pip install --no-cache-dir \
+    bandit \
+    safety \
+    pip-audit
+
+USER photonic
+
+CMD ["bash", "-c", "bandit -r src/ && safety check && pip-audit"]
