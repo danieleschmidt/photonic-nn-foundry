@@ -5,25 +5,46 @@ services:
     build:
       context: .
       target: development
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     volumes:
       - .:/app
       - ~/.gitconfig:/home/photonic/.gitconfig:ro
+      - photonic-cache:/app/.cache
     environment:
       - PYTHONPATH=/app/src
+      - DEVELOPMENT_MODE=true
+      - LOG_LEVEL=DEBUG
     command: bash
+    networks:
+      - photonic-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import photonic_foundry; print('healthy')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   jupyter:
     build:
       context: .
       target: jupyter
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     ports:
       - "8888:8888"
     volumes:
       - .:/app
       - ./notebooks:/app/notebooks
+      - jupyter-data:/home/photonic/.jupyter
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - JUPYTER_TOKEN=photonic-foundry-dev
+      - PYTHONPATH=/app/src
+    networks:
+      - photonic-network
+    depends_on:
+      photonic-foundry:
+        condition: service_healthy
 
   tests:
     build:
@@ -31,9 +52,15 @@ services:
       target: development
     volumes:
       - .:/app
-    command: pytest -v --cov=src/photonic_foundry --cov-report=html
+      - test-reports:/app/reports
+    command: pytest -v --cov=src/photonic_foundry --cov-report=html --cov-report=xml --junit-xml=reports/junit.xml
     environment:
       - PYTHONPATH=/app/src
+      - TEST_MODE=true
+    networks:
+      - photonic-network
+    depends_on:
+      - photonic-foundry
 
   docs:
     build:
@@ -42,10 +69,126 @@ services:
     volumes:
       - .:/app
       - ./docs:/app/docs
+      - docs-build:/app/docs/_build
     ports:
       - "8000:8000"
     command: sphinx-autobuild docs docs/_build/html --host 0.0.0.0 --port 8000
+    networks:
+      - photonic-network
+    depends_on:
+      - photonic-foundry
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - photonic-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=photonic_foundry
+      - POSTGRES_USER=photonic
+      - POSTGRES_PASSWORD=foundry_dev_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - photonic-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U photonic"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - photonic-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    networks:
+      - photonic-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    depends_on:
+      - prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    restart: unless-stopped
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    networks:
+      - photonic-network
+
+  security-scanner:
+    image: aquasec/trivy:latest
+    volumes:
+      - .:/workspace:ro
+      - trivy-cache:/root/.cache/trivy
+    command: fs --format json --output /workspace/security-report.json /workspace
+    networks:
+      - photonic-network
+
+volumes:
+  photonic-cache:
+  jupyter-data:
+  test-reports:
+  docs-build:
+  redis-data:
+  postgres-data:
+  prometheus-data:
+  grafana-data:
+  trivy-cache:
 
 networks:
-  default:
-    name: photonic-foundry-network
+  photonic-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
