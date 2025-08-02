@@ -1,0 +1,455 @@
+# Comprehensive security scanning workflow for photonic-nn-foundry
+# Copy this file to .github/workflows/security-scan.yml
+
+name: Security Scan
+
+on:
+  schedule:
+    # Run daily at 3 AM UTC
+    - cron: '0 3 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - 'Dockerfile*'
+      - '.github/workflows/security-scan.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - 'Dockerfile*'
+  workflow_dispatch:
+    inputs:
+      scan_level:
+        description: 'Scan level (basic/comprehensive)'
+        required: false
+        default: 'basic'
+        type: choice
+        options:
+          - basic
+          - comprehensive
+
+env:
+  PYTHONUNBUFFERED: 1
+  FORCE_COLOR: 1
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  # Static Application Security Testing (SAST)
+  sast:
+    name: Static Analysis Security Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit semgrep safety pip-audit
+
+      - name: Run Bandit security linter
+        run: |
+          bandit -r src/ \
+            -f json -o bandit-report.json \
+            -ll -x tests/ || true
+          
+          # Also run with text output for logs
+          bandit -r src/ -ll -x tests/
+
+      - name: Run Semgrep security analysis
+        run: |
+          semgrep \
+            --config=auto \
+            --json \
+            --output=semgrep-report.json \
+            --error \
+            src/ || true
+          
+          semgrep --config=auto src/
+
+      - name: Upload SAST results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: sast-results
+          path: |
+            bandit-report.json
+            semgrep-report.json
+
+      - name: Upload Bandit results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: bandit-report.json
+        continue-on-error: true
+
+  # Dependency vulnerability scanning
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install safety pip-audit
+
+      - name: Install project dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run Safety check
+        run: |
+          safety check \
+            --json \
+            --output safety-report.json \
+            --continue-on-error || true
+          
+          safety check
+
+      - name: Run pip-audit
+        run: |
+          pip-audit \
+            --format=json \
+            --output=pip-audit-report.json \
+            --progress-spinner=off || true
+          
+          pip-audit
+
+      - name: Generate SBOM (Software Bill of Materials)
+        run: |
+          pip install cyclonedx-bom
+          cyclonedx-py -o sbom.json
+
+      - name: Upload dependency scan results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: dependency-scan-results
+          path: |
+            safety-report.json
+            pip-audit-report.json
+            sbom.json
+
+  # Container security scanning
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build container for scanning
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.multi-arch
+          target: production
+          tags: photonic-foundry:scan
+          load: true
+          cache-from: type=gha
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | \
+            sh -s -- -b /usr/local/bin
+
+      - name: Run Trivy vulnerability scan
+        run: |
+          trivy image \
+            --format json \
+            --output trivy-report.json \
+            --severity HIGH,CRITICAL \
+            photonic-foundry:scan || true
+          
+          trivy image \
+            --severity HIGH,CRITICAL \
+            photonic-foundry:scan
+
+      - name: Run Trivy configuration scan
+        run: |
+          trivy config \
+            --format json \
+            --output trivy-config-report.json \
+            . || true
+          
+          trivy config .
+
+      - name: Scan for secrets in container
+        run: |
+          trivy image \
+            --scanners secret \
+            --format json \
+            --output trivy-secret-report.json \
+            photonic-foundry:scan || true
+
+      - name: Upload container scan results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: container-scan-results
+          path: |
+            trivy-report.json
+            trivy-config-report.json
+            trivy-secret-report.json
+
+  # CodeQL Analysis
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['python']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+
+  # License compliance check
+  license-check:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install license checking tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-licenses licensecheck
+
+      - name: Check Python dependencies licenses
+        run: |
+          pip install -r requirements.txt
+          pip-licenses \
+            --format=json \
+            --output-file=licenses-report.json \
+            --with-urls \
+            --with-description
+
+      - name: Generate license compatibility report
+        run: |
+          pip-licenses \
+            --allow-only="MIT;BSD;Apache;ISC;Python Software Foundation" \
+            --fail-on="GPL;AGPL;LGPL"
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v3
+        with:
+          name: license-report
+          path: licenses-report.json
+
+  # Secrets scanning
+  secrets-scan:
+    name: Secrets Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install TruffleHog
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | \
+            sh -s -- -b /usr/local/bin
+
+      - name: Run TruffleHog secrets scan
+        run: |
+          trufflehog git \
+            --json \
+            --no-update \
+            file://. > secrets-report.json || true
+
+      - name: Check for secrets (fail if found)
+        run: |
+          if [ -s secrets-report.json ]; then
+            echo "🚨 Secrets detected in repository!"
+            cat secrets-report.json
+            exit 1
+          else
+            echo "✅ No secrets detected"
+          fi
+
+      - name: Upload secrets scan results
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: secrets-scan-results
+          path: secrets-report.json
+
+  # Comprehensive security report
+  security-report:
+    name: Generate Security Report
+    needs: [sast, dependency-scan, container-scan, codeql, license-check, secrets-scan]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all scan results
+        uses: actions/download-artifact@v3
+        with:
+          path: scan-results/
+
+      - name: Install report generation tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install jinja2 markdown
+
+      - name: Generate comprehensive security report
+        run: |
+          python scripts/generate_security_report.py \
+            --input-dir scan-results/ \
+            --output security-report.html \
+            --format html
+
+      - name: Upload comprehensive security report
+        uses: actions/upload-artifact@v3
+        with:
+          name: comprehensive-security-report
+          path: security-report.html
+
+      - name: Check overall security status
+        run: |
+          # Combine all security check results
+          OVERALL_STATUS="PASS"
+          
+          if [[ "${{ needs.sast.result }}" == "failure" ]]; then
+            echo "❌ SAST checks failed"
+            OVERALL_STATUS="FAIL"
+          fi
+          
+          if [[ "${{ needs.dependency-scan.result }}" == "failure" ]]; then
+            echo "❌ Dependency scan failed"
+            OVERALL_STATUS="FAIL"
+          fi
+          
+          if [[ "${{ needs.container-scan.result }}" == "failure" ]]; then
+            echo "❌ Container scan failed"
+            OVERALL_STATUS="FAIL"
+          fi
+          
+          if [[ "${{ needs.codeql.result }}" == "failure" ]]; then
+            echo "❌ CodeQL analysis failed"
+            OVERALL_STATUS="FAIL"
+          fi
+          
+          if [[ "${{ needs.license-check.result }}" == "failure" ]]; then
+            echo "❌ License check failed"
+            OVERALL_STATUS="FAIL"
+          fi
+          
+          if [[ "${{ needs.secrets-scan.result }}" == "failure" ]]; then
+            echo "❌ Secrets scan failed"
+            OVERALL_STATUS="FAIL"
+          fi
+          
+          if [[ "$OVERALL_STATUS" == "PASS" ]]; then
+            echo "✅ All security checks passed"
+          else
+            echo "🚨 Security checks failed - see individual job results"
+            exit 1
+          fi
+
+  # Notification
+  notify:
+    name: Security Scan Notification
+    needs: [security-report]
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          STATUS="✅ Passed"
+          COLOR="good"
+          
+          if [[ "${{ needs.security-report.result }}" != "success" ]]; then
+            STATUS="❌ Failed"
+            COLOR="danger"
+          fi
+          
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"attachments\": [{
+                \"color\": \"$COLOR\",
+                \"title\": \"Security Scan Results\",
+                \"text\": \"Daily security scan $STATUS\",
+                \"fields\": [{
+                  \"title\": \"Repository\",
+                  \"value\": \"${{ github.repository }}\",
+                  \"short\": true
+                }, {
+                  \"title\": \"Branch\",
+                  \"value\": \"${{ github.ref_name }}\",
+                  \"short\": true
+                }],
+                \"footer\": \"GitHub Actions\",
+                \"ts\": $(date +%s)
+              }]
+            }" \
+            $SLACK_WEBHOOK_URL
