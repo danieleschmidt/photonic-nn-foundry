@@ -1,5 +1,5 @@
 """
-Circuit optimization and performance enhancement utilities.
+Advanced circuit optimization and performance enhancement utilities for photonic neural networks.
 """
 
 import numpy as np
