@@ -1,79 +1,102 @@
 {
   "name": "Photonic Neural Network Foundry",
-  "dockerFile": "../Dockerfile",
-  "context": "..",
+  "image": "mcr.microsoft.com/devcontainers/python:3.10-bullseye",
   
   "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    }
   },
-
+  
   "customizations": {
     "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.flake8",
+        "ms-python.pylint",
+        "ms-python.isort",
+        "ms-toolsai.jupyter",
+        "ms-vscode.makefile-tools",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker",
+        "GitHub.copilot",
+        "ms-vsliveshare.vsliveshare"
+      ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "python.linting.enabled": true,
-        "python.linting.flake8Enabled": true,
-        "python.linting.mypyEnabled": true,
         "python.formatting.provider": "black",
-        "python.formatting.blackPath": "/usr/local/bin/black",
-        "python.sortImports.path": "/usr/local/bin/isort",
+        "python.formatting.blackArgs": ["--line-length=88"],
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.linting.flake8Enabled": true,
         "python.testing.pytestEnabled": true,
         "python.testing.unittestEnabled": false,
-        "python.testing.pytestArgs": ["tests/"],
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
           "source.organizeImports": true
         },
-        "files.associations": {
-          "*.v": "verilog",
-          "*.sv": "systemverilog"
-        },
-        "terminal.integrated.defaultProfile.linux": "bash"
-      },
-      
-      "extensions": [
-        "ms-python.python",
-        "ms-python.flake8",
-        "ms-python.black-formatter",
-        "ms-python.isort",
-        "ms-python.mypy-type-checker",
-        "ms-toolsai.jupyter",
-        "ms-vscode.vscode-json",
-        "redhat.vscode-yaml",
-        "ms-vscode.makefile-tools",
-        "eamodio.gitlens",
-        "GitHub.copilot",
-        "ms-vsliveshare.vsliveshare",
-        "mshr-h.VerilogHDL",
-        "charliermarsh.ruff"
-      ]
+        "files.exclude": {
+          "**/__pycache__": true,
+          "**/.pytest_cache": true,
+          "**/.tox": true,
+          "**/build": true,
+          "**/dist": true,
+          "**/*.egg-info": true
+        }
+      }
     }
   },
-
-  "remoteUser": "vscode",
-  "userEnvProbe": "loginInteractiveShell",
-
-  "mounts": [
-    "source=${localWorkspaceFolder}/.vscode,target=/home/vscode/.vscode,type=bind,consistency=cached"
-  ],
-
-  "postCreateCommand": "pip install -e .[dev]",
   
-  "forwardPorts": [8888, 8080],
+  "forwardPorts": [
+    8000,
+    5432,
+    6379,
+    8888,
+    3000
+  ],
   "portsAttributes": {
+    "8000": {
+      "label": "API Server",
+      "protocol": "http"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "protocol": "tcp"
+    },
+    "6379": {
+      "label": "Redis",
+      "protocol": "tcp"
+    },
     "8888": {
       "label": "Jupyter Lab",
-      "onAutoForward": "notify"
+      "protocol": "http"
     },
-    "8080": {
-      "label": "Development Server",
-      "onAutoForward": "ignore"
+    "3000": {
+      "label": "Frontend Dev Server",
+      "protocol": "http"
     }
   },
-
-  "shutdownAction": "stopContainer",
   
-  "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  
+  "remoteUser": "vscode",
+  
+  "mounts": [
+    "source=photonic-foundry-venv,target=/workspace/.venv,type=volume"
+  ],
+  
+  "containerEnv": {
+    "PYTHONPATH": "/workspace/src",
+    "DEBUG": "true",
+    "DEVELOPMENT": "true",
+    "DATABASE_URL": "sqlite:///workspace/data/dev.db",
+    "REDIS_URL": "redis://localhost:6379/0",
+    "API_HOST": "0.0.0.0",
+    "API_PORT": "8000",
+    "JUPYTER_ENABLE_LAB": "yes"
+  }
 }
