@@ -383,4 +383,42 @@ def log_operation(operation: str, context: Dict):
 - **Usage Metrics**: Command frequency, model types
 - **Error Metrics**: Error rates, error types
 
+## Data Flow Diagrams
+
+### Model Processing Data Flow
+
+```mermaid
+graph TB
+    A[PyTorch Model] --> B[Model Analyzer]
+    B --> C[Layer Decomposer]
+    C --> D[Photonic Mapper]
+    D --> E[Circuit Generator]
+    E --> F[Verilog Synthesizer]
+    F --> G[Hardware Description]
+    
+    H[Configuration] --> D
+    I[PDK Library] --> E
+    J[Optimization Rules] --> E
+```
+
+### System Component Interactions
+
+```mermaid
+graph LR
+    CLI[CLI Interface] --> Core[Photonic Core]
+    Core --> Trans[Transpiler Engine]
+    Core --> Sim[Simulator]
+    Core --> Prof[Profiler]
+    
+    Trans --> MZI[MZI Components]
+    Trans --> Ring[Ring Resonators]
+    Trans --> WG[Waveguides]
+    
+    Sim --> OpSim[Optical Simulation]
+    Sim --> ESim[Electrical Simulation]
+    
+    Prof --> Energy[Energy Analysis]
+    Prof --> Timing[Timing Analysis]
+```
+
 This architecture provides a solid foundation for the photonic neural network framework while maintaining flexibility for future enhancements and extensions.

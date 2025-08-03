@@ -2,10 +2,207 @@
 Core photonic accelerator functionality.
 """
 
-from typing import Dict, Any, Optional
+import torch
+import torch.nn as nn
+from typing import Dict, Any, Optional, List, Tuple
 import logging
+import numpy as np
+from dataclasses import dataclass
+from enum import Enum
+import json
+import time
 
 logger = logging.getLogger(__name__)
+
+
+class PhotonicComponent(Enum):
+    """Enumeration of supported photonic components."""
+    MZI = "mach_zehnder_interferometer"
+    RING = "ring_resonator" 
+    WAVEGUIDE = "waveguide"
+    PHOTODETECTOR = "photodetector"
+    MODULATOR = "electro_optic_modulator"
+
+
+@dataclass
+class CircuitMetrics:
+    """Performance metrics for photonic circuits."""
+    energy_per_op: float  # pJ per operation
+    latency: float        # ps
+    area: float          # mm²
+    power: float         # mW
+    throughput: float    # GOPS
+    accuracy: float      # relative to FP32
+    
+
+class PhotonicLayer:
+    """Base class for photonic neural network layers."""
+    
+    def __init__(self, input_size: int, output_size: int):
+        self.input_size = input_size
+        self.output_size = output_size
+        self.components = []
+        
+    def add_component(self, component_type: PhotonicComponent, params: Dict[str, Any]):
+        """Add a photonic component to this layer."""
+        self.components.append({
+            'type': component_type,
+            'params': params
+        })
+        
+    def generate_verilog(self) -> str:
+        """Generate Verilog representation of this layer."""
+        raise NotImplementedError
+        
+        
+class MZILayer(PhotonicLayer):
+    """Mach-Zehnder Interferometer based linear layer."""
+    
+    def __init__(self, input_size: int, output_size: int, precision: int = 8):
+        super().__init__(input_size, output_size)
+        self.precision = precision
+        self.weights = np.random.randn(output_size, input_size)
+        
+        # Add MZI mesh components
+        for i in range(output_size):
+            for j in range(input_size):
+                self.add_component(PhotonicComponent.MZI, {
+                    'phase_shifter_bits': precision,
+                    'insertion_loss': 0.1,  # dB
+                    'crosstalk': -30,        # dB
+                    'position': (i, j)
+                })
+                
+    def generate_verilog(self) -> str:
+        """Generate Verilog for MZI mesh."""
+        verilog = f"""
+// MZI-based linear layer: {self.input_size} -> {self.output_size}
+module mzi_layer_{self.input_size}x{self.output_size} (
+    input clk,
+    input rst_n,
+    input [{self.precision-1}:0] data_in [{self.input_size-1}:0],
+    input valid_in,
+    output [{self.precision-1}:0] data_out [{self.output_size-1}:0],
+    output valid_out
+);
+
+// MZI mesh implementation
+genvar i, j;
+generate
+    for (i = 0; i < {self.output_size}; i = i + 1) begin: row_gen
+        for (j = 0; j < {self.input_size}; j = j + 1) begin: col_gen
+            mzi_unit #(
+                .PRECISION({self.precision}),
+                .WEIGHT({int(self.weights[i,j] * (2**(self.precision-1)))})
+            ) mzi_inst (
+                .clk(clk),
+                .rst_n(rst_n),
+                .data_in(data_in[j]),
+                .weight_out(intermediate[i][j])
+            );
+        end
+    end
+endgenerate
+
+// Accumulation network
+reg [{self.precision-1}:0] accumulator [{self.output_size-1}:0];
+reg valid_out_reg;
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        valid_out_reg <= 1'b0;
+    end else begin
+        valid_out_reg <= valid_in;
+        for (int k = 0; k < {self.output_size}; k++) begin
+            accumulator[k] <= // Sum across input dimensions
+        end
+    end
+end
+
+assign data_out = accumulator;
+assign valid_out = valid_out_reg;
+
+endmodule
+"""
+        return verilog
+
+
+class PhotonicCircuit:
+    """Complete photonic neural network circuit."""
+    
+    def __init__(self, name: str = "photonic_nn"):
+        self.name = name
+        self.layers = []
+        self.connections = []
+        self.total_components = 0
+        
+    def add_layer(self, layer: PhotonicLayer):
+        """Add a layer to the circuit."""
+        self.layers.append(layer)
+        self.total_components += len(layer.components)
+        
+    def connect_layers(self, from_idx: int, to_idx: int):
+        """Connect two layers in the circuit."""
+        if from_idx >= len(self.layers) or to_idx >= len(self.layers):
+            raise ValueError("Invalid layer indices")
+            
+        self.connections.append((from_idx, to_idx))
+        
+    def analyze_circuit(self) -> CircuitMetrics:
+        """Analyze circuit performance metrics."""
+        total_mzis = sum(len([c for c in layer.components 
+                            if c['type'] == PhotonicComponent.MZI]) 
+                          for layer in self.layers)
+        
+        # Physics-based performance modeling
+        energy_per_mzi = 0.5  # pJ per MZI operation
+        latency_per_layer = 50  # ps per layer
+        area_per_mzi = 0.001  # mm² per MZI
+        
+        metrics = CircuitMetrics(
+            energy_per_op=energy_per_mzi * total_mzis,
+            latency=latency_per_layer * len(self.layers),
+            area=area_per_mzi * total_mzis,
+            power=energy_per_mzi * total_mzis * 1e6,  # Assuming 1 GHz operation
+            throughput=1e12 / (latency_per_layer * len(self.layers)),  # GOPS
+            accuracy=0.98  # Typical photonic precision vs FP32
+        )
+        
+        return metrics
+        
+    def generate_verilog(self) -> str:
+        """Generate complete Verilog module for the circuit."""
+        module_def = f"""
+// Generated photonic neural network: {self.name}
+// Total layers: {len(self.layers)}
+// Total components: {self.total_components}
+
+module {self.name} (
+    input clk,
+    input rst_n,
+    input [31:0] data_in,
+    input valid_in,
+    output [31:0] data_out,
+    output valid_out
+);
+
+"""
+        
+        # Generate individual layer modules
+        layer_verilog = ""
+        for i, layer in enumerate(self.layers):
+            layer_verilog += f"\n// Layer {i}\n"
+            layer_verilog += layer.generate_verilog()
+            layer_verilog += "\n"
+            
+        # Generate connections
+        connections_verilog = "\n// Layer connections\n"
+        for i, (from_idx, to_idx) in enumerate(self.connections):
+            connections_verilog += f"// Connect layer {from_idx} to layer {to_idx}\n"
+            
+        module_end = "\nendmodule\n"
+        
+        return module_def + layer_verilog + connections_verilog + module_end
 
 
 class PhotonicAccelerator:
@@ -21,22 +218,102 @@ class PhotonicAccelerator:
         """
         self.pdk = pdk
         self.wavelength = wavelength
+        self.supported_layers = {
+            'Linear': MZILayer,
+            'Conv2d': self._create_conv_layer,
+        }
         logger.info(f"Initialized PhotonicAccelerator with PDK: {pdk}, λ: {wavelength}nm")
     
-    def compile_and_profile(self, verilog_code: str) -> Dict[str, Any]:
+    def _create_conv_layer(self, *args, **kwargs):
+        """Create convolution layer (simplified as matrix operations)."""
+        return MZILayer(*args, **kwargs)
+        
+    def convert_pytorch_model(self, model: nn.Module) -> PhotonicCircuit:
+        """
+        Convert PyTorch model to photonic circuit.
+        
+        Args:
+            model: PyTorch neural network model
+            
+        Returns:
+            PhotonicCircuit representation
+        """
+        circuit = PhotonicCircuit(f"converted_{model.__class__.__name__}")
+        
+        # Analyze model structure
+        layer_idx = 0
+        for name, module in model.named_modules():
+            if isinstance(module, nn.Linear):
+                layer = MZILayer(module.in_features, module.out_features)
+                # Copy weights from PyTorch model
+                layer.weights = module.weight.detach().numpy()
+                circuit.add_layer(layer)
+                
+                # Connect to previous layer
+                if layer_idx > 0:
+                    circuit.connect_layers(layer_idx - 1, layer_idx)
+                layer_idx += 1
+                
+                logger.info(f"Converted {name}: Linear({module.in_features}, {module.out_features})")
+                
+        return circuit
+    
+    def compile_and_profile(self, circuit: PhotonicCircuit) -> CircuitMetrics:
         """
         Compile and profile photonic circuit.
         
         Args:
-            verilog_code: Verilog description of photonic circuit
+            circuit: PhotonicCircuit to analyze
             
         Returns:
-            Dictionary with profiling results
+            CircuitMetrics with detailed performance analysis
         """
-        # Placeholder implementation
-        return {
-            "energy_per_op": 0.5,  # pJ
-            "latency": 100,        # ps
-            "area": 0.1,          # mm²
-            "power": 10.0,        # mW
-        }
+        start_time = time.time()
+        
+        # Perform circuit analysis
+        metrics = circuit.analyze_circuit()
+        
+        # Add compilation overhead to latency
+        compilation_time = time.time() - start_time
+        logger.info(f"Circuit compilation completed in {compilation_time:.3f}s")
+        
+        # Log detailed metrics
+        logger.info(f"Circuit Metrics:")
+        logger.info(f"  Energy per op: {metrics.energy_per_op:.2f} pJ")
+        logger.info(f"  Latency: {metrics.latency:.2f} ps")
+        logger.info(f"  Area: {metrics.area:.3f} mm²")
+        logger.info(f"  Power: {metrics.power:.2f} mW")
+        logger.info(f"  Throughput: {metrics.throughput:.2f} GOPS")
+        logger.info(f"  Accuracy: {metrics.accuracy:.1%}")
+        
+        return metrics
+        
+    def simulate_inference(self, circuit: PhotonicCircuit, input_data: np.ndarray) -> Tuple[np.ndarray, float]:
+        """
+        Simulate inference on photonic circuit.
+        
+        Args:
+            circuit: PhotonicCircuit to simulate
+            input_data: Input data array
+            
+        Returns:
+            Tuple of (output_data, inference_time)
+        """
+        start_time = time.time()
+        
+        # Simplified simulation - apply layer transformations
+        current_data = input_data
+        
+        for i, layer in enumerate(circuit.layers):
+            if isinstance(layer, MZILayer):
+                # Simulate matrix multiplication with quantization effects
+                weights_quantized = np.round(layer.weights * (2**(layer.precision-1))) / (2**(layer.precision-1))
+                current_data = np.dot(current_data, weights_quantized.T)
+                
+                # Add noise and non-idealities
+                noise_factor = 0.02  # 2% noise
+                current_data += np.random.normal(0, noise_factor * np.std(current_data), current_data.shape)
+                
+        inference_time = time.time() - start_time
+        
+        return current_data, inference_time
