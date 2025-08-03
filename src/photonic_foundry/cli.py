@@ -254,6 +254,117 @@ def simulate(circuit_file: str, input_data: str, output: str):
 
 
 @main.command()
+@click.option("--limit", default=20, help="Number of circuits to list")
+def list_circuits(limit: int):
+    """List saved photonic circuits."""
+    try:
+        accelerator = PhotonicAccelerator()
+        circuits = accelerator.list_saved_circuits(limit=limit)
+        
+        if not circuits:
+            click.echo("📂 No saved circuits found.")
+            return
+            
+        click.echo(f"\n📂 Saved Circuits ({len(circuits)} found):\n")
+        
+        for circuit in circuits:
+            click.echo(f"🔗 {circuit['name']}")
+            click.echo(f"   Layers: {circuit['layer_count']}, Components: {circuit['component_count']}")
+            click.echo(f"   Created: {circuit['created_at'][:19]}")
+            
+            if circuit['has_metrics']:
+                click.echo(f"   ⚡ Energy: {circuit.get('energy_per_op', 0):.2f} pJ/op")
+                click.echo(f"   ⏱️  Latency: {circuit.get('latency', 0):.2f} ps")
+                click.echo(f"   📐 Area: {circuit.get('area', 0):.3f} mm²")
+                
+            click.echo(f"   💾 Verilog: {'✅' if circuit['has_verilog'] else '❌'}")
+            click.echo()
+            
+    except Exception as e:
+        click.echo(f"❌ Error listing circuits: {e}", err=True)
+        
+
+@main.command()
+@click.argument("circuit_name")
+def load_circuit(circuit_name: str):
+    """Load and display a saved circuit."""
+    try:
+        accelerator = PhotonicAccelerator()
+        circuit = accelerator.load_circuit(circuit_name)
+        
+        if not circuit:
+            click.echo(f"❌ Circuit '{circuit_name}' not found.")
+            return
+            
+        click.echo(f"\n✅ Loaded circuit: {circuit.name}")
+        click.echo(f"   Total layers: {len(circuit.layers)}")
+        click.echo(f"   Total components: {circuit.total_components}")
+        click.echo(f"   Connections: {len(circuit.connections)}")
+        
+        # Show layer details
+        click.echo(f"\n📊 Layer Details:")
+        for i, layer in enumerate(circuit.layers):
+            layer_type = type(layer).__name__
+            input_size = getattr(layer, 'input_size', 'N/A')
+            output_size = getattr(layer, 'output_size', 'N/A')
+            click.echo(f"   Layer {i}: {layer_type} ({input_size} → {output_size})")
+            
+    except Exception as e:
+        click.echo(f"❌ Error loading circuit: {e}", err=True)
+
+
+@main.command()
+def db_stats():
+    """Show database and cache statistics."""
+    try:
+        accelerator = PhotonicAccelerator()
+        stats = accelerator.get_database_stats()
+        
+        click.echo("\n📊 Database & Cache Statistics:\n")
+        
+        # Database stats
+        db_stats = stats['database']
+        click.echo("💾 Database:")
+        click.echo(f"   Circuits: {db_stats.get('circuits_count', 0)}")
+        click.echo(f"   Components: {db_stats.get('components_count', 0)}")
+        click.echo(f"   Simulations: {db_stats.get('simulation_results_count', 0)}")
+        click.echo(f"   Size: {db_stats.get('database_size_bytes', 0) / 1024 / 1024:.2f} MB")
+        
+        # Cache stats  
+        cache_stats = stats['cache']
+        click.echo(f"\n🗂️  Cache:")
+        click.echo(f"   Cached circuits: {cache_stats.get('total_entries', 0)}")
+        click.echo(f"   Cache size: {cache_stats.get('total_size_mb', 0):.2f} MB")
+        click.echo(f"   Cache directory: {cache_stats.get('cache_dir', 'N/A')}")
+        
+        # Circuit stats
+        circuit_stats = stats['circuit_stats']
+        click.echo(f"\n🔗 Circuit Statistics:")
+        click.echo(f"   Total circuits: {circuit_stats.get('total_circuits', 0)}")
+        click.echo(f"   With Verilog: {circuit_stats.get('circuits_with_verilog', 0)}")
+        click.echo(f"   Avg components: {circuit_stats.get('avg_components', 0):.1f}")
+        
+        if circuit_stats.get('latest_update'):
+            click.echo(f"   Latest update: {circuit_stats['latest_update'][:19]}")
+            
+    except Exception as e:
+        click.echo(f"❌ Error getting database stats: {e}", err=True)
+
+
+@main.command()
+@click.confirmation_option(prompt="Are you sure you want to clear the cache?")
+def clear_cache():
+    """Clear the circuit cache."""
+    try:
+        from .database.cache import clear_all_caches
+        clear_all_caches()
+        click.echo("✅ Cache cleared successfully.")
+        
+    except Exception as e:
+        click.echo(f"❌ Error clearing cache: {e}", err=True)
+
+
+@main.command()
 def examples():
     """Show usage examples."""
     examples_text = """
@@ -273,6 +384,12 @@ def examples():
 
 5. Advanced transpilation with optimization:
    photonic-foundry transpile complex_model.pth --target photonic_conv --optimize
+
+6. Database management:
+   photonic-foundry list-circuits --limit 10
+   photonic-foundry load-circuit my_circuit
+   photonic-foundry db-stats
+   photonic-foundry clear-cache
 
 📚 For more information, visit: https://github.com/yourusername/photonic-nn-foundry
     """

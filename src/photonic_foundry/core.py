@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from enum import Enum
 import json
 import time
+from .database import get_database, CircuitRepository, get_circuit_cache
+from .database.models import CircuitModel, CircuitMetrics as DBCircuitMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -222,6 +224,11 @@ class PhotonicAccelerator:
             'Linear': MZILayer,
             'Conv2d': self._create_conv_layer,
         }
+        
+        # Initialize database and cache
+        self.circuit_repo = CircuitRepository()
+        self.circuit_cache = get_circuit_cache()
+        
         logger.info(f"Initialized PhotonicAccelerator with PDK: {pdk}, λ: {wavelength}nm")
     
     def _create_conv_layer(self, *args, **kwargs):
@@ -317,3 +324,151 @@ class PhotonicAccelerator:
         inference_time = time.time() - start_time
         
         return current_data, inference_time
+        
+    def save_circuit(self, circuit: PhotonicCircuit, 
+                    verilog_code: Optional[str] = None,
+                    metrics: Optional[CircuitMetrics] = None) -> int:
+        """
+        Save circuit to database with caching.
+        
+        Args:
+            circuit: PhotonicCircuit to save
+            verilog_code: Generated Verilog code
+            metrics: Performance metrics
+            
+        Returns:
+            Database ID of saved circuit
+        """
+        # Convert to database model
+        circuit_data = {
+            'name': circuit.name,
+            'layers': [
+                {
+                    'type': type(layer).__name__,
+                    'input_size': getattr(layer, 'input_size', 0),
+                    'output_size': getattr(layer, 'output_size', 0),
+                    'components': layer.components
+                }
+                for layer in circuit.layers
+            ],
+            'connections': circuit.connections,
+            'total_components': circuit.total_components,
+            'pdk': self.pdk,
+            'wavelength': self.wavelength
+        }
+        
+        # Create database model
+        db_circuit = CircuitModel(circuit.name, circuit_data)
+        
+        if verilog_code:
+            db_circuit.set_verilog(verilog_code)
+            
+        if metrics:
+            db_metrics = DBCircuitMetrics(
+                energy_per_op=metrics.energy_per_op,
+                latency=metrics.latency,
+                area=metrics.area,
+                power=metrics.power,
+                throughput=metrics.throughput,
+                accuracy=metrics.accuracy,
+                loss=0.5,  # Default optical loss
+                crosstalk=-30  # Default crosstalk isolation
+            )
+            db_circuit.set_metrics(db_metrics)
+            
+        # Save to database
+        circuit_id = self.circuit_repo.save(db_circuit)
+        
+        # Cache the circuit
+        cache_data = {
+            'circuit_data': circuit_data,
+            'verilog_code': verilog_code,
+            'metrics': metrics.to_dict() if metrics else None
+        }
+        self.circuit_cache.put_circuit(circuit_data, verilog_code, cache_data.get('metrics'))
+        
+        logger.info(f"Saved circuit '{circuit.name}' with ID {circuit_id}")
+        return circuit_id
+        
+    def load_circuit(self, name: str) -> Optional[PhotonicCircuit]:
+        """
+        Load circuit from database or cache.
+        
+        Args:
+            name: Circuit name
+            
+        Returns:
+            PhotonicCircuit if found, None otherwise
+        """
+        # Try database first
+        db_circuit_data = self.circuit_repo.find_by_name(name)
+        
+        if db_circuit_data:
+            db_circuit = CircuitModel.from_dict(db_circuit_data)
+            
+            # Reconstruct PhotonicCircuit
+            circuit = PhotonicCircuit(db_circuit.name)
+            
+            # Rebuild layers from stored data
+            for layer_data in db_circuit.circuit_data.get('layers', []):
+                if layer_data['type'] == 'MZILayer':
+                    layer = MZILayer(
+                        layer_data['input_size'],
+                        layer_data['output_size']
+                    )
+                    layer.components = layer_data.get('components', [])
+                    circuit.add_layer(layer)
+                    
+            # Restore connections
+            circuit.connections = db_circuit.circuit_data.get('connections', [])
+            circuit.total_components = db_circuit.circuit_data.get('total_components', 0)
+            
+            logger.info(f"Loaded circuit '{name}' from database")
+            return circuit
+            
+        return None
+        
+    def list_saved_circuits(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """
+        List saved circuits with metadata.
+        
+        Args:
+            limit: Maximum number of circuits to return
+            
+        Returns:
+            List of circuit metadata dictionaries
+        """
+        circuits = self.circuit_repo.list_all(limit=limit)
+        
+        circuit_list = []
+        for circuit in circuits:
+            circuit_info = {
+                'name': circuit.name,
+                'model_hash': circuit.model_hash,
+                'layer_count': circuit.get_layer_count(),
+                'component_count': circuit.get_component_count(),
+                'created_at': circuit.created_at.isoformat(),
+                'updated_at': circuit.updated_at.isoformat(),
+                'has_verilog': circuit.verilog_code is not None,
+                'has_metrics': circuit.metrics is not None
+            }
+            
+            if circuit.metrics:
+                circuit_info['energy_per_op'] = circuit.metrics.energy_per_op
+                circuit_info['latency'] = circuit.metrics.latency
+                circuit_info['area'] = circuit.metrics.area
+                
+            circuit_list.append(circuit_info)
+            
+        return circuit_list
+        
+    def get_database_stats(self) -> Dict[str, Any]:
+        """Get database and cache statistics."""
+        db_stats = self.circuit_repo.db.get_database_stats()
+        cache_stats = self.circuit_cache.get_cache_stats()
+        
+        return {
+            'database': db_stats,
+            'cache': cache_stats,
+            'circuit_stats': self.circuit_repo.get_circuit_stats()
+        }
