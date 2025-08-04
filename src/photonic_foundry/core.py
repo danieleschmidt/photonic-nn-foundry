@@ -171,6 +171,56 @@ class PhotonicCircuit:
         )
         
         return metrics
+    
+    def calculate_advanced_energy(self) -> Dict[str, float]:
+        """Calculate detailed energy consumption breakdown."""
+        mzi_count = sum(len([c for c in layer.components 
+                            if c['type'] == PhotonicComponent.MZI]) 
+                          for layer in self.layers)
+        ring_count = sum(len([c for c in layer.components 
+                             if c['type'] == PhotonicComponent.RING]) 
+                           for layer in self.layers)
+        
+        # Laser power (dominant component)
+        base_laser_power = 10e-3  # 10 mW baseline
+        laser_power = base_laser_power * (1 + 0.1 * mzi_count)
+        
+        # Thermal tuning power
+        thermal_power = mzi_count * 0.5e-3 + ring_count * 1e-3
+        
+        # Electronic control
+        control_power = 1e-3 + (mzi_count + ring_count) * 0.1e-3
+        
+        # Photodetector power
+        detector_count = len(self.layers)  # One per output layer
+        detector_power = detector_count * 0.1e-3
+        
+        return {
+            'laser_power_mw': laser_power * 1000,
+            'thermal_power_mw': thermal_power * 1000,
+            'control_power_mw': control_power * 1000,
+            'detector_power_mw': detector_power * 1000,
+            'total_power_mw': (laser_power + thermal_power + control_power + detector_power) * 1000
+        }
+    
+    def analyze_thermal_requirements(self) -> Dict[str, Any]:
+        """Analyze thermal management requirements."""
+        mzi_count = sum(len([c for c in layer.components 
+                            if c['type'] == PhotonicComponent.MZI]) 
+                          for layer in self.layers)
+        
+        # Thermal crosstalk analysis
+        thermal_zones = max(1, mzi_count // 10)  # Group MZIs into thermal zones
+        max_temp_rise = 5.0  # Maximum 5°C rise per zone
+        cooling_power = thermal_zones * 2e-3  # 2 mW cooling per zone
+        
+        return {
+            'thermal_zones': thermal_zones,
+            'max_temperature_rise_c': max_temp_rise,
+            'cooling_power_required_mw': cooling_power * 1000,
+            'thermal_time_constant_us': 10.0,  # Typical silicon thermal constant
+            'requires_active_cooling': mzi_count > 100
+        }
         
     def generate_verilog(self) -> str:
         """Generate complete Verilog module for the circuit."""
