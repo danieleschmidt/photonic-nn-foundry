@@ -147,9 +147,9 @@ If you use this work in your research, please cite:
 ```bibtex
 @software{photonic_nn_foundry,
   title = {Photonic Neural Network Foundry},
-  author = {Your Name},
+  author = {Daniel Schmidt},
   year = {2025},
-  url = {https://github.com/yourusername/photonic-nn-foundry}
+  url = {https://github.com/danieleschmidt/photonic-nn-foundry}
 }
 ```
 
