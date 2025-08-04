@@ -346,11 +346,7 @@ def setup_middleware(app: FastAPI, config: Dict[str, Any]):
     
     # Metrics collection
     if config.get('enable_metrics', True):
-        metrics_middleware = MetricsMiddleware(enabled=True)
         app.add_middleware(MetricsMiddleware, enabled=True)
-        
-        # Store reference for metrics endpoint
-        app.state.metrics_middleware = metrics_middleware
     
     # Request logging (should be last to capture all middleware timing)
     app.add_middleware(

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class PhotonicConfig(BaseModel):
     """Configuration model for photonic accelerator."""
     
-    pdk: str = Field(..., regex=r'^(skywater130|tsmc65|generic)$')
+    pdk: str = Field(..., pattern=r'^(skywater130|tsmc65|generic)$')
     wavelength: float = Field(default=1550.0, ge=1200.0, le=1700.0)
     precision: int = Field(default=8, ge=1, le=32)
     max_model_size_mb: int = Field(default=100, ge=1, le=1000)
