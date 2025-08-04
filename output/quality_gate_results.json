@@ -1,0 +1,158 @@
+{
+  "timestamp": 1754336496.773,
+  "results": [
+    {
+      "name": "Code Structure",
+      "passed": true,
+      "score": 100.0,
+      "details": {
+        "src_exists": true,
+        "tests_exists": true,
+        "examples_exists": true,
+        "docs_exists": true,
+        "README.md_exists": true,
+        "requirements.txt_exists": true,
+        "pyproject.toml_exists": true,
+        "python_files_count": 11,
+        "__init__.py_exists": true,
+        "core.py_exists": true,
+        "validation.py_exists": true,
+        "error_handling.py_exists": true
+      },
+      "execution_time": 0.0001285076141357422,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "Unit Tests",
+      "passed": true,
+      "score": 100.0,
+      "details": {
+        "test_files_count": 1,
+        "test_exit_code": 0,
+        "test_stdout": "=== PhotonicFoundry Comprehensive Test Suite ===\n\n=== Test Summary ===\nTests run: 13\nFailures: 0\nErrors: 0\nSuccess rate: 100.0%\n",
+        "test_stderr": "test_caching_behavior (__main__.TestPhotonicFoundry.test_caching_behavior)\nTest caching functionality. ... ok\ntest_circuit_structure (__main__.TestPhotonicFoundry.test_circuit_structure)\nTest basic circuit structure validation. ... ok\ntest_component_counts (__main__.TestPhotonicFoundry.test_component_counts)\nTest component count consistency. ... ok\ntest_data_sanitization (__main__.TestPhotonicFoundry.test_data_sanitization)\nTest data sanitization functionality. ... ok\ntest_error_recovery (__main__.TestPhotonicFoundry.test_error_recovery)\nTest error recovery mechanisms. ... ok\ntest_invalid_circuit_handling (__main__.TestPhotonicFoundry.test_invalid_circuit_handling)\nTest handling of invalid circuits. ... ok\ntest_large_circuit_handling (__main__.TestPhotonicFoundry.test_large_circuit_handling)\nTest handling of large circuits. ... ok\ntest_layer_connectivity (__main__.TestPhotonicFoundry.test_layer_connectivity)\nTest layer size compatibility. ... ok\ntest_optimization_effects (__main__.TestPhotonicFoundry.test_optimization_effects)\nTest circuit optimization effects. ... ok\ntest_parallel_processing_simulation (__main__.TestPhotonicFoundry.test_parallel_processing_simulation)\nTest parallel processing capabilities (simulated). ... ok\ntest_performance_simulation (__main__.TestPhotonicFoundry.test_performance_simulation)\nTest performance metrics calculation. ... ok\ntest_security_validation (__main__.TestPhotonicFoundry.test_security_validation)\nTest security validation. ... ok\ntest_verilog_generation (__main__.TestPhotonicFoundry.test_verilog_generation)\nTest Verilog code generation. ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.006s\n\nOK\n"
+      },
+      "execution_time": 0.11989188194274902,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "Security Scan",
+      "passed": false,
+      "score": 30.0,
+      "details": {
+        "security_issues_found": 0,
+        "potential_secrets_found": 12
+      },
+      "execution_time": 0.024069547653198242,
+      "errors": [],
+      "warnings": [
+        "docker-compose.prod.yml: potential password",
+        "docker-compose.yml: potential token",
+        "docker-compose.production.yml: potential password"
+      ]
+    },
+    {
+      "name": "Performance Tests",
+      "passed": true,
+      "score": 100.0,
+      "details": {
+        "basic_example_time": 0.0601038932800293,
+        "basic_example_exit_code": 0,
+        "basic_example_performance": "excellent",
+        "robust_example_time": 0.07931828498840332,
+        "robust_example_exit_code": 0
+      },
+      "execution_time": 0.1394946575164795,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "Documentation",
+      "passed": true,
+      "score": 90.0,
+      "details": {
+        "readme_length": 4856,
+        "has_overview": true,
+        "has_installation": true,
+        "has_usage": true,
+        "doc_files_count": 1,
+        "has_additional_docs": true,
+        "documentation_ratio": 1.0
+      },
+      "execution_time": 0.0008404254913330078,
+      "errors": [],
+      "warnings": [
+        "README missing example section"
+      ]
+    },
+    {
+      "name": "Example Scripts",
+      "passed": false,
+      "score": 60.0,
+      "details": {
+        "example_files_count": 5,
+        "basic_usage_minimal.py_status": "working",
+        "basic_usage.py_status": "failed",
+        "test_robust_standalone.py_status": "working",
+        "robust_usage.py_status": "failed",
+        "basic_usage_standalone.py_status": "working",
+        "success_ratio": 0.6
+      },
+      "execution_time": 0.28391194343566895,
+      "errors": [
+        "basic_usage.py failed with exit code 1",
+        "robust_usage.py failed with exit code 1"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "Code Quality",
+      "passed": true,
+      "score": 100.0,
+      "details": {
+        "python_files_count": 30,
+        "total_lines": 10796,
+        "total_functions": 447,
+        "long_functions": 13,
+        "long_function_ratio": 0.029082774049217
+      },
+      "execution_time": 0.00863790512084961,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "Dependency Analysis",
+      "passed": true,
+      "score": 100.0,
+      "details": {
+        "requirements_count": 9,
+        "requirements": [
+          "torch>=2.0.0",
+          "numpy>=1.21.0",
+          "scipy>=1.7.0",
+          "matplotlib>=3.5.0",
+          "pandas>=1.3.0",
+          "pydantic>=2.0.0",
+          "click>=8.0.0",
+          "tqdm>=4.60.0",
+          "pyyaml>=6.0"
+        ],
+        "has_pyproject_toml": true,
+        "has_build-system": true,
+        "has_project": true
+      },
+      "execution_time": 0.00011491775512695312,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "summary": {
+    "total_gates": 8,
+    "passed_gates": 6,
+    "average_score": 85.0,
+    "total_errors": 2,
+    "total_warnings": 4
+  }
+}

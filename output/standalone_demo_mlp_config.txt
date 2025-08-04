@@ -1,0 +1,16 @@
+Photonic Neural Network Configuration
+=====================================
+Name: standalone_demo_mlp
+PDK: skywater130
+Wavelength: 1550nm
+Total Components: 56
+Layers: 3
+  Layer 1: linear (4 -> 8)
+  Layer 2: activation (8 -> 8)
+  Layer 3: linear (8 -> 2)
+
+Performance Metrics:
+Energy per inference: 32.0 pJ
+Latency: 150 ps
+Area: 0.0520 mm²
+Throughput: 6666666666.7 GOPS
