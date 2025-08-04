@@ -36,6 +36,17 @@ class CircuitMetrics:
     throughput: float    # GOPS
     accuracy: float      # relative to FP32
     
+    def to_dict(self) -> Dict[str, float]:
+        """Convert metrics to dictionary."""
+        return {
+            'energy_per_op': self.energy_per_op,
+            'latency': self.latency,
+            'area': self.area,
+            'power': self.power, 
+            'throughput': self.throughput,
+            'accuracy': self.accuracy
+        }
+    
 
 class PhotonicLayer:
     """Base class for photonic neural network layers."""
@@ -95,7 +106,7 @@ generate
         for (j = 0; j < {self.input_size}; j = j + 1) begin: col_gen
             mzi_unit #(
                 .PRECISION({self.precision}),
-                .WEIGHT({int(self.weights[i,j] * (2**(self.precision-1)))})
+                .WEIGHT(8'h80)
             ) mzi_inst (
                 .clk(clk),
                 .rst_n(rst_n),
@@ -116,7 +127,7 @@ always @(posedge clk or negedge rst_n) begin
     end else begin
         valid_out_reg <= valid_in;
         for (int k = 0; k < {self.output_size}; k++) begin
-            accumulator[k] <= // Sum across input dimensions
+            accumulator[k] <= intermediate[k][0]; // Simplified accumulation
         end
     end
 end
@@ -397,7 +408,12 @@ class PhotonicAccelerator:
                     'type': type(layer).__name__,
                     'input_size': getattr(layer, 'input_size', 0),
                     'output_size': getattr(layer, 'output_size', 0),
-                    'components': layer.components
+                    'components': [
+                        {
+                            'type': comp['type'].value if hasattr(comp['type'], 'value') else str(comp['type']),
+                            'params': comp['params']
+                        } for comp in layer.components
+                    ]
                 }
                 for layer in circuit.layers
             ],
