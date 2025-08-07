@@ -8,3 +8,9 @@ pydantic>=2.0.0
 click>=8.0.0
 tqdm>=4.60.0
 pyyaml>=6.0
+
+# Quantum security and resilience dependencies
+cryptography>=3.4.8
+
+# Performance and scaling dependencies
+psutil>=5.8.0

@@ -1,0 +1,574 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: quantum-photonic-foundry
+  labels:
+    app: quantum-photonic-foundry
+    environment: production
+    quantum-enhanced: "true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-planner-service
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-planner
+    tier: backend
+    quantum-component: planning
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: quantum-planner
+  template:
+    metadata:
+      labels:
+        app: quantum-planner
+        tier: backend
+        quantum-component: planning
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: quantum-planner
+        image: photonic-foundry:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8443
+          name: https
+        env:
+        - name: QUANTUM_SECURITY_LEVEL
+          value: "enhanced"
+        - name: MAX_CONCURRENT_TASKS
+          value: "16"
+        - name: THERMAL_LIMIT
+          value: "75.0"
+        - name: PYTHONPATH
+          value: "/app/src"
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: quantum-config
+          mountPath: /app/config
+          readOnly: true
+        - name: circuit-cache
+          mountPath: /app/cache
+        - name: logs
+          mountPath: /app/logs
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: quantum-config
+        configMap:
+          name: quantum-config
+      - name: circuit-cache
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: logs
+        emptyDir:
+          sizeLimit: 500Mi
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      serviceAccountName: quantum-service-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-planner-service
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-planner
+    service-type: quantum-planning
+spec:
+  type: ClusterIP
+  selector:
+    app: quantum-planner
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 8443
+    protocol: TCP
+  - name: grpc
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-optimizer
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-optimizer
+    tier: compute
+    quantum-component: optimization
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quantum-optimizer
+  template:
+    metadata:
+      labels:
+        app: quantum-optimizer
+        tier: compute
+        quantum-component: optimization
+    spec:
+      containers:
+      - name: quantum-optimizer
+        image: photonic-foundry:latest
+        command: ["python", "-m", "photonic_foundry.quantum_optimizer"]
+        env:
+        - name: OPTIMIZATION_STRATEGY
+          value: "hybrid_quantum_classical"
+        - name: MAX_WORKERS
+          value: "8"
+        - name: GPU_ENABLED
+          value: "true"
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 8Gi
+            nvidia.com/gpu: 1
+          requests:
+            cpu: 2000m
+            memory: 4Gi
+        volumeMounts:
+        - name: optimization-results
+          mountPath: /app/results
+      volumes:
+      - name: optimization-results
+        persistentVolumeClaim:
+          claimName: optimization-storage
+      nodeSelector:
+        quantum-compute: "true"
+      tolerations:
+      - key: "quantum-workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quantum-security-manager
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-security
+    tier: security
+    quantum-component: security
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quantum-security
+  template:
+    metadata:
+      labels:
+        app: quantum-security
+        tier: security
+        quantum-component: security
+    spec:
+      containers:
+      - name: quantum-security
+        image: photonic-foundry:latest
+        command: ["python", "-m", "photonic_foundry.quantum_security"]
+        env:
+        - name: SECURITY_LEVEL
+          value: "quantum_resistant"
+        - name: AUDIT_LOGGING
+          value: "true"
+        - name: ADVERSARIAL_PROTECTION
+          value: "true"
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 2000
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        volumeMounts:
+        - name: security-logs
+          mountPath: /app/security-logs
+        - name: crypto-keys
+          mountPath: /app/keys
+          readOnly: true
+      volumes:
+      - name: security-logs
+        persistentVolumeClaim:
+          claimName: security-logs-storage
+      - name: crypto-keys
+        secret:
+          secretName: quantum-crypto-keys
+          defaultMode: 0400
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: quantum-resilience-check
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-resilience
+    job-type: health-check
+spec:
+  schedule: "*/15 * * * *"  # Every 15 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: resilience-checker
+            image: photonic-foundry:latest
+            command: ["python", "-m", "photonic_foundry.quantum_resilience"]
+            args: ["--health-check", "--auto-recovery"]
+            env:
+            - name: CIRCUIT_MONITORING
+              value: "enabled"
+            - name: FAULT_PREDICTION
+              value: "enabled"
+            resources:
+              limits:
+                cpu: 500m
+                memory: 1Gi
+              requests:
+                cpu: 250m
+                memory: 512Mi
+          restartPolicy: OnFailure
+          serviceAccountName: quantum-service-account
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quantum-config
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-config
+    config-type: application
+data:
+  quantum.yaml: |
+    quantum_planner:
+      max_concurrent_tasks: 16
+      thermal_limit: 75.0
+      auto_scale_enabled: true
+      min_nodes: 2
+      max_nodes: 16
+    
+    optimization:
+      strategy: "hybrid_quantum_classical"
+      max_iterations: 1000
+      convergence_threshold: 1e-6
+      parallel_evaluations: true
+      use_gpu_acceleration: true
+    
+    security:
+      level: "enhanced"
+      min_entropy_bits: 256
+      require_authentication: true
+      enable_audit_logging: true
+      quantum_key_distribution: false
+      adversarial_protection: true
+      side_channel_protection: true
+    
+    resilience:
+      enable_health_monitoring: true
+      enable_fault_prediction: true
+      enable_auto_recovery: true
+      max_recovery_attempts: 3
+      health_check_interval: 300  # 5 minutes
+    
+    performance:
+      target_latency_ps: 100
+      target_energy_pj: 10
+      target_throughput_gops: 1000
+      enable_performance_monitoring: true
+    
+    database:
+      connection_pool_size: 10
+      cache_size_mb: 512
+      enable_distributed_cache: true
+      backup_interval_hours: 6
+  
+  logging.yaml: |
+    version: 1
+    formatters:
+      quantum:
+        format: '%(asctime)s [%(levelname)s] %(name)s (%(quantum_component)s): %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        level: INFO
+        formatter: quantum
+      file:
+        class: logging.handlers.RotatingFileHandler
+        filename: /app/logs/quantum-foundry.log
+        maxBytes: 100MB
+        backupCount: 5
+        level: DEBUG
+        formatter: quantum
+    loggers:
+      photonic_foundry:
+        level: DEBUG
+        handlers: [console, file]
+        propagate: false
+    root:
+      level: INFO
+      handlers: [console]
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: quantum-crypto-keys
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-security
+    secret-type: crypto-keys
+type: Opaque
+data:
+  # Base64 encoded quantum keys (would be generated securely in production)
+  master.key: UXVhbnR1bUVuaGFuY2VkS2V5Rm9yUGhvdG9uaWNGb3VuZHJ5
+  signing.key: UXVhbnR1bVNpZ25pbmdLZXlGb3JBdXRoZW50aWNhdGlvbg==
+  encryption.key: UXVhbnR1bUVuY3J5cHRpb25LZXlGb3JEYXRhUHJvdGVjdGlvbg==
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: quantum-service-account
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-foundry
+    account-type: service
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: quantum-role
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-foundry
+    rbac-type: role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["get", "list", "watch", "create"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: quantum-role-binding
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-foundry
+    rbac-type: binding
+subjects:
+- kind: ServiceAccount
+  name: quantum-service-account
+  namespace: quantum-photonic-foundry
+roleRef:
+  kind: Role
+  name: quantum-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: optimization-storage
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-optimizer
+    storage-type: optimization
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: security-logs-storage
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-security
+    storage-type: logs
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: quantum-network-policy
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-foundry
+    policy-type: network-security
+spec:
+  podSelector:
+    matchLabels:
+      app: quantum-planner
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: quantum-photonic-foundry
+    - podSelector:
+        matchLabels:
+          tier: frontend
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8443
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: quantum-photonic-foundry
+    ports:
+    - protocol: TCP
+      port: 5432  # PostgreSQL
+    - protocol: TCP
+      port: 6379  # Redis
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443   # HTTPS outbound
+    - protocol: TCP
+      port: 53    # DNS
+    - protocol: UDP
+      port: 53    # DNS
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: quantum-planner-hpa
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-planner
+    autoscaling-type: horizontal
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: quantum-planner-service
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: quantum_tasks_per_second
+      target:
+        type: AverageValue
+        averageValue: "100"
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Max
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+      selectPolicy: Min
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: quantum-planner-pdb
+  namespace: quantum-photonic-foundry
+  labels:
+    app: quantum-planner
+    disruption-policy: high-availability
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: quantum-planner

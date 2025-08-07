@@ -1,0 +1,28 @@
+apiVersion: v2
+name: quantum-photonic-foundry
+description: A Helm chart for Quantum-Inspired Photonic Neural Network Foundry
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+home: https://github.com/danieleschmidt/photonic-nn-foundry
+sources:
+  - https://github.com/danieleschmidt/photonic-nn-foundry
+maintainers:
+  - name: Daniel Schmidt
+    email: daniel@photonic-foundry.com
+    url: https://photonic-foundry.com
+keywords:
+  - quantum
+  - photonic
+  - neural-networks
+  - ai
+  - optimization
+  - task-planning
+annotations:
+  category: AI/ML
+  licenses: MIT
+  images: |
+    - name: photonic-foundry
+      image: photonic-foundry:1.0.0
+dependencies: []
+kubeVersion: ">=1.20.0"
