@@ -1,0 +1,107 @@
+# Production Dockerfile for Quantum-Inspired Photonic Foundry
+# Multi-stage build for optimized production image
+
+# Stage 1: Builder stage
+FROM python:3.11-slim as builder
+
+# Set build arguments
+ARG TARGETARCH=amd64
+ARG BUILDPLATFORM=linux/amd64
+
+# Install system dependencies for building
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create build directory
+WORKDIR /build
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt requirements-dev.txt ./
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install dependencies with optimizations
+RUN pip install --no-cache-dir -r requirements.txt --index-url https://download.pytorch.org/whl/cpu
+
+# Copy source code
+COPY src/ ./src/
+COPY pyproject.toml ./
+COPY README.md ./
+
+# Install the package
+RUN pip install . --no-deps
+
+# Stage 2: Runtime stage
+FROM python:3.11-slim as runtime
+
+# Set metadata labels
+LABEL maintainer="Daniel Schmidt <daniel@photonic-foundry.com>"
+LABEL org.opencontainers.image.title="Quantum-Inspired Photonic Foundry"
+LABEL org.opencontainers.image.description="Production-ready quantum task planning for photonic neural networks"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.source="https://github.com/danieleschmidt/photonic-nn-foundry"
+
+# Create non-root user
+RUN groupadd -r quantum && useradd -r -g quantum -u 1000 quantum
+
+# Install runtime dependencies only
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Set up application directory
+WORKDIR /app
+
+# Copy installed packages from builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+# Copy application source
+COPY --from=builder /build/src/ ./src/
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/cache /app/config /app/data /app/results \
+    && chown -R quantum:quantum /app
+
+# Copy configuration files
+COPY deployment/config/ ./config/
+COPY deployment/scripts/ ./scripts/
+
+# Set environment variables
+ENV PYTHONPATH=/app/src
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PHOTONIC_FOUNDRY_CONFIG_PATH=/app/config
+ENV QUANTUM_SECURITY_LEVEL=enhanced
+ENV QUANTUM_LOG_LEVEL=INFO
+ENV QUANTUM_CACHE_DIR=/app/cache
+ENV QUANTUM_DATA_DIR=/app/data
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import sys; sys.path.insert(0, '/app/src'); \
+    from photonic_foundry import PhotonicAccelerator; \
+    acc = PhotonicAccelerator(); \
+    print('Health check passed')" || exit 1
+
+# Switch to non-root user
+USER quantum
+
+# Expose ports
+EXPOSE 8080 8443 9090
+
+# Set default command
+CMD ["python", "-m", "photonic_foundry.api.server"]
+
+# Alternative entry points for different services
+# CMD ["python", "-m", "photonic_foundry.quantum_planner", "--service-mode"]
+# CMD ["python", "-m", "photonic_foundry.quantum_optimizer", "--distributed"]
+# CMD ["python", "-m", "photonic_foundry.quantum_security", "--manager-mode"]
