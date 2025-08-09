@@ -1,0 +1,10 @@
+Photonic Neural Network Configuration
+=====================================
+Name: simple_mlp_example
+PDK: skywater130
+Wavelength: 1550nm
+Total Components: 101,760
+Energy per inference: 50944.0 pJ
+Latency: 150 ps
+Area: 101.696 mm²
+Throughput: 6666666666.7 GOPS

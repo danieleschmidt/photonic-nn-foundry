@@ -48,8 +48,11 @@ class ErrorInfo:
     recovery_suggestions: Optional[List[str]] = None
     
     def __post_init__(self):
+        """Set default values after initialization."""
         if self.timestamp is None:
             self.timestamp = time.time()
+        if self.recovery_suggestions is None:
+            self.recovery_suggestions = []
 
 
 class PhotonicException(Exception):
