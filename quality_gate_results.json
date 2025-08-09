@@ -1,0 +1,186 @@
+{
+  "timestamp": 1754703086.8548946,
+  "execution_time": 1.6542329788208008,
+  "total_gates": 6,
+  "passed_gates": 6,
+  "failed_gates": 0,
+  "critical_gates": 3,
+  "critical_passed": 3,
+  "critical_failed": 0,
+  "overall_score": 100.0,
+  "system_readiness": "PRODUCTION READY",
+  "gate_results": {
+    "Core Functionality": {
+      "success": true,
+      "critical": true,
+      "duration": 0.024327754974365234,
+      "result": {
+        "success": true,
+        "circuit_components": 5500,
+        "energy_per_op": 2750.0,
+        "latency_ps": 100,
+        "throughput_gops": 10000000000.0,
+        "inference_time_s": 0.0014743804931640625,
+        "output_shape": [
+          32,
+          10
+        ],
+        "details": "Core functionality working correctly"
+      }
+    },
+    "Quantum Optimization": {
+      "success": true,
+      "critical": true,
+      "duration": 0.011678695678710938,
+      "result": {
+        "success": true,
+        "compilation_tasks": 5,
+        "optimized_tasks": 5,
+        "improvement_factor": 0.0,
+        "optimization_objectives": [
+          "energy",
+          "latency"
+        ],
+        "details": "Quantum optimization working correctly"
+      }
+    },
+    "Performance Optimization": {
+      "success": true,
+      "critical": false,
+      "duration": 0.018245458602905273,
+      "result": {
+        "success": true,
+        "optimization_results": [
+          {
+            "level": "conservative",
+            "target": "energy",
+            "converged": true,
+            "improvements": {
+              "energy_per_op": 0.0,
+              "latency": 0.0,
+              "area": 0.0,
+              "power": 0.0
+            },
+            "optimization_time": 1.9311904907226562e-05
+          },
+          {
+            "level": "balanced",
+            "target": "multi_objective",
+            "converged": true,
+            "improvements": {
+              "energy_per_op": 36.2548828125,
+              "latency": 25.0,
+              "throughput": 25.0,
+              "area": 6.241861979166652,
+              "power": 0.0
+            },
+            "optimization_time": 0.0031828880310058594
+          }
+        ],
+        "optimizer_stats": {
+          "total_optimizations": 2,
+          "successful_optimizations": 2,
+          "success_rate": 100.0,
+          "average_optimization_time": 0.001601099967956543,
+          "cached_results": 2,
+          "optimizer_usage": {
+            "CircuitTopologyOptimizer": 1,
+            "HybridMultiLevelOptimizer": 1
+          }
+        },
+        "details": "Performance optimization working correctly"
+      }
+    },
+    "Quantum Security": {
+      "success": true,
+      "critical": true,
+      "duration": 0.13062834739685059,
+      "result": {
+        "success": true,
+        "tokens_created": 2,
+        "valid_tokens": 2,
+        "tokens_with_permissions": 2,
+        "security_level": "quantum_resistant",
+        "details": "Security system working correctly"
+      }
+    },
+    "Resilience & Self-Healing": {
+      "success": true,
+      "critical": false,
+      "duration": 1.0043444633483887,
+      "result": {
+        "success": true,
+        "circuits_monitored": 2,
+        "valid_reports": 2,
+        "reports": [
+          {
+            "circuit_id": "test_circuit_1",
+            "current_health": 0.9640139782146697,
+            "health_trend": -0.0041096593180921515,
+            "component_count": 15,
+            "degraded_components": [],
+            "thermal_alerts": [],
+            "active_failures": 0,
+            "failure_details": [],
+            "recommended_actions": [],
+            "last_updated": 1754703086.1873815
+          },
+          {
+            "circuit_id": "test_circuit_2",
+            "current_health": 0.9688566825349416,
+            "health_trend": 0.004309718384183814,
+            "component_count": 15,
+            "degraded_components": [],
+            "thermal_alerts": [],
+            "active_failures": 0,
+            "failure_details": [],
+            "recommended_actions": [],
+            "last_updated": 1754703086.1877806
+          }
+        ],
+        "details": "Resilience system working correctly"
+      }
+    },
+    "Database Operations": {
+      "success": true,
+      "critical": false,
+      "duration": 0.4621608257293701,
+      "result": {
+        "success": true,
+        "circuit_saved": true,
+        "circuit_id": 2,
+        "circuits_in_db": 2,
+        "database_stats": {
+          "database": {
+            "circuits_count": 2,
+            "components_count": 0,
+            "simulation_results_count": 0,
+            "pdks_count": 0,
+            "performance_metrics_count": 0,
+            "database_size_bytes": 33591296,
+            "cache_enabled": true,
+            "cache_dir": ".cache/circuits",
+            "cached_circuits": 2
+          },
+          "cache": {
+            "total_entries": 1,
+            "max_entries": 1000,
+            "total_size_bytes": 178520,
+            "total_size_mb": 0.17024993896484375,
+            "cache_dir": ".cache/circuits",
+            "oldest_entry": "2025-08-09 01:31:26.846367",
+            "newest_entry": "2025-08-09 01:31:26.846367"
+          },
+          "circuit_stats": {
+            "total_circuits": 2,
+            "circuits_with_verilog": 2,
+            "avg_components": 292.0,
+            "latest_update": "2025-08-09T01:31:26.394457"
+          }
+        },
+        "details": "Database operations working correctly"
+      }
+    }
+  },
+  "recommendations": []
+}

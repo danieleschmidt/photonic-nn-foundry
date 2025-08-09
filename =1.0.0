@@ -1,0 +1,58 @@
+Collecting pytest
+  Downloading pytest-8.4.1-py3-none-any.whl.metadata (7.7 kB)
+Collecting pytest-cov
+  Downloading pytest_cov-6.2.1-py3-none-any.whl.metadata (30 kB)
+Collecting pytest-xdist
+  Downloading pytest_xdist-3.8.0-py3-none-any.whl.metadata (3.0 kB)
+Collecting pytest-benchmark
+  Downloading pytest_benchmark-5.1.0-py3-none-any.whl.metadata (25 kB)
+Collecting ruff
+  Downloading ruff-0.12.8-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (25 kB)
+Collecting black
+  Downloading black-25.1.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl.metadata (81 kB)
+Collecting mypy
+  Downloading mypy-1.17.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.2 kB)
+Collecting iniconfig>=1 (from pytest)
+  Downloading iniconfig-2.1.0-py3-none-any.whl.metadata (2.7 kB)
+Requirement already satisfied: packaging>=20 in ./venv/lib/python3.12/site-packages (from pytest) (25.0)
+Collecting pluggy<2,>=1.5 (from pytest)
+  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest)
+  Downloading pygments-2.19.2-py3-none-any.whl.metadata (2.5 kB)
+Collecting coverage>=7.5 (from coverage[toml]>=7.5->pytest-cov)
+  Downloading coverage-7.10.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.9 kB)
+Collecting execnet>=2.1 (from pytest-xdist)
+  Downloading execnet-2.1.1-py3-none-any.whl.metadata (2.9 kB)
+Collecting py-cpuinfo (from pytest-benchmark)
+  Downloading py_cpuinfo-9.0.0-py3-none-any.whl.metadata (794 bytes)
+Requirement already satisfied: click>=8.0.0 in ./venv/lib/python3.12/site-packages (from black) (8.2.1)
+Collecting mypy-extensions>=0.4.3 (from black)
+  Downloading mypy_extensions-1.1.0-py3-none-any.whl.metadata (1.1 kB)
+Collecting pathspec>=0.9.0 (from black)
+  Downloading pathspec-0.12.1-py3-none-any.whl.metadata (21 kB)
+Collecting platformdirs>=2 (from black)
+  Downloading platformdirs-4.3.8-py3-none-any.whl.metadata (12 kB)
+Requirement already satisfied: typing_extensions>=4.6.0 in ./venv/lib/python3.12/site-packages (from mypy) (4.14.1)
+Downloading pytest-8.4.1-py3-none-any.whl (365 kB)
+Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Downloading pytest_cov-6.2.1-py3-none-any.whl (24 kB)
+Downloading pytest_xdist-3.8.0-py3-none-any.whl (46 kB)
+Downloading pytest_benchmark-5.1.0-py3-none-any.whl (44 kB)
+Downloading ruff-0.12.8-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 123.7 MB/s  0:00:00
+Downloading black-25.1.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl (1.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 93.0 MB/s  0:00:00
+Downloading mypy-1.17.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (12.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.7/12.7 MB 130.0 MB/s  0:00:00
+Downloading coverage-7.10.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (248 kB)
+Downloading execnet-2.1.1-py3-none-any.whl (40 kB)
+Downloading iniconfig-2.1.0-py3-none-any.whl (6.0 kB)
+Downloading mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
+Downloading pathspec-0.12.1-py3-none-any.whl (31 kB)
+Downloading platformdirs-4.3.8-py3-none-any.whl (18 kB)
+Downloading pygments-2.19.2-py3-none-any.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 69.8 MB/s  0:00:00
+Downloading py_cpuinfo-9.0.0-py3-none-any.whl (22 kB)
+Installing collected packages: py-cpuinfo, ruff, pygments, pluggy, platformdirs, pathspec, mypy-extensions, iniconfig, execnet, coverage, pytest, mypy, black, pytest-xdist, pytest-cov, pytest-benchmark
+
+Successfully installed black-25.1.0 coverage-7.10.2 execnet-2.1.1 iniconfig-2.1.0 mypy-1.17.1 mypy-extensions-1.1.0 pathspec-0.12.1 platformdirs-4.3.8 pluggy-1.6.0 py-cpuinfo-9.0.0 pygments-2.19.2 pytest-8.4.1 pytest-benchmark-5.1.0 pytest-cov-6.2.1 pytest-xdist-3.8.0 ruff-0.12.8

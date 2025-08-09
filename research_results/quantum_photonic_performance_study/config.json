@@ -1,0 +1,18 @@
+{
+  "experiment_id": "quantum_photonic_performance_study",
+  "experiment_type": "ExperimentType.PERFORMANCE_COMPARISON",
+  "description": "Comprehensive comparison of quantum-photonic vs classical approaches",
+  "hypothesis": "Quantum-photonic neural networks achieve 5x energy efficiency improvement",
+  "success_criteria": {
+    "energy_improvement": {
+      "comparison": "Classical_CPU_vs_Quantum_Photonic_Neural_Network",
+      "metric": "energy_per_op",
+      "threshold": 400
+    }
+  },
+  "parameters": {},
+  "num_runs": 5,
+  "significance_level": 0.05,
+  "random_seed": 42,
+  "output_dir": "experiments/quantum_photonic_performance_study"
+}
