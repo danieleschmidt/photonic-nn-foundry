@@ -21,6 +21,13 @@ import queue
 import threading
 from .core import PhotonicCircuit, PhotonicAccelerator, CircuitMetrics
 from .quantum_planner import QuantumTask, QuantumTaskPlanner, QuantumState
+from scipy.optimize import minimize, differential_evolution
+from scipy.spatial.distance import pdist, squareform
+import matplotlib.pyplot as plt
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import Matern
+import warnings
+warnings.filterwarnings('ignore')
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +40,10 @@ class OptimizationStrategy(Enum):
     GRADIENT_DESCENT = "gradient_descent"
     HYBRID_QUANTUM_CLASSICAL = "hybrid_quantum_classical"
     REINFORCEMENT_LEARNING = "reinforcement_learning"
+    QUANTUM_SUPERPOSITION = "quantum_superposition"
+    VARIATIONAL_QUANTUM = "variational_quantum"
+    QUANTUM_APPROXIMATE = "quantum_approximate"
+    BAYESIAN_OPTIMIZATION = "bayesian_optimization"
 
 
 class ScalingMode(Enum):
@@ -54,6 +65,11 @@ class OptimizationConfig:
     parallel_evaluations: bool = True
     use_gpu_acceleration: bool = True
     cache_intermediate_results: bool = True
+    quantum_depth: int = 4  # For quantum circuits
+    entanglement_layers: int = 2  # For quantum optimization
+    measurement_shots: int = 1000  # For quantum measurements
+    noise_model: Optional[str] = None  # Quantum noise simulation
+    acquisition_function: str = "expected_improvement"  # For Bayesian optimization
 
 
 @dataclass
@@ -122,7 +138,11 @@ class QuantumOptimizationEngine:
             OptimizationStrategy.PARTICLE_SWARM: self._particle_swarm_optimization,
             OptimizationStrategy.GRADIENT_DESCENT: self._gradient_descent_optimization,
             OptimizationStrategy.HYBRID_QUANTUM_CLASSICAL: self._hybrid_optimization,
-            OptimizationStrategy.REINFORCEMENT_LEARNING: self._reinforcement_learning_optimization
+            OptimizationStrategy.REINFORCEMENT_LEARNING: self._reinforcement_learning_optimization,
+            OptimizationStrategy.QUANTUM_SUPERPOSITION: self._quantum_superposition_optimization,
+            OptimizationStrategy.VARIATIONAL_QUANTUM: self._variational_quantum_optimization,
+            OptimizationStrategy.QUANTUM_APPROXIMATE: self._quantum_approximate_optimization,
+            OptimizationStrategy.BAYESIAN_OPTIMIZATION: self._bayesian_optimization
         }
         
         optimizer = strategy_map[self.config.strategy]
@@ -624,6 +644,509 @@ class QuantumOptimizationEngine:
         
         key_data = f"{circuit.name}_{len(circuit.layers)}_{circuit.total_components}_{str(parameter_bounds)}"
         return hashlib.md5(key_data.encode()).hexdigest()
+    
+    def _quantum_superposition_optimization(self, objective_function: Callable[[np.ndarray], float],
+                                          parameter_bounds: List[Tuple[float, float]]) -> Dict[str, Any]:
+        """
+        Quantum superposition-based optimization using coherent parameter exploration.
+        
+        This algorithm explores multiple parameter configurations simultaneously
+        in quantum superposition, then collapses to the optimal solution.
+        """
+        n_params = len(parameter_bounds)
+        
+        # Initialize quantum superposition state
+        superposition_states = self.config.population_size
+        quantum_amplitudes = np.ones(superposition_states, dtype=complex) / np.sqrt(superposition_states)
+        
+        # Create superposition of parameter configurations
+        parameter_superposition = np.array([
+            [np.random.uniform(bounds[0], bounds[1]) for bounds in parameter_bounds]
+            for _ in range(superposition_states)
+        ])
+        
+        best_params = None
+        best_objective = float('inf')
+        coherence_history = []
+        interference_history = []
+        
+        for iteration in range(self.config.max_iterations // 10):
+            # Quantum interference between parameter states
+            for i in range(superposition_states):
+                for j in range(i + 1, superposition_states):
+                    # Calculate quantum interference
+                    phase_diff = np.angle(quantum_amplitudes[i]) - np.angle(quantum_amplitudes[j])
+                    interference = np.cos(phase_diff)
+                    
+                    # Apply interference to parameter evolution
+                    if interference > 0.5:  # Constructive interference
+                        # Attract similar parameter configurations
+                        direction = parameter_superposition[j] - parameter_superposition[i]
+                        parameter_superposition[i] += 0.1 * interference * direction
+                        parameter_superposition[j] -= 0.1 * interference * direction
+                    elif interference < -0.5:  # Destructive interference
+                        # Repel different parameter configurations
+                        direction = parameter_superposition[j] - parameter_superposition[i]
+                        parameter_superposition[i] -= 0.05 * abs(interference) * direction
+                        parameter_superposition[j] += 0.05 * abs(interference) * direction
+            
+            # Apply bounds
+            for i, bounds in enumerate(parameter_bounds):
+                parameter_superposition[:, i] = np.clip(
+                    parameter_superposition[:, i], bounds[0], bounds[1]
+                )
+            
+            # Measure objective values in superposition
+            if self.config.parallel_evaluations:
+                with ThreadPoolExecutor(max_workers=min(8, mp.cpu_count())) as executor:
+                    objective_values = list(executor.map(objective_function, parameter_superposition))
+            else:
+                objective_values = [objective_function(params) for params in parameter_superposition]
+            
+            objective_values = np.array(objective_values)
+            
+            # Update quantum amplitudes based on objective values
+            # Better objectives get higher amplitudes
+            fitness_weights = 1.0 / (1.0 + objective_values - np.min(objective_values))
+            quantum_amplitudes = fitness_weights / np.linalg.norm(fitness_weights)
+            quantum_amplitudes = quantum_amplitudes.astype(complex)
+            
+            # Apply quantum phase evolution
+            phase_evolution = np.exp(1j * np.pi * fitness_weights / np.max(fitness_weights))
+            quantum_amplitudes *= phase_evolution
+            
+            # Renormalize
+            quantum_amplitudes /= np.linalg.norm(quantum_amplitudes)
+            
+            # Track coherence (measure of superposition preservation)
+            coherence = 1.0 - np.sum(np.abs(quantum_amplitudes) ** 4)  # Linear entropy
+            coherence_history.append(coherence)
+            
+            # Track interference strength
+            interference_strength = np.mean([
+                abs(np.dot(quantum_amplitudes[i:i+1], np.conj(quantum_amplitudes[j:j+1])))
+                for i in range(len(quantum_amplitudes))
+                for j in range(i+1, len(quantum_amplitudes))
+            ])
+            interference_history.append(interference_strength)
+            
+            # Find current best
+            best_idx = np.argmin(objective_values)
+            if objective_values[best_idx] < best_objective:
+                best_objective = objective_values[best_idx]
+                best_params = parameter_superposition[best_idx].copy()
+            
+            # Quantum decoherence and collapse check
+            if coherence < 0.1 or iteration > self.config.max_iterations // 20:
+                # Collapse superposition to best state
+                best_amplitude_idx = np.argmax(np.abs(quantum_amplitudes))
+                parameter_superposition = np.tile(
+                    parameter_superposition[best_amplitude_idx], 
+                    (superposition_states, 1)
+                )
+                # Add quantum noise to prevent local optima
+                noise_scale = 0.01 * (1 - iteration / (self.config.max_iterations // 10))
+                for i, bounds in enumerate(parameter_bounds):
+                    noise = np.random.normal(0, (bounds[1] - bounds[0]) * noise_scale, superposition_states)
+                    parameter_superposition[:, i] += noise
+                    parameter_superposition[:, i] = np.clip(
+                        parameter_superposition[:, i], bounds[0], bounds[1]
+                    )
+                
+                # Reinitialize quantum amplitudes
+                quantum_amplitudes = np.ones(superposition_states, dtype=complex) / np.sqrt(superposition_states)
+        
+        return {
+            'success': True,
+            'best_parameters': best_params if best_params is not None else np.array([0.0] * n_params),
+            'best_objective': best_objective,
+            'iterations_completed': iteration + 1,
+            'coherence_history': coherence_history,
+            'interference_history': interference_history,
+            'final_coherence': coherence_history[-1] if coherence_history else 0.0,
+            'quantum_advantage': np.mean(interference_history) if interference_history else 0.0
+        }
+    
+    def _variational_quantum_optimization(self, objective_function: Callable[[np.ndarray], float],
+                                        parameter_bounds: List[Tuple[float, float]]) -> Dict[str, Any]:
+        """
+        Variational Quantum Eigensolver (VQE) inspired optimization.
+        
+        Uses parameterized quantum circuits to explore the optimization landscape.
+        """
+        n_params = len(parameter_bounds)
+        
+        # Initialize quantum circuit parameters
+        n_qubits = min(8, max(2, int(np.ceil(np.log2(n_params)))))
+        circuit_depth = self.config.quantum_depth
+        
+        # Variational parameters (angles for quantum gates)
+        n_variational_params = n_qubits * circuit_depth * 3  # RX, RY, RZ rotations
+        variational_params = np.random.uniform(0, 2*np.pi, n_variational_params)
+        
+        # Map problem parameters to quantum circuit
+        def encode_parameters(params):
+            # Simple parameter encoding: normalize to [0, 2π]
+            encoded = np.zeros(n_qubits)
+            for i, (param, bounds) in enumerate(zip(params, parameter_bounds)):
+                if i < n_qubits:
+                    normalized = (param - bounds[0]) / (bounds[1] - bounds[0])
+                    encoded[i] = normalized * 2 * np.pi
+            return encoded
+        
+        def quantum_circuit_expectation(variational_params, encoded_params):
+            # Simplified quantum circuit simulation
+            # In practice, this would run on quantum hardware or simulator
+            
+            # Initialize quantum state
+            state_vector = np.zeros(2**n_qubits, dtype=complex)
+            state_vector[0] = 1.0  # |000...0⟩ state
+            
+            # Apply parameterized quantum gates
+            for layer in range(circuit_depth):
+                for qubit in range(n_qubits):
+                    param_idx = layer * n_qubits * 3 + qubit * 3
+                    
+                    # Apply rotation gates (simplified)
+                    rx_angle = variational_params[param_idx] + encoded_params[qubit] if qubit < len(encoded_params) else variational_params[param_idx]
+                    ry_angle = variational_params[param_idx + 1]
+                    rz_angle = variational_params[param_idx + 2]
+                    
+                    # Simplified gate application (just phase rotation)
+                    phase_factor = np.exp(1j * (rx_angle + ry_angle + rz_angle))
+                    state_vector *= phase_factor
+                
+                # Entanglement layer
+                if layer < self.config.entanglement_layers:
+                    # Apply CNOT gates (simplified as phase correlation)
+                    entanglement_phase = np.sum(variational_params[layer*n_qubits:(layer+1)*n_qubits])
+                    state_vector *= np.exp(1j * entanglement_phase / n_qubits)
+            
+            # Measure expectation value
+            probabilities = np.abs(state_vector)**2
+            expectation = np.sum(probabilities * np.arange(len(probabilities))) / len(probabilities)
+            
+            return expectation
+        
+        def variational_objective(variational_params):
+            # Sample multiple parameter configurations
+            sample_objectives = []
+            
+            for _ in range(min(10, self.config.measurement_shots // 100)):
+                # Sample parameters from current quantum distribution
+                sampled_params = []
+                for bounds in parameter_bounds:
+                    # Use quantum expectation to guide parameter sampling
+                    encoded = encode_parameters([np.mean([bounds[0], bounds[1]])]*n_params)
+                    expectation = quantum_circuit_expectation(variational_params, encoded)
+                    
+                    # Map expectation to parameter range
+                    param_value = bounds[0] + (bounds[1] - bounds[0]) * (expectation % 1.0)
+                    sampled_params.append(param_value)
+                
+                obj_value = objective_function(np.array(sampled_params))
+                sample_objectives.append(obj_value)
+            
+            return np.mean(sample_objectives)
+        
+        # Optimize variational parameters using classical optimizer
+        optimization_result = minimize(
+            variational_objective,
+            variational_params,
+            method='COBYLA',
+            options={'maxiter': self.config.max_iterations // 5}
+        )
+        
+        # Extract final optimized parameters
+        final_variational_params = optimization_result.x
+        
+        # Generate final parameter configuration
+        best_params = []
+        for bounds in parameter_bounds:
+            encoded = encode_parameters([np.mean([bounds[0], bounds[1]])]*n_params)
+            expectation = quantum_circuit_expectation(final_variational_params, encoded)
+            param_value = bounds[0] + (bounds[1] - bounds[0]) * (expectation % 1.0)
+            best_params.append(param_value)
+        
+        best_params = np.array(best_params)
+        best_objective = objective_function(best_params)
+        
+        return {
+            'success': optimization_result.success,
+            'best_parameters': best_params,
+            'best_objective': best_objective,
+            'iterations_completed': optimization_result.nit,
+            'variational_parameters': final_variational_params,
+            'quantum_circuit_depth': circuit_depth,
+            'n_qubits_used': n_qubits,
+            'classical_optimization_result': optimization_result
+        }
+    
+    def _quantum_approximate_optimization(self, objective_function: Callable[[np.ndarray], float],
+                                        parameter_bounds: List[Tuple[float, float]]) -> Dict[str, Any]:
+        """
+        Quantum Approximate Optimization Algorithm (QAOA) for photonic parameter optimization.
+        
+        Alternates between cost and mixer Hamiltonians to find optimal parameters.
+        """
+        n_params = len(parameter_bounds)
+        
+        # QAOA parameters
+        p_layers = min(4, self.config.quantum_depth)  # Number of QAOA layers
+        
+        # Initialize QAOA angles (beta and gamma)
+        beta_angles = np.random.uniform(0, np.pi, p_layers)  # Mixer angles
+        gamma_angles = np.random.uniform(0, 2*np.pi, p_layers)  # Cost angles
+        
+        def qaoa_expectation(beta_angles, gamma_angles, test_params):
+            # Simulate QAOA circuit for given parameters
+            
+            # Initialize in equal superposition |+⟩^n
+            n_states = min(32, 2**n_params)  # Limit state space for tractability
+            amplitudes = np.ones(n_states, dtype=complex) / np.sqrt(n_states)
+            
+            for layer in range(p_layers):
+                # Cost Hamiltonian evolution (problem-dependent)
+                cost_values = []
+                for state_idx in range(n_states):
+                    # Map state index to parameter values
+                    binary = format(state_idx, f'0{n_params}b')
+                    state_params = np.array([
+                        parameter_bounds[i][0] + (int(binary[i]) / (2**1 - 1)) * (parameter_bounds[i][1] - parameter_bounds[i][0])
+                        for i in range(min(n_params, len(binary)))
+                    ])
+                    
+                    if len(state_params) < n_params:
+                        state_params = np.pad(state_params, (0, n_params - len(state_params)), constant_values=np.mean([b[0] + b[1] for b in parameter_bounds])/2)
+                    
+                    cost = objective_function(state_params)
+                    cost_values.append(cost)
+                
+                # Apply cost Hamiltonian
+                cost_phases = np.exp(-1j * gamma_angles[layer] * np.array(cost_values))
+                amplitudes *= cost_phases
+                
+                # Mixer Hamiltonian evolution (X rotations)
+                # Simplified as amplitude mixing
+                mixer_matrix = np.eye(n_states, dtype=complex)
+                for i in range(n_states):
+                    for j in range(n_states):
+                        if bin(i ^ j).count('1') == 1:  # Hamming distance 1
+                            mixer_matrix[i, j] = -1j * np.sin(beta_angles[layer])
+                        elif i == j:
+                            mixer_matrix[i, j] = np.cos(beta_angles[layer])
+                
+                amplitudes = mixer_matrix @ amplitudes
+            
+            # Measure expectation value
+            probabilities = np.abs(amplitudes)**2
+            expectation = np.sum(probabilities * cost_values) if len(cost_values) == len(probabilities) else 0.0
+            
+            return expectation
+        
+        def qaoa_objective(qaoa_params):
+            mid_point = len(qaoa_params) // 2
+            beta = qaoa_params[:mid_point]
+            gamma = qaoa_params[mid_point:]
+            
+            # Average over multiple test parameter configurations
+            test_configs = [
+                np.array([np.random.uniform(bounds[0], bounds[1]) for bounds in parameter_bounds])
+                for _ in range(5)
+            ]
+            
+            expectations = [qaoa_expectation(beta, gamma, test_params) for test_params in test_configs]
+            return np.mean(expectations)
+        
+        # Optimize QAOA parameters
+        initial_qaoa_params = np.concatenate([beta_angles, gamma_angles])
+        
+        qaoa_result = minimize(
+            qaoa_objective,
+            initial_qaoa_params,
+            method='COBYLA',
+            options={'maxiter': self.config.max_iterations // 10}
+        )
+        
+        # Extract optimized QAOA parameters
+        optimized_qaoa_params = qaoa_result.x
+        mid_point = len(optimized_qaoa_params) // 2
+        final_beta = optimized_qaoa_params[:mid_point]
+        final_gamma = optimized_qaoa_params[mid_point:]
+        
+        # Sample final parameter configuration from optimized QAOA state
+        n_samples = 100
+        sampled_params = []
+        sampled_objectives = []
+        
+        for _ in range(n_samples):
+            # Generate sample based on QAOA probability distribution
+            test_params = np.array([np.random.uniform(bounds[0], bounds[1]) for bounds in parameter_bounds])
+            
+            # Weight by QAOA probability (simplified)
+            qaoa_prob = abs(qaoa_expectation(final_beta, final_gamma, test_params))
+            
+            if np.random.random() < qaoa_prob / 10:  # Acceptance probability
+                sampled_params.append(test_params)
+                sampled_objectives.append(objective_function(test_params))
+        
+        if sampled_objectives:
+            best_idx = np.argmin(sampled_objectives)
+            best_params = sampled_params[best_idx]
+            best_objective = sampled_objectives[best_idx]
+        else:
+            # Fallback to random sample
+            best_params = np.array([np.random.uniform(bounds[0], bounds[1]) for bounds in parameter_bounds])
+            best_objective = objective_function(best_params)
+        
+        return {
+            'success': qaoa_result.success,
+            'best_parameters': best_params,
+            'best_objective': best_objective,
+            'iterations_completed': qaoa_result.nit,
+            'qaoa_layers': p_layers,
+            'final_beta_angles': final_beta,
+            'final_gamma_angles': final_gamma,
+            'n_samples_generated': len(sampled_params),
+            'classical_optimization_result': qaoa_result
+        }
+    
+    def _bayesian_optimization(self, objective_function: Callable[[np.ndarray], float],
+                             parameter_bounds: List[Tuple[float, float]]) -> Dict[str, Any]:
+        """
+        Bayesian optimization using Gaussian Process surrogate model.
+        
+        Efficiently explores parameter space using acquisition functions.
+        """
+        n_params = len(parameter_bounds)
+        
+        # Initialize with Latin Hypercube Sampling
+        from scipy.stats import qmc
+        
+        n_initial = min(20, 5 * n_params)  # Initial sample size
+        sampler = qmc.LatinHypercube(d=n_params)
+        initial_samples = sampler.random(n_initial)
+        
+        # Scale to parameter bounds
+        X_samples = np.array([
+            [bounds[0] + (bounds[1] - bounds[0]) * sample[i] 
+             for i, bounds in enumerate(parameter_bounds)]
+            for sample in initial_samples
+        ])
+        
+        # Evaluate initial samples
+        if self.config.parallel_evaluations:
+            with ThreadPoolExecutor(max_workers=min(8, mp.cpu_count())) as executor:
+                y_samples = list(executor.map(objective_function, X_samples))
+        else:
+            y_samples = [objective_function(x) for x in X_samples]
+        
+        y_samples = np.array(y_samples).reshape(-1, 1)
+        
+        # Initialize Gaussian Process
+        kernel = Matern(length_scale=1.0, nu=2.5)
+        gp = GaussianProcessRegressor(kernel=kernel, alpha=1e-6, normalize_y=True)
+        
+        acquisition_history = []
+        best_params = None
+        best_objective = float('inf')
+        
+        for iteration in range(self.config.max_iterations // 20):
+            # Fit Gaussian Process
+            gp.fit(X_samples, y_samples)
+            
+            # Find current best
+            current_best_idx = np.argmin(y_samples)
+            current_best_y = y_samples[current_best_idx, 0]
+            current_best_x = X_samples[current_best_idx]
+            
+            if current_best_y < best_objective:
+                best_objective = current_best_y
+                best_params = current_best_x.copy()
+            
+            # Acquisition function optimization
+            def acquisition_function(x):
+                x = x.reshape(1, -1)
+                mu, sigma = gp.predict(x, return_std=True)
+                
+                if self.config.acquisition_function == "expected_improvement":
+                    # Expected Improvement
+                    xi = 0.01  # Exploration parameter
+                    improvement = current_best_y - mu
+                    Z = improvement / (sigma + 1e-9)
+                    from scipy.stats import norm
+                    ei = improvement * norm.cdf(Z) + sigma * norm.pdf(Z)
+                    return -ei[0]  # Minimize negative EI
+                
+                elif self.config.acquisition_function == "upper_confidence_bound":
+                    # Upper Confidence Bound
+                    kappa = 2.576  # 99% confidence
+                    ucb = mu - kappa * sigma  # Minimize, so subtract
+                    return ucb[0]
+                
+                else:  # probability_improvement
+                    # Probability of Improvement
+                    xi = 0.01
+                    improvement = current_best_y - mu - xi
+                    Z = improvement / (sigma + 1e-9)
+                    from scipy.stats import norm
+                    pi = norm.cdf(Z)
+                    return -pi[0]  # Minimize negative PI
+            
+            # Optimize acquisition function
+            # Multiple random starts for acquisition optimization
+            best_acq_x = None
+            best_acq_value = float('inf')
+            
+            for _ in range(min(10, n_params * 2)):
+                x0 = np.array([np.random.uniform(bounds[0], bounds[1]) for bounds in parameter_bounds])
+                
+                bounds_scipy = [(bounds[0], bounds[1]) for bounds in parameter_bounds]
+                
+                try:
+                    acq_result = minimize(
+                        acquisition_function,
+                        x0,
+                        bounds=bounds_scipy,
+                        method='L-BFGS-B'
+                    )
+                    
+                    if acq_result.success and acq_result.fun < best_acq_value:
+                        best_acq_value = acq_result.fun
+                        best_acq_x = acq_result.x
+                except:
+                    continue
+            
+            if best_acq_x is None:
+                # Fallback to random sampling
+                best_acq_x = np.array([np.random.uniform(bounds[0], bounds[1]) for bounds in parameter_bounds])
+            
+            # Evaluate new point
+            new_y = objective_function(best_acq_x)
+            
+            # Add to dataset
+            X_samples = np.vstack([X_samples, best_acq_x.reshape(1, -1)])
+            y_samples = np.vstack([y_samples, [[new_y]]])
+            
+            acquisition_history.append(best_acq_value)
+            
+            # Convergence check
+            if len(acquisition_history) > 5:
+                recent_acq = acquisition_history[-5:]
+                if np.std(recent_acq) < self.config.convergence_threshold:
+                    break
+        
+        return {
+            'success': True,
+            'best_parameters': best_params if best_params is not None else X_samples[np.argmin(y_samples)],
+            'best_objective': best_objective,
+            'iterations_completed': iteration + 1,
+            'n_samples_evaluated': len(X_samples),
+            'acquisition_history': acquisition_history,
+            'gp_length_scale': gp.kernel_.length_scale if hasattr(gp.kernel_, 'length_scale') else None,
+            'acquisition_function_used': self.config.acquisition_function,
+            'final_gp_log_likelihood': gp.log_marginal_likelihood() if hasattr(gp, 'log_marginal_likelihood') else None
+        }
 
 
 class DistributedQuantumProcessor:

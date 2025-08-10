@@ -52,6 +52,10 @@ class PhotonicLayer:
     """Base class for photonic neural network layers."""
     
     def __init__(self, input_size: int, output_size: int):
+        if input_size <= 0:
+            raise ValueError(f"input_size must be positive, got {input_size}")
+        if output_size <= 0:
+            raise ValueError(f"output_size must be positive, got {output_size}")
         self.input_size = input_size
         self.output_size = output_size
         self.components = []
@@ -172,12 +176,15 @@ class PhotonicCircuit:
         latency_per_layer = 50  # ps per layer
         area_per_mzi = 0.001  # mm² per MZI
         
+        # Prevent division by zero for circuits with no layers
+        total_latency = latency_per_layer * len(self.layers) if self.layers else 1.0
+        
         metrics = CircuitMetrics(
             energy_per_op=energy_per_mzi * total_mzis,
             latency=latency_per_layer * len(self.layers),
             area=area_per_mzi * total_mzis,
             power=energy_per_mzi * total_mzis * 1e6,  # Assuming 1 GHz operation
-            throughput=1e12 / (latency_per_layer * len(self.layers)),  # GOPS
+            throughput=1e12 / total_latency,  # GOPS
             accuracy=0.98  # Typical photonic precision vs FP32
         )
         

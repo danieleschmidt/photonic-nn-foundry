@@ -5,7 +5,7 @@ Input validation and model compatibility checking.
 import torch
 import torch.nn as nn
 from typing import Dict, List, Any, Optional, Tuple
-from pydantic import BaseModel, field_validator, Field
+from pydantic import BaseModel, validator, Field
 import logging
 import numpy as np
 
@@ -23,14 +23,14 @@ class PhotonicConfig(BaseModel):
     allowed_layer_types: List[str] = Field(default=['Linear', 'Conv2d', 'ReLU', 'BatchNorm2d'])
     enable_optimization: bool = True
     
-    @field_validator('wavelength')
+    @validator('wavelength')
     def validate_wavelength(cls, v):
         """Ensure wavelength is in optical communication bands."""
         if not (1200 <= v <= 1700):
             raise ValueError('Wavelength must be between 1200-1700nm (optical communication bands)')
         return v
     
-    @field_validator('precision')  
+    @validator('precision')  
     def validate_precision(cls, v):
         """Ensure precision is reasonable for photonic implementation."""
         if v > 16:
