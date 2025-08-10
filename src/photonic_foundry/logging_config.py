@@ -13,6 +13,10 @@ from typing import Dict, Any, Optional
 from pathlib import Path
 import traceback
 import uuid
+import threading
+from contextlib import contextmanager
+import time
+import functools
 
 
 class StructuredFormatter(logging.Formatter):
@@ -331,17 +335,24 @@ class LoggingContext:
         self.operation = operation
         self.context = kwargs
         self.start_time = None
+        self.operation_id = str(uuid.uuid4())
         
     def __enter__(self):
         self.start_time = datetime.utcnow()
-        self.logger.info(f"Starting operation: {self.operation}", extra=self.context)
+        context = {**self.context, 'operation_id': self.operation_id}
+        self.logger.info(f"Starting operation: {self.operation}", extra=context)
         return self
         
     def __exit__(self, exc_type, exc_val, exc_tb):
         duration = (datetime.utcnow() - self.start_time).total_seconds()
         success = exc_type is None
         
-        context = {**self.context, 'duration_seconds': duration}
+        context = {
+            **self.context, 
+            'duration_seconds': duration,
+            'operation_id': self.operation_id,
+            'success': success
+        }
         
         if success:
             self.logger.info(f"Completed operation: {self.operation}", extra=context)
@@ -351,6 +362,283 @@ class LoggingContext:
             self.logger.error(f"Failed operation: {self.operation}", extra=context, exc_info=True)
 
 
+class MetricsLogger:
+    """Logger for performance and business metrics."""
+    
+    def __init__(self, name: str = "photonic_foundry.metrics"):
+        self.logger = logging.getLogger(name)
+        
+    def log_timing(self, operation: str, duration_ms: float, **kwargs):
+        """Log timing metrics."""
+        self.logger.info("TIMING", extra={
+            'metric_type': 'timing',
+            'operation': operation,
+            'duration_ms': duration_ms,
+            'timestamp': datetime.utcnow().isoformat(),
+            **kwargs
+        })
+        
+    def log_counter(self, metric_name: str, value: int = 1, **kwargs):
+        """Log counter metrics."""
+        self.logger.info("COUNTER", extra={
+            'metric_type': 'counter',
+            'metric_name': metric_name,
+            'value': value,
+            'timestamp': datetime.utcnow().isoformat(),
+            **kwargs
+        })
+        
+    def log_gauge(self, metric_name: str, value: float, **kwargs):
+        """Log gauge metrics."""
+        self.logger.info("GAUGE", extra={
+            'metric_type': 'gauge',
+            'metric_name': metric_name,
+            'value': value,
+            'timestamp': datetime.utcnow().isoformat(),
+            **kwargs
+        })
+        
+    def log_error_rate(self, operation: str, error_count: int, total_count: int, **kwargs):
+        """Log error rate metrics."""
+        error_rate = error_count / total_count if total_count > 0 else 0
+        self.logger.info("ERROR_RATE", extra={
+            'metric_type': 'error_rate',
+            'operation': operation,
+            'error_count': error_count,
+            'total_count': total_count,
+            'error_rate': error_rate,
+            'timestamp': datetime.utcnow().isoformat(),
+            **kwargs
+        })
+
+
+class PerformanceLogger:
+    """Logger for detailed performance tracking."""
+    
+    def __init__(self):
+        self.metrics_logger = MetricsLogger()
+        self._thread_local = threading.local()
+        
+    @contextmanager
+    def measure_time(self, operation: str, **kwargs):
+        """Context manager to measure and log operation time."""
+        start_time = time.perf_counter()
+        try:
+            yield
+        finally:
+            duration_ms = (time.perf_counter() - start_time) * 1000
+            self.metrics_logger.log_timing(operation, duration_ms, **kwargs)
+            
+    def measure_function(self, operation_name: str = None, log_args: bool = False):
+        """Decorator to measure function execution time."""
+        def decorator(func):
+            op_name = operation_name or f"{func.__module__}.{func.__name__}"
+            
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                start_time = time.perf_counter()
+                
+                # Log function entry
+                extra = {'operation': op_name}
+                if log_args:
+                    extra['args_count'] = len(args)
+                    extra['kwargs_keys'] = list(kwargs.keys())
+                    
+                try:
+                    result = func(*args, **kwargs)
+                    duration_ms = (time.perf_counter() - start_time) * 1000
+                    
+                    # Log success
+                    self.metrics_logger.log_timing(op_name, duration_ms, success=True, **extra)
+                    return result
+                    
+                except Exception as e:
+                    duration_ms = (time.perf_counter() - start_time) * 1000
+                    
+                    # Log failure
+                    extra.update({
+                        'success': False,
+                        'exception_type': type(e).__name__,
+                        'exception_message': str(e)
+                    })
+                    self.metrics_logger.log_timing(op_name, duration_ms, **extra)
+                    raise
+                    
+            return wrapper
+        return decorator
+
+
+class AuditLogger:
+    """Logger for security and audit events."""
+    
+    def __init__(self, name: str = "photonic_foundry.audit"):
+        self.logger = logging.getLogger(name)
+        
+    def log_access(self, user_id: str, resource: str, action: str, success: bool = True, **kwargs):
+        """Log access attempts."""
+        self.logger.info("ACCESS", extra={
+            'event_type': 'access',
+            'user_id': user_id,
+            'resource': resource,
+            'action': action,
+            'success': success,
+            'timestamp': datetime.utcnow().isoformat(),
+            **kwargs
+        })
+        
+    def log_security_event(self, event_type: str, severity: str, description: str, **kwargs):
+        """Log security-related events."""
+        self.logger.warning("SECURITY", extra={
+            'event_type': 'security',
+            'security_event_type': event_type,
+            'severity': severity,
+            'description': description,
+            'timestamp': datetime.utcnow().isoformat(),
+            **kwargs
+        })
+        
+    def log_data_operation(self, operation: str, data_type: str, record_count: int = None, **kwargs):
+        """Log data operations for compliance."""
+        self.logger.info("DATA_OP", extra={
+            'event_type': 'data_operation',
+            'operation': operation,
+            'data_type': data_type,
+            'record_count': record_count,
+            'timestamp': datetime.utcnow().isoformat(),
+            **kwargs
+        })
+
+
+class AlertHandler(logging.Handler):
+    """Custom handler for critical alerts."""
+    
+    def __init__(self, alert_callback: callable = None):
+        super().__init__()
+        self.alert_callback = alert_callback or self._default_alert
+        self.setLevel(logging.ERROR)
+        
+    def emit(self, record):
+        """Emit alert for critical log records."""
+        if record.levelno >= logging.ERROR:
+            try:
+                alert_data = {
+                    'timestamp': datetime.utcfromtimestamp(record.created).isoformat(),
+                    'level': record.levelname,
+                    'logger': record.name,
+                    'message': record.getMessage(),
+                    'module': record.module,
+                    'function': record.funcName,
+                    'line_number': record.lineno
+                }
+                
+                if record.exc_info:
+                    alert_data['exception'] = {
+                        'type': record.exc_info[0].__name__,
+                        'message': str(record.exc_info[1]),
+                        'traceback': traceback.format_exception(*record.exc_info)
+                    }
+                    
+                self.alert_callback(alert_data)
+            except Exception as e:
+                # Don't let alert failures break logging
+                print(f"Alert handler error: {e}", file=sys.stderr)
+                
+    def _default_alert(self, alert_data):
+        """Default alert implementation - just print to stderr."""
+        print(f"ALERT: {alert_data['level']} - {alert_data['message']}", file=sys.stderr)
+
+
+# Global instances
+_performance_logger = None
+_metrics_logger = None
+_audit_logger = None
+
+
+def get_performance_logger() -> PerformanceLogger:
+    """Get global performance logger instance."""
+    global _performance_logger
+    if _performance_logger is None:
+        _performance_logger = PerformanceLogger()
+    return _performance_logger
+
+
+def get_metrics_logger() -> MetricsLogger:
+    """Get global metrics logger instance."""
+    global _metrics_logger
+    if _metrics_logger is None:
+        _metrics_logger = MetricsLogger()
+    return _metrics_logger
+
+
+def get_audit_logger() -> AuditLogger:
+    """Get global audit logger instance."""
+    global _audit_logger
+    if _audit_logger is None:
+        _audit_logger = AuditLogger()
+    return _audit_logger
+
+
+def log_startup_info():
+    """Log system startup information."""
+    logger = get_logger("photonic_foundry.startup")
+    logger.info("Photonic Foundry system starting up", extra={
+        'python_version': sys.version,
+        'platform': sys.platform,
+        'working_directory': os.getcwd(),
+        'process_id': os.getpid()
+    })
+
+
+def log_shutdown_info():
+    """Log system shutdown information."""
+    logger = get_logger("photonic_foundry.shutdown")
+    logger.info("Photonic Foundry system shutting down", extra={
+        'process_id': os.getpid()
+    })
+
+
+# Decorator functions for common use cases
+def log_function_calls(logger_name: str = None, log_args: bool = False):
+    """Decorator to log function calls."""
+    def decorator(func):
+        logger = get_logger(logger_name or f"{func.__module__}.{func.__name__}")
+        
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            extra = {
+                'function': func.__name__,
+                'module': func.__module__
+            }
+            
+            if log_args:
+                extra['args_count'] = len(args)
+                extra['kwargs_keys'] = list(kwargs.keys())
+                
+            logger.debug(f"Calling function: {func.__name__}", extra=extra)
+            
+            try:
+                result = func(*args, **kwargs)
+                logger.debug(f"Function completed: {func.__name__}", extra=extra)
+                return result
+            except Exception as e:
+                extra.update({
+                    'exception_type': type(e).__name__,
+                    'exception_message': str(e)
+                })
+                logger.error(f"Function failed: {func.__name__}", extra=extra, exc_info=True)
+                raise
+                
+        return wrapper
+    return decorator
+
+
+def measure_performance(operation_name: str = None):
+    """Decorator to measure and log performance."""
+    perf_logger = get_performance_logger()
+    return perf_logger.measure_function(operation_name)
+
+
 # Initialize logging on module import
 if not logging.getLogger().hasHandlers():
     setup_logging()
+    log_startup_info()

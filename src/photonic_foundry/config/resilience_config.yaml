@@ -1,0 +1,141 @@
+# Photonic Foundry Resilience Framework Configuration
+# This file contains comprehensive configuration for all resilience components
+
+# Logging Configuration
+log_level: "INFO"                    # DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_format: "structured"             # structured, simple, detailed
+log_file: "./logs/photonic_foundry.log"
+enable_console_logging: true
+enable_security_filter: true
+log_directory: "./logs"
+
+# Monitoring Configuration
+metrics_retention_hours: 24          # How long to keep metrics in memory
+metrics_collection_interval: 60      # Seconds between metric collections
+enable_performance_monitoring: true
+enable_health_checks: true
+
+# Security Configuration
+security_level: "MEDIUM"             # LOW, MEDIUM, HIGH, CRITICAL
+rate_limit_requests: 100             # Max requests per window
+rate_limit_window: 60                # Rate limiting window in seconds
+enable_ip_blocking: true             # Auto-block IPs with too many failures
+enable_malware_scanning: true        # Enable YARA-based malware scanning
+
+# Circuit Breaker Configuration
+enable_circuit_breakers: true
+default_failure_threshold: 5         # Failures before circuit opens
+default_recovery_timeout: 60.0       # Seconds before trying recovery
+default_timeout: 30.0                # Operation timeout in seconds
+
+# Error Handling Configuration
+enable_error_recovery: true          # Enable automatic error recovery
+max_retry_attempts: 3                # Maximum retry attempts
+retry_backoff_factor: 1.5           # Exponential backoff factor
+
+# Validation Configuration
+enable_strict_validation: true       # Enable strict input validation
+max_request_size_mb: 10              # Maximum API request size
+enable_data_sanitization: true       # Enable automatic data sanitization
+
+# File System Configuration
+data_directory: "./data"
+quarantine_directory: "./quarantine"
+
+# Component-Specific Settings
+components:
+  
+  # Database Circuit Breaker
+  database:
+    failure_threshold: 3
+    recovery_timeout: 30.0
+    timeout: 10.0
+    slow_call_threshold: 2.0
+  
+  # API Circuit Breaker  
+  api:
+    failure_threshold: 5
+    recovery_timeout: 60.0
+    timeout: 30.0
+    slow_call_threshold: 5.0
+    
+  # Model Processing Circuit Breaker
+  model_processing:
+    failure_threshold: 2
+    recovery_timeout: 120.0
+    timeout: 60.0
+    slow_call_threshold: 10.0
+    
+  # Security Settings
+  security:
+    scan_paths:
+      - "src/"
+      - "examples/"
+    blocked_file_extensions:
+      - ".exe"
+      - ".bat" 
+      - ".sh"
+      - ".cmd"
+      - ".ps1"
+    max_file_size_mb: 100
+    
+  # Health Check Settings
+  health_checks:
+    database:
+      enabled: true
+      timeout: 5.0
+    network:
+      enabled: true
+      timeout: 5.0  
+      target_hosts:
+        - "8.8.8.8"
+        - "google.com"
+    disk_space:
+      enabled: true
+      paths:
+        - "/"
+      warning_threshold: 0.8
+      critical_threshold: 0.95
+    components:
+      enabled: true
+      
+  # Performance Monitoring
+  performance:
+    operation_tracking: true
+    slow_query_threshold: 1.0        # Seconds
+    memory_usage_tracking: true
+    cpu_usage_tracking: true
+    
+  # Alert Configuration
+  alerts:
+    email_notifications: false       # Set to true and configure SMTP
+    slack_notifications: false       # Set to true and configure webhook
+    log_alerts: true
+    alert_thresholds:
+      cpu_usage: 85                  # Percentage
+      memory_usage: 90               # Percentage
+      disk_usage: 95                 # Percentage
+      error_rate: 0.1                # 10% error rate
+      
+# Environment-Specific Overrides
+environments:
+  development:
+    log_level: "DEBUG"
+    enable_console_logging: true
+    security_level: "LOW"
+    enable_strict_validation: false
+    
+  testing:
+    log_level: "WARNING"
+    enable_console_logging: false
+    security_level: "MEDIUM"
+    enable_strict_validation: true
+    
+  production:
+    log_level: "INFO"
+    enable_console_logging: false
+    security_level: "HIGH"
+    enable_strict_validation: true
+    rate_limit_requests: 1000
+    enable_malware_scanning: true
+    max_request_size_mb: 50

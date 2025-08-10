@@ -9,15 +9,31 @@ import json
 import time
 import subprocess
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Set, Tuple
-from dataclasses import dataclass
+from typing import Dict, List, Any, Optional, Set, Tuple, Callable
+from dataclasses import dataclass, field
 from enum import Enum
 import logging
 import tempfile
 import ast
 import inspect
+import threading
+from datetime import datetime, timedelta
+import base64
+import hmac
+import secrets
+from concurrent.futures import ThreadPoolExecutor
+from collections import defaultdict, deque
+try:
+    import yara  # For malware detection (optional dependency)
+    YARA_AVAILABLE = True
+except ImportError:
+    YARA_AVAILABLE = False
+    yara = None
 
 logger = logging.getLogger(__name__)
+
+# Import SecurityException from error_handling
+from .error_handling import SecurityException
 
 
 class SecurityLevel(Enum):
@@ -518,6 +534,440 @@ def scan_security(security_level: SecurityLevel = SecurityLevel.MEDIUM,
     return scanner.scan_system(scan_paths)
 
 
+class RateLimiter:
+    """Rate limiter for API endpoints and operations."""
+    
+    def __init__(self, max_requests: int = 100, time_window: int = 60):
+        self.max_requests = max_requests
+        self.time_window = time_window  # seconds
+        self.requests = defaultdict(deque)
+        self._lock = threading.Lock()
+        
+    def is_allowed(self, identifier: str) -> bool:
+        """Check if request is allowed under rate limit."""
+        now = time.time()
+        
+        with self._lock:
+            request_times = self.requests[identifier]
+            
+            # Remove old requests outside time window
+            while request_times and request_times[0] <= now - self.time_window:
+                request_times.popleft()
+                
+            # Check if under limit
+            if len(request_times) >= self.max_requests:
+                return False
+                
+            # Add current request
+            request_times.append(now)
+            return True
+            
+    def get_remaining_requests(self, identifier: str) -> int:
+        """Get remaining requests for identifier."""
+        now = time.time()
+        
+        with self._lock:
+            request_times = self.requests[identifier]
+            
+            # Remove old requests
+            while request_times and request_times[0] <= now - self.time_window:
+                request_times.popleft()
+                
+            return max(0, self.max_requests - len(request_times))
+
+
+class TokenManager:
+    """Secure token generation and validation."""
+    
+    def __init__(self, secret_key: bytes = None):
+        self.secret_key = secret_key or secrets.token_bytes(32)
+        self.tokens = {}  # token -> (user_id, expiry_time, permissions)
+        self._lock = threading.Lock()
+        
+    def generate_token(self, user_id: str, permissions: List[str] = None, 
+                      expires_in: int = 3600) -> str:
+        """Generate secure token for user."""
+        token_data = {
+            'user_id': user_id,
+            'permissions': permissions or [],
+            'issued_at': time.time(),
+            'expires_at': time.time() + expires_in
+        }
+        
+        # Create signed token
+        token_json = json.dumps(token_data, sort_keys=True)
+        token_bytes = token_json.encode('utf-8')
+        encoded_token = base64.urlsafe_b64encode(token_bytes).decode('ascii')
+        
+        # Create signature
+        signature = hmac.new(
+            self.secret_key,
+            encoded_token.encode('ascii'),
+            hashlib.sha256
+        ).hexdigest()
+        
+        full_token = f"{encoded_token}.{signature}"
+        
+        with self._lock:
+            self.tokens[full_token] = (user_id, token_data['expires_at'], permissions or [])
+            
+        return full_token
+        
+    def validate_token(self, token: str) -> Optional[Dict[str, Any]]:
+        """Validate token and return user information."""
+        try:
+            if '.' not in token:
+                return None
+                
+            encoded_token, signature = token.rsplit('.', 1)
+            
+            # Verify signature
+            expected_signature = hmac.new(
+                self.secret_key,
+                encoded_token.encode('ascii'),
+                hashlib.sha256
+            ).hexdigest()
+            
+            if not hmac.compare_digest(signature, expected_signature):
+                return None
+                
+            # Decode token
+            token_bytes = base64.urlsafe_b64decode(encoded_token.encode('ascii'))
+            token_data = json.loads(token_bytes.decode('utf-8'))
+            
+            # Check expiration
+            if token_data['expires_at'] <= time.time():
+                self._cleanup_expired_token(token)
+                return None
+                
+            return {
+                'user_id': token_data['user_id'],
+                'permissions': token_data['permissions'],
+                'issued_at': token_data['issued_at'],
+                'expires_at': token_data['expires_at']
+            }
+            
+        except (ValueError, json.JSONDecodeError, KeyError):
+            return None
+            
+    def revoke_token(self, token: str) -> bool:
+        """Revoke a token."""
+        with self._lock:
+            if token in self.tokens:
+                del self.tokens[token]
+                return True
+            return False
+            
+    def _cleanup_expired_token(self, token: str):
+        """Clean up expired token."""
+        with self._lock:
+            if token in self.tokens:
+                del self.tokens[token]
+
+
+class MalwareScanner:
+    """Malware scanner using YARA rules."""
+    
+    def __init__(self):
+        self.yara_rules = None
+        self.custom_rules = []
+        self._load_rules()
+        
+    def _load_rules(self):
+        """Load YARA rules for malware detection."""
+        if not YARA_AVAILABLE:
+            logger.warning("YARA not available - malware scanning disabled")
+            return
+            
+        # Basic malware detection rules
+        rule_content = '''
+        rule SuspiciousExecutable {
+            meta:
+                description = "Detects suspicious executable patterns"
+            strings:
+                $mz = { 4D 5A }  // MZ header
+                $pe = "PE"
+                $exec1 = "cmd.exe"
+                $exec2 = "powershell"
+                $exec3 = "bash"
+            condition:
+                $mz at 0 and $pe and any of ($exec*)
+        }
+        
+        rule PythonPickle {
+            meta:
+                description = "Detects Python pickle data"
+            strings:
+                $pickle1 = { 80 02 }  // Pickle protocol 2
+                $pickle3 = { 80 03 }  # Pickle protocol 3
+                $pickle4 = { 80 04 }  # Pickle protocol 4
+            condition:
+                any of ($pickle*)
+        }
+        
+        rule SuspiciousScript {
+            meta:
+                description = "Detects suspicious script patterns"
+            strings:
+                $eval = "eval("
+                $exec = "exec("
+                $import_os = "import os"
+                $subprocess = "subprocess"
+                $dangerous = "__import__"
+            condition:
+                2 of them
+        }
+        '''
+        
+        try:
+            self.yara_rules = yara.compile(source=rule_content)
+        except Exception as e:
+            logger.error(f"Failed to compile YARA rules: {e}")
+            
+    def scan_data(self, data: bytes, file_name: str = "unknown") -> List[SecurityIssue]:
+        """Scan data for malware patterns."""
+        issues = []
+        
+        if not self.yara_rules:
+            return issues
+            
+        try:
+            matches = self.yara_rules.match(data=data)
+            
+            for match in matches:
+                issues.append(SecurityIssue(
+                    severity="critical",
+                    category="malware",
+                    description=f"Malware pattern detected: {match.rule}",
+                    location=file_name,
+                    recommendation="Do not process this file - contains malicious patterns"
+                ))
+                
+        except Exception as e:
+            logger.error(f"YARA scanning error: {e}")
+            issues.append(SecurityIssue(
+                severity="medium",
+                category="scan_error",
+                description=f"Could not scan file for malware: {e}",
+                location=file_name,
+                recommendation="Manual security review required"
+            ))
+            
+        return issues
+        
+    def scan_file(self, file_path: str) -> List[SecurityIssue]:
+        """Scan file for malware patterns."""
+        try:
+            with open(file_path, 'rb') as f:
+                data = f.read()
+            return self.scan_data(data, file_path)
+        except Exception as e:
+            return [SecurityIssue(
+                severity="medium",
+                category="scan_error",
+                description=f"Could not read file for scanning: {e}",
+                location=file_path,
+                recommendation="Verify file permissions and integrity"
+            )]
+
+
+class SecurityMonitor:
+    """Monitor security events and maintain security metrics."""
+    
+    def __init__(self):
+        self.security_events = deque(maxlen=1000)
+        self.threat_counts = defaultdict(int)
+        self.blocked_ips = set()
+        self.failed_attempts = defaultdict(list)
+        self._lock = threading.Lock()
+        
+    def record_security_event(self, event_type: str, severity: str, 
+                             description: str, source_ip: str = None, 
+                             user_id: str = None, **kwargs):
+        """Record a security event."""
+        event = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'event_type': event_type,
+            'severity': severity,
+            'description': description,
+            'source_ip': source_ip,
+            'user_id': user_id,
+            **kwargs
+        }
+        
+        with self._lock:
+            self.security_events.append(event)
+            self.threat_counts[event_type] += 1
+            
+            # Track failed attempts by IP
+            if source_ip and event_type == 'authentication_failed':
+                now = datetime.utcnow()
+                self.failed_attempts[source_ip].append(now)
+                
+                # Clean old attempts (older than 1 hour)
+                self.failed_attempts[source_ip] = [
+                    attempt for attempt in self.failed_attempts[source_ip]
+                    if now - attempt < timedelta(hours=1)
+                ]
+                
+                # Auto-block IPs with too many failed attempts
+                if len(self.failed_attempts[source_ip]) >= 5:
+                    self.blocked_ips.add(source_ip)
+                    logger.warning(f"Auto-blocked IP {source_ip} due to repeated failed attempts")
+                    
+        logger.warning(f"Security event: {event_type} - {description}")
+        
+    def is_ip_blocked(self, ip: str) -> bool:
+        """Check if IP is blocked."""
+        return ip in self.blocked_ips
+        
+    def block_ip(self, ip: str, reason: str = "Manual block"):
+        """Block an IP address."""
+        with self._lock:
+            self.blocked_ips.add(ip)
+        self.record_security_event('ip_blocked', 'high', f"IP blocked: {reason}", source_ip=ip)
+        
+    def unblock_ip(self, ip: str):
+        """Unblock an IP address."""
+        with self._lock:
+            self.blocked_ips.discard(ip)
+        self.record_security_event('ip_unblocked', 'info', "IP unblocked", source_ip=ip)
+        
+    def get_security_summary(self) -> Dict[str, Any]:
+        """Get security monitoring summary."""
+        with self._lock:
+            recent_events = [
+                event for event in self.security_events
+                if datetime.fromisoformat(event['timestamp']) > datetime.utcnow() - timedelta(hours=24)
+            ]
+            
+            return {
+                'total_events': len(self.security_events),
+                'recent_events_24h': len(recent_events),
+                'threat_counts': dict(self.threat_counts),
+                'blocked_ips_count': len(self.blocked_ips),
+                'top_threats': dict(sorted(self.threat_counts.items(), 
+                                         key=lambda x: x[1], reverse=True)[:5])
+            }
+
+
+class SecureFileHandler:
+    """Secure file handling with validation and sandboxing."""
+    
+    def __init__(self, allowed_extensions: Set[str] = None, max_file_size: int = 100 * 1024 * 1024):
+        self.allowed_extensions = allowed_extensions or {'.py', '.json', '.yaml', '.yml', '.txt'}
+        self.max_file_size = max_file_size
+        self.quarantine_dir = Path(tempfile.gettempdir()) / "photonic_quarantine"
+        self.quarantine_dir.mkdir(exist_ok=True)
+        
+    def validate_file(self, file_path: str, content: bytes = None) -> List[SecurityIssue]:
+        """Comprehensive file validation."""
+        issues = []
+        path_obj = Path(file_path)
+        
+        # Extension validation
+        if path_obj.suffix not in self.allowed_extensions:
+            issues.append(SecurityIssue(
+                severity="high",
+                category="file_validation",
+                description=f"File extension '{path_obj.suffix}' not allowed",
+                location=file_path,
+                recommendation=f"Only these extensions are allowed: {self.allowed_extensions}"
+            ))
+            
+        # Size validation
+        if content and len(content) > self.max_file_size:
+            issues.append(SecurityIssue(
+                severity="medium",
+                category="file_validation",
+                description=f"File size {len(content)} bytes exceeds limit {self.max_file_size}",
+                location=file_path,
+                recommendation="Reduce file size or increase limit"
+            ))
+            
+        # Malware scanning
+        if content:
+            scanner = MalwareScanner()
+            malware_issues = scanner.scan_data(content, file_path)
+            issues.extend(malware_issues)
+            
+        return issues
+        
+    def quarantine_file(self, file_path: str, reason: str) -> str:
+        """Move suspicious file to quarantine."""
+        quarantine_path = self.quarantine_dir / f"{int(time.time())}_{Path(file_path).name}"
+        
+        try:
+            if os.path.exists(file_path):
+                os.rename(file_path, quarantine_path)
+            
+            # Create metadata file
+            metadata = {
+                'original_path': file_path,
+                'quarantine_time': datetime.utcnow().isoformat(),
+                'reason': reason,
+                'file_hash': self._calculate_file_hash(str(quarantine_path))
+            }
+            
+            metadata_path = quarantine_path.with_suffix('.metadata.json')
+            with open(metadata_path, 'w') as f:
+                json.dump(metadata, f, indent=2)
+                
+            logger.warning(f"File quarantined: {file_path} -> {quarantine_path}")
+            return str(quarantine_path)
+            
+        except Exception as e:
+            logger.error(f"Failed to quarantine file {file_path}: {e}")
+            raise
+            
+    def _calculate_file_hash(self, file_path: str) -> str:
+        """Calculate SHA-256 hash of file."""
+        hasher = hashlib.sha256()
+        with open(file_path, 'rb') as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hasher.update(chunk)
+        return hasher.hexdigest()
+
+
+# Global security instances
+_rate_limiter = None
+_token_manager = None
+_security_monitor = None
+_file_handler = None
+
+
+def get_rate_limiter() -> RateLimiter:
+    """Get global rate limiter instance."""
+    global _rate_limiter
+    if _rate_limiter is None:
+        _rate_limiter = RateLimiter()
+    return _rate_limiter
+
+
+def get_token_manager() -> TokenManager:
+    """Get global token manager instance."""
+    global _token_manager
+    if _token_manager is None:
+        _token_manager = TokenManager()
+    return _token_manager
+
+
+def get_security_monitor() -> SecurityMonitor:
+    """Get global security monitor instance."""
+    global _security_monitor
+    if _security_monitor is None:
+        _security_monitor = SecurityMonitor()
+    return _security_monitor
+
+
+def get_secure_file_handler() -> SecureFileHandler:
+    """Get global secure file handler instance."""
+    global _file_handler
+    if _file_handler is None:
+        _file_handler = SecureFileHandler()
+    return _file_handler
+
+
 def validate_input_security(data: Any) -> List[SecurityIssue]:
     """Validate input data for security issues."""
     validator = InputValidator()
@@ -532,3 +982,63 @@ def validate_input_security(data: Any) -> List[SecurityIssue]:
         issues.extend(validator.validate_file_path(data))
         
     return issues
+
+
+def secure_operation(operation_name: str, user_id: str = None, source_ip: str = None):
+    """Decorator for secure operations with logging and rate limiting."""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            # Rate limiting
+            rate_limiter = get_rate_limiter()
+            identifier = source_ip or user_id or "anonymous"
+            
+            if not rate_limiter.is_allowed(identifier):
+                security_monitor = get_security_monitor()
+                security_monitor.record_security_event(
+                    'rate_limit_exceeded',
+                    'medium',
+                    f"Rate limit exceeded for operation: {operation_name}",
+                    source_ip=source_ip,
+                    user_id=user_id
+                )
+                raise SecurityException(f"Rate limit exceeded for {operation_name}", "rate_limiting")
+                
+            # IP blocking check
+            security_monitor = get_security_monitor()
+            if source_ip and security_monitor.is_ip_blocked(source_ip):
+                security_monitor.record_security_event(
+                    'blocked_ip_attempt',
+                    'high',
+                    f"Blocked IP attempted operation: {operation_name}",
+                    source_ip=source_ip,
+                    user_id=user_id
+                )
+                raise SecurityException("Access denied - IP blocked", "ip_blocked")
+                
+            try:
+                result = func(*args, **kwargs)
+                
+                # Log successful operation
+                security_monitor.record_security_event(
+                    'operation_success',
+                    'info',
+                    f"Operation completed: {operation_name}",
+                    source_ip=source_ip,
+                    user_id=user_id
+                )
+                
+                return result
+                
+            except Exception as e:
+                # Log failed operation
+                security_monitor.record_security_event(
+                    'operation_failed',
+                    'medium',
+                    f"Operation failed: {operation_name} - {str(e)}",
+                    source_ip=source_ip,
+                    user_id=user_id
+                )
+                raise
+                
+        return wrapper
+    return decorator

@@ -1,0 +1,333 @@
+# Global values for multi-region Photonic Foundry deployment
+# This file contains shared configuration across all regions
+
+# Global deployment configuration
+global:
+  deployment:
+    strategy: "multi-region"
+    type: "enterprise"
+    environment: "production"
+  
+  # Image configuration
+  imageRegistry: "docker.io/photonicfoundry"
+  imagePullSecrets: 
+    - name: photonic-foundry-registry-secret
+  storageClass: "fast-ssd"
+  
+  # Multi-region settings
+  regions:
+    enabled: true
+    primary: "us-east-1"
+    secondary: ["eu-west-1", "ap-southeast-1"]
+    dataReplication: "sync"
+    failoverStrategy: "automatic"
+  
+  # Global networking
+  networking:
+    serviceMesh:
+      enabled: true
+      provider: "istio"
+      mtls: "strict"
+    loadBalancer:
+      type: "global"
+      provider: "cloudflare"
+      geoRouting: true
+      healthCheck: true
+    cdn:
+      enabled: true
+      provider: "cloudflare"
+      edgeCompute: true
+      quantumDistribution: true
+  
+  # Security and compliance
+  security:
+    encryption:
+      atRest: true
+      inTransit: true
+      quantum: true
+    compliance:
+      frameworks: ["gdpr", "ccpa", "pdpa"]
+      dataResidency: true
+      auditLogging: true
+      retention: "7years"
+  
+  # Monitoring and observability
+  monitoring:
+    enabled: true
+    prometheus:
+      enabled: true
+      retention: "15d"
+    grafana:
+      enabled: true
+      dashboards: true
+    jaeger:
+      enabled: true
+      sampling: "probabilistic"
+    alerts:
+      enabled: true
+      channels: ["slack", "email", "pagerduty"]
+
+# Regional deployment configurations
+regions:
+  us-east-1:
+    enabled: true
+    primary: true
+    replicas: 5
+    resources:
+      requests:
+        cpu: "2000m"
+        memory: "4Gi"
+        nvidia.com/gpu: "1"
+      limits:
+        cpu: "8000m"
+        memory: "16Gi"
+        nvidia.com/gpu: "2"
+    compliance:
+      framework: "ccpa"
+      dataResidency: true
+      jurisdiction: "USA"
+    nodeSelector:
+      region: "us-east-1"
+      quantum-compute: "true"
+      gpu-type: "nvidia-a100"
+    tolerations:
+      - key: "quantum-workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+    storage:
+      quantumData: "20Gi"
+      complianceLogs: "10Gi"
+      cache: "5Gi"
+  
+  eu-west-1:
+    enabled: true
+    primary: false
+    replicas: 4
+    resources:
+      requests:
+        cpu: "2000m"
+        memory: "4Gi"
+        nvidia.com/gpu: "1"
+      limits:
+        cpu: "6000m"
+        memory: "12Gi"
+        nvidia.com/gpu: "2"
+    compliance:
+      framework: "gdpr"
+      dataResidency: true
+      jurisdiction: "EU"
+      dpo: "dpo-eu@photonic-foundry.com"
+      controller: "Photonic Foundry EU Ltd"
+    nodeSelector:
+      region: "eu-west-1"
+      quantum-compute: "true"
+      gpu-type: "nvidia-h100"
+      gdpr-compliant: "true"
+    tolerations:
+      - key: "quantum-workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      - key: "gdpr-workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+    storage:
+      quantumData: "15Gi"
+      gdprAuditLogs: "15Gi"
+      consentRecords: "5Gi"
+  
+  ap-southeast-1:
+    enabled: true
+    primary: false
+    replicas: 3
+    resources:
+      requests:
+        cpu: "1500m"
+        memory: "3Gi"
+        nvidia.com/gpu: "1"
+      limits:
+        cpu: "4000m"
+        memory: "8Gi"
+        nvidia.com/gpu: "2"
+    compliance:
+      framework: "pdpa"
+      dataResidency: true
+      jurisdiction: "Singapore"
+      dpo: "dpo-apac@photonic-foundry.com"
+      organization: "Photonic Foundry Singapore Pte Ltd"
+    nodeSelector:
+      region: "ap-southeast-1"
+      quantum-compute: "true"
+      gpu-type: "nvidia-a100"
+      pdpa-compliant: "true"
+    tolerations:
+      - key: "quantum-workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      - key: "apac-workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+    storage:
+      quantumData: "10Gi"
+      pdpaAuditLogs: "10Gi"
+      consentRecords: "3Gi"
+    edgeComputing:
+      enabled: true
+      lowLatencyMode: true
+
+# Application configuration
+application:
+  quantum:
+    planner:
+      enabled: true
+      maxConcurrentTasks: 32
+      thermalLimit: 75.0
+      autoScaleEnabled: true
+      distributedProcessing: true
+    
+    optimizer:
+      enabled: true
+      strategy: "hybrid_quantum_classical"
+      maxIterations: 2000
+      convergenceThreshold: 1e-8
+      parallelEvaluations: true
+      gpuAcceleration: true
+      multiRegionOptimization: true
+    
+    security:
+      level: "quantum_resistant"
+      minEntropyBits: 512
+      requireAuthentication: true
+      enableAuditLogging: true
+      quantumKeyDistribution: true
+      adversarialProtection: true
+      sideChannelProtection: true
+    
+    resilience:
+      enableHealthMonitoring: true
+      enableFaultPrediction: true
+      enableAutoRecovery: true
+      maxRecoveryAttempts: 5
+      healthCheckInterval: 180
+      crossRegionFailover: true
+
+# Networking and traffic management
+networking:
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/rate-limit-rps: "100"
+    hosts:
+      - host: "api.photonic-foundry.com"
+        paths:
+          - path: "/"
+            pathType: "Prefix"
+      - host: "quantum.photonic-foundry.com"
+        paths:
+          - path: "/quantum"
+            pathType: "Prefix"
+    tls:
+      - secretName: "photonic-foundry-tls"
+        hosts:
+          - "api.photonic-foundry.com"
+          - "quantum.photonic-foundry.com"
+  
+  service:
+    type: "LoadBalancer"
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    ports:
+      http: 80
+      https: 443
+      metrics: 9090
+
+# Storage configuration
+storage:
+  persistence:
+    enabled: true
+    accessModes:
+      - "ReadWriteOnce"
+    annotations:
+      volume.beta.kubernetes.io/storage-class: "fast-ssd"
+  
+  backup:
+    enabled: true
+    schedule: "0 2 * * *"  # Daily at 2 AM
+    retention: "30d"
+    crossRegion: true
+
+# External dependencies
+redis:
+  enabled: true
+  auth:
+    enabled: true
+  master:
+    persistence:
+      enabled: true
+      size: "8Gi"
+  replica:
+    replicaCount: 2
+    persistence:
+      enabled: true
+      size: "8Gi"
+
+postgresql:
+  enabled: true
+  auth:
+    enablePostgresUser: true
+    database: "photonic_foundry"
+  primary:
+    persistence:
+      enabled: true
+      size: "20Gi"
+  readReplicas:
+    replicaCount: 2
+    persistence:
+      enabled: true
+      size: "20Gi"
+
+# Certificate management
+certManager:
+  enabled: true
+  installCRDs: true
+
+# Autoscaling
+autoscaling:
+  enabled: true
+  global:
+    minReplicas: 8
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  regional:
+    us-east-1:
+      minReplicas: 3
+      maxReplicas: 50
+    eu-west-1:
+      minReplicas: 3
+      maxReplicas: 40
+    ap-southeast-1:
+      minReplicas: 2
+      maxReplicas: 25
+
+# Pod disruption budgets
+podDisruptionBudget:
+  enabled: true
+  global:
+    minAvailable: 6
+  regional:
+    us-east-1:
+      minAvailable: 2
+    eu-west-1:
+      minAvailable: 2
+    ap-southeast-1:
+      minAvailable: 1

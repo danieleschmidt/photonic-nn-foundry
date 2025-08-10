@@ -402,3 +402,203 @@ PHOTONIC_SIMULATION_CIRCUIT_BREAKER_CONFIG = CircuitBreakerConfig(
     timeout=60.0,
     slow_call_threshold=10.0
 )
+
+MODEL_VALIDATION_CIRCUIT_BREAKER_CONFIG = CircuitBreakerConfig(
+    failure_threshold=3,
+    recovery_timeout=45.0,
+    timeout=15.0,
+    slow_call_threshold=3.0
+)
+
+FILE_PROCESSING_CIRCUIT_BREAKER_CONFIG = CircuitBreakerConfig(
+    failure_threshold=5,
+    recovery_timeout=30.0,
+    timeout=20.0,
+    slow_call_threshold=5.0
+)
+
+
+class CircuitBreakerMiddleware:
+    """Middleware for adding circuit breaker protection to API endpoints."""
+    
+    def __init__(self, registry: CircuitBreakerRegistry = None):
+        self.registry = registry or _circuit_breaker_registry
+        
+    def protect_endpoint(self, endpoint_name: str, config: CircuitBreakerConfig = None):
+        """Decorator to protect API endpoints with circuit breakers."""
+        def decorator(func):
+            # Get or create circuit breaker for this endpoint
+            breaker = self.registry.get_or_create(
+                f"api_{endpoint_name}",
+                config or API_CIRCUIT_BREAKER_CONFIG
+            )
+            return breaker(func)
+        return decorator
+        
+    def protect_database_operation(self, operation_name: str):
+        """Decorator to protect database operations."""
+        def decorator(func):
+            breaker = self.registry.get_or_create(
+                f"db_{operation_name}",
+                DATABASE_CIRCUIT_BREAKER_CONFIG
+            )
+            return breaker(func)
+        return decorator
+        
+    def protect_model_operation(self, operation_name: str):
+        """Decorator to protect model processing operations."""
+        def decorator(func):
+            breaker = self.registry.get_or_create(
+                f"model_{operation_name}",
+                MODEL_VALIDATION_CIRCUIT_BREAKER_CONFIG
+            )
+            return breaker(func)
+        return decorator
+
+
+class AdaptiveCircuitBreaker(CircuitBreaker):
+    """Circuit breaker that adapts thresholds based on historical performance."""
+    
+    def __init__(self, name: str, config: CircuitBreakerConfig = None):
+        super().__init__(name, config)
+        self._historical_performance = deque(maxlen=1000)
+        self._adaptation_enabled = True
+        self._last_adaptation = time.time()
+        self._adaptation_interval = 300  # 5 minutes
+        
+    def _record_success(self, response_time: float):
+        """Enhanced success recording with adaptation."""
+        super()._record_success(response_time)
+        
+        # Record performance for adaptation
+        self._historical_performance.append({
+            'timestamp': time.time(),
+            'response_time': response_time,
+            'success': True
+        })
+        
+        self._maybe_adapt_thresholds()
+        
+    def _record_failure(self, exception: Exception):
+        """Enhanced failure recording with adaptation."""
+        super()._record_failure(exception)
+        
+        # Record performance for adaptation
+        self._historical_performance.append({
+            'timestamp': time.time(),
+            'response_time': None,
+            'success': False,
+            'error_type': type(exception).__name__
+        })
+        
+        self._maybe_adapt_thresholds()
+        
+    def _maybe_adapt_thresholds(self):
+        """Adapt circuit breaker thresholds based on performance history."""
+        if not self._adaptation_enabled:
+            return
+            
+        now = time.time()
+        if now - self._last_adaptation < self._adaptation_interval:
+            return
+            
+        if len(self._historical_performance) < 50:  # Need minimum data
+            return
+            
+        try:
+            self._adapt_thresholds()
+            self._last_adaptation = now
+        except Exception as e:
+            logger.warning(f"Failed to adapt circuit breaker thresholds: {e}")
+            
+    def _adapt_thresholds(self):
+        """Adapt thresholds based on performance patterns."""
+        recent_data = [
+            record for record in self._historical_performance
+            if record['timestamp'] > time.time() - 3600  # Last hour
+        ]
+        
+        if len(recent_data) < 20:
+            return
+            
+        # Calculate success rate
+        successes = sum(1 for record in recent_data if record['success'])
+        success_rate = successes / len(recent_data)
+        
+        # Calculate average response time for successful calls
+        successful_times = [
+            record['response_time'] for record in recent_data
+            if record['success'] and record['response_time'] is not None
+        ]
+        
+        if successful_times:
+            avg_response_time = statistics.mean(successful_times)
+            p95_response_time = statistics.quantiles(successful_times, n=20)[18]  # 95th percentile
+            
+            # Adapt slow call threshold
+            new_slow_threshold = min(
+                p95_response_time * 1.5,
+                self.config.slow_call_threshold * 2
+            )
+            
+            if abs(new_slow_threshold - self.config.slow_call_threshold) > 1.0:
+                logger.info(
+                    f"Adapting slow call threshold for '{self.name}': "
+                    f"{self.config.slow_call_threshold:.2f}s -> {new_slow_threshold:.2f}s"
+                )
+                self.config.slow_call_threshold = new_slow_threshold
+                
+        # Adapt failure threshold based on recent patterns
+        if success_rate < 0.5:  # High failure rate
+            new_failure_threshold = max(2, self.config.failure_threshold - 1)
+        elif success_rate > 0.95:  # Very high success rate
+            new_failure_threshold = min(10, self.config.failure_threshold + 1)
+        else:
+            new_failure_threshold = self.config.failure_threshold
+            
+        if new_failure_threshold != self.config.failure_threshold:
+            logger.info(
+                f"Adapting failure threshold for '{self.name}': "
+                f"{self.config.failure_threshold} -> {new_failure_threshold}"
+            )
+            self.config.failure_threshold = new_failure_threshold
+
+
+# Global middleware instance
+_circuit_breaker_middleware = None
+
+
+def get_circuit_breaker_middleware() -> CircuitBreakerMiddleware:
+    """Get global circuit breaker middleware instance."""
+    global _circuit_breaker_middleware
+    if _circuit_breaker_middleware is None:
+        _circuit_breaker_middleware = CircuitBreakerMiddleware()
+    return _circuit_breaker_middleware
+
+
+def protect_critical_operation(operation_type: str = "general", config: CircuitBreakerConfig = None):
+    """General decorator for protecting critical operations."""
+    middleware = get_circuit_breaker_middleware()
+    
+    if operation_type == "database":
+        return middleware.protect_database_operation
+    elif operation_type == "model":
+        return middleware.protect_model_operation
+    elif operation_type == "api":
+        return middleware.protect_endpoint
+    else:
+        # Generic protection
+        def decorator(operation_name: str):
+            def inner_decorator(func):
+                breaker = _circuit_breaker_registry.get_or_create(
+                    operation_name,
+                    config or CircuitBreakerConfig()
+                )
+                return breaker(func)
+            return inner_decorator
+        return decorator
+
+
+def create_adaptive_circuit_breaker(name: str, config: CircuitBreakerConfig = None) -> AdaptiveCircuitBreaker:
+    """Create an adaptive circuit breaker."""
+    return AdaptiveCircuitBreaker(name, config)

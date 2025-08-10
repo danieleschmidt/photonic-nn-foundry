@@ -1,0 +1,255 @@
+{
+  "app": {
+    "name": "Photonic Foundry",
+    "description": "Quantum-Inspired Photonic Neural Network Foundry",
+    "version": "1.0.0",
+    "tagline": "Transforming AI with Quantum-Inspired Photonic Computing"
+  },
+  "quantum": {
+    "optimization": {
+      "started": "Quantum optimization started for {model_name}",
+      "completed": "Quantum optimization completed in {duration}ms",
+      "failed": "Quantum optimization failed: {error}",
+      "progress": "Optimization progress: {percentage}% complete",
+      "convergence": "Convergence achieved with threshold {threshold}",
+      "parallel": "Running {count} parallel evaluations",
+      "gpu_acceleration": "GPU acceleration enabled with {gpu_type}"
+    },
+    "planner": {
+      "task_created": "Quantum planning task created with ID {task_id}",
+      "task_started": "Planning task {task_id} started",
+      "task_completed": "Planning task {task_id} completed successfully",
+      "task_failed": "Planning task {task_id} failed: {error}",
+      "resource_allocated": "Resources allocated: {cpu} CPU, {memory} memory, {gpu} GPU",
+      "thermal_limit": "Thermal limit reached: {temperature}°C",
+      "auto_scaling": "Auto-scaling triggered: {action}"
+    },
+    "security": {
+      "key_generated": "Quantum encryption key generated",
+      "authentication_required": "Quantum authentication required",
+      "adversarial_detected": "Adversarial attack detected and mitigated",
+      "side_channel_protected": "Side-channel protection active",
+      "audit_logged": "Security event logged for audit",
+      "entropy_level": "Entropy level: {bits} bits"
+    },
+    "resilience": {
+      "health_check": "Health check completed: {status}",
+      "fault_predicted": "Potential fault predicted in {component}",
+      "auto_recovery": "Auto-recovery initiated for {component}",
+      "backup_created": "Backup created: {backup_id}",
+      "failover_triggered": "Failover triggered to {region}",
+      "circuit_monitoring": "Circuit monitoring active"
+    }
+  },
+  "api": {
+    "welcome": "Welcome to Photonic Foundry API",
+    "health": {
+      "healthy": "Service is healthy",
+      "degraded": "Service is degraded",
+      "unhealthy": "Service is unhealthy"
+    },
+    "errors": {
+      "not_found": "Resource not found",
+      "unauthorized": "Unauthorized access",
+      "forbidden": "Access forbidden",
+      "rate_limit": "Rate limit exceeded",
+      "internal_error": "Internal server error",
+      "validation_error": "Validation error: {details}",
+      "quantum_error": "Quantum processing error: {details}"
+    },
+    "responses": {
+      "success": "Operation completed successfully",
+      "created": "Resource created successfully",
+      "updated": "Resource updated successfully",
+      "deleted": "Resource deleted successfully"
+    }
+  },
+  "compliance": {
+    "ccpa": {
+      "notice": "California Consumer Privacy Act (CCPA) Notice",
+      "rights": "Your Privacy Rights",
+      "data_collection": "We collect and process personal information as described in our privacy policy",
+      "opt_out": "You have the right to opt-out of the sale of personal information",
+      "request_info": "You have the right to request information about personal information we collect",
+      "delete_data": "You have the right to request deletion of personal information",
+      "non_discrimination": "We will not discriminate against you for exercising your privacy rights",
+      "contact": "Contact us at privacy@photonic-foundry.com for privacy requests",
+      "categories": {
+        "identifiers": "Personal identifiers",
+        "commercial": "Commercial information",
+        "biometric": "Biometric information",
+        "internet": "Internet or network activity",
+        "geolocation": "Geolocation data",
+        "sensory": "Audio, electronic, visual information",
+        "professional": "Professional or employment information",
+        "education": "Education information",
+        "inferences": "Inferences drawn from personal information"
+      },
+      "purposes": {
+        "business": "Business purposes",
+        "commercial": "Commercial purposes",
+        "service": "Providing services",
+        "security": "Security and fraud prevention",
+        "debugging": "Debugging and repair",
+        "analytics": "Internal analytics",
+        "quality": "Quality assurance"
+      }
+    },
+    "gdpr": {
+      "notice": "General Data Protection Regulation (GDPR) Notice",
+      "controller": "Data Controller: {controller}",
+      "dpo": "Data Protection Officer: {dpo}",
+      "lawful_basis": "Lawful basis for processing",
+      "consent": "Consent Management",
+      "consent_given": "Consent given for data processing",
+      "consent_withdrawn": "Consent withdrawn",
+      "legitimate_interest": "Legitimate interest assessment",
+      "data_subject_rights": "Data Subject Rights",
+      "right_access": "Right of access to personal data",
+      "right_rectification": "Right to rectification of inaccurate data",
+      "right_erasure": "Right to erasure (right to be forgotten)",
+      "right_restrict": "Right to restrict processing",
+      "right_portability": "Right to data portability",
+      "right_object": "Right to object to processing",
+      "right_automated": "Right not to be subject to automated decision-making",
+      "breach_notification": "Data breach notification within 72 hours",
+      "privacy_by_design": "Privacy by design and by default",
+      "impact_assessment": "Data protection impact assessment completed",
+      "cross_border": "Cross-border data transfer safeguards",
+      "adequacy_decision": "Adequacy decision required for data transfer",
+      "bcr": "Binding Corporate Rules apply",
+      "scc": "Standard Contractual Clauses in effect"
+    },
+    "pdpa": {
+      "notice": "Personal Data Protection Act (PDPA) Notice",
+      "organization": "Organization: {organization}",
+      "dpo": "Data Protection Officer: {dpo}",
+      "collection_notice": "Personal data collection notice",
+      "purpose_limitation": "Personal data used only for stated purposes",
+      "consent_required": "Consent required for data processing",
+      "notification_obligation": "Data breach notification obligation",
+      "access_request": "Personal data access request",
+      "correction_request": "Personal data correction request",
+      "data_portability": "Data portability available upon request",
+      "retention_policy": "Data retention policy in effect",
+      "cross_border_transfer": "Cross-border data transfer restrictions",
+      "do_not_call": "Do Not Call (DNC) registry compliance",
+      "marketing_consent": "Marketing communications consent required",
+      "automated_decision": "Automated decision-making safeguards",
+      "data_accuracy": "Data accuracy maintenance obligation",
+      "security_measures": "Appropriate security measures implemented"
+    }
+  },
+  "regions": {
+    "us-east-1": "US East (N. Virginia)",
+    "us-west-2": "US West (Oregon)",
+    "eu-west-1": "Europe (Ireland)",
+    "eu-central-1": "Europe (Frankfurt)",
+    "ap-southeast-1": "Asia Pacific (Singapore)",
+    "ap-northeast-1": "Asia Pacific (Tokyo)",
+    "global": "Global"
+  },
+  "monitoring": {
+    "metrics": {
+      "latency": "Latency: {value}ms",
+      "throughput": "Throughput: {value} GOPS",
+      "energy": "Energy consumption: {value} pJ",
+      "temperature": "Temperature: {value}°C",
+      "accuracy": "Accuracy: {value}%",
+      "uptime": "Uptime: {value}",
+      "memory": "Memory usage: {value}GB",
+      "cpu": "CPU usage: {value}%",
+      "gpu": "GPU utilization: {value}%"
+    },
+    "alerts": {
+      "high_latency": "High latency detected: {value}ms",
+      "high_temperature": "High temperature alert: {value}°C",
+      "low_accuracy": "Accuracy degradation: {value}%",
+      "resource_limit": "Resource limit reached: {resource}",
+      "connection_lost": "Connection lost to {service}",
+      "failover_initiated": "Failover initiated to {region}",
+      "security_incident": "Security incident detected: {type}"
+    }
+  },
+  "deployment": {
+    "status": {
+      "deploying": "Deployment in progress",
+      "healthy": "Deployment healthy",
+      "degraded": "Deployment degraded",
+      "failed": "Deployment failed",
+      "rolling_update": "Rolling update in progress",
+      "scaling": "Scaling operation in progress"
+    },
+    "regions": {
+      "primary": "Primary region",
+      "secondary": "Secondary region",
+      "edge": "Edge location",
+      "quantum_node": "Quantum compute node",
+      "compliance_zone": "Compliance zone: {framework}"
+    }
+  },
+  "ui": {
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "update": "Update",
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "warning": "Warning",
+      "info": "Information",
+      "confirm": "Confirm",
+      "yes": "Yes",
+      "no": "No",
+      "close": "Close",
+      "back": "Back",
+      "next": "Next",
+      "previous": "Previous",
+      "search": "Search",
+      "filter": "Filter",
+      "sort": "Sort",
+      "refresh": "Refresh"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "quantum_optimizer": "Quantum Optimizer",
+      "quantum_planner": "Quantum Planner",
+      "security": "Security",
+      "compliance": "Compliance",
+      "monitoring": "Monitoring",
+      "settings": "Settings",
+      "help": "Help",
+      "about": "About"
+    },
+    "forms": {
+      "required_field": "This field is required",
+      "invalid_email": "Please enter a valid email address",
+      "password_strength": "Password must be at least 8 characters",
+      "passwords_match": "Passwords must match",
+      "invalid_format": "Invalid format",
+      "value_too_large": "Value is too large",
+      "value_too_small": "Value is too small"
+    }
+  },
+  "datetime": {
+    "formats": {
+      "short_date": "MM/DD/YYYY",
+      "long_date": "MMMM DD, YYYY",
+      "short_time": "h:mm A",
+      "long_time": "h:mm:ss A",
+      "datetime": "MM/DD/YYYY h:mm A"
+    },
+    "relative": {
+      "just_now": "just now",
+      "minutes_ago": "{minutes} minutes ago",
+      "hours_ago": "{hours} hours ago",
+      "days_ago": "{days} days ago",
+      "weeks_ago": "{weeks} weeks ago",
+      "months_ago": "{months} months ago",
+      "years_ago": "{years} years ago"
+    }
+  }
+}
