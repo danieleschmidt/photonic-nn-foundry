@@ -16,10 +16,25 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from scipy import stats
+from scipy.optimize import minimize, differential_evolution
 import matplotlib.pyplot as plt
+import seaborn as sns
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 import multiprocessing as mp
 from abc import ABC, abstractmethod
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    from plotly.subplots import make_subplots
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+    logger.warning("Plotly not available - interactive visualizations will be disabled")
+from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.preprocessing import StandardScaler
+import warnings
+warnings.filterwarnings('ignore')
+import math
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +59,12 @@ class MetricType(Enum):
     POWER_CONSUMPTION = "power_consumption"
     CONVERGENCE_TIME = "convergence_time"
     STATISTICAL_SIGNIFICANCE = "statistical_significance"
+    QUANTUM_ADVANTAGE = "quantum_advantage"
+    COHERENCE_TIME = "coherence_time"
+    FIDELITY = "fidelity"
+    GATE_ERROR_RATE = "gate_error_rate"
+    DECOHERENCE_RATE = "decoherence_rate"
+    OPTIMIZATION_EFFICIENCY = "optimization_efficiency"
 
 
 @dataclass
@@ -277,6 +298,11 @@ class QuantumPhotonicBaseline(BaselineAlgorithm):
             MetricType.THROUGHPUT.value: base_metrics.throughput * quantum_speedup,  # GOPS
             MetricType.POWER_CONSUMPTION.value: base_metrics.power / quantum_speedup,  # mW
             MetricType.AREA_EFFICIENCY.value: base_metrics.throughput * quantum_speedup / base_metrics.area,
+            MetricType.QUANTUM_ADVANTAGE.value: quantum_speedup,
+            MetricType.COHERENCE_TIME.value: 100.0 / quantum_speedup,  # μs (estimated)
+            MetricType.FIDELITY.value: min(0.99, 0.95 + quantum_speedup * 0.01),
+            MetricType.GATE_ERROR_RATE.value: max(0.001, 0.01 / quantum_speedup),
+            MetricType.OPTIMIZATION_EFFICIENCY.value: len(optimized_tasks) / total_time if total_time > 0 else 0,
             "quantum_speedup": quantum_speedup,
             "optimization_tasks": len(optimized_tasks),
             "output_shape": output.shape,
