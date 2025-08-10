@@ -1,0 +1,184 @@
+{
+  "app": {
+    "name": "Fundición Fotónica",
+    "description": "Fundición de Redes Neuronales Fotónicas Inspiradas en Cuántica",
+    "version": "1.0.0",
+    "tagline": "Transformando la IA con Computación Fotónica Inspirada en Cuántica"
+  },
+  "quantum": {
+    "optimization": {
+      "started": "Optimización cuántica iniciada para {model_name}",
+      "completed": "Optimización cuántica completada en {duration}ms",
+      "failed": "Error en optimización cuántica: {error}",
+      "progress": "Progreso de optimización: {percentage}% completado",
+      "convergence": "Convergencia alcanzada con umbral {threshold}",
+      "parallel": "Ejecutando {count} evaluaciones paralelas",
+      "gpu_acceleration": "Aceleración GPU habilitada con {gpu_type}"
+    },
+    "planner": {
+      "task_created": "Tarea de planificación cuántica creada con ID {task_id}",
+      "task_started": "Tarea de planificación {task_id} iniciada",
+      "task_completed": "Tarea de planificación {task_id} completada exitosamente",
+      "task_failed": "Tarea de planificación {task_id} falló: {error}",
+      "resource_allocated": "Recursos asignados: {cpu} CPU, {memory} memoria, {gpu} GPU",
+      "thermal_limit": "Límite térmico alcanzado: {temperature}°C",
+      "auto_scaling": "Escalado automático activado: {action}"
+    },
+    "security": {
+      "key_generated": "Clave de cifrado cuántico generada",
+      "authentication_required": "Autenticación cuántica requerida",
+      "adversarial_detected": "Ataque adversarial detectado y mitigado",
+      "side_channel_protected": "Protección de canal lateral activa",
+      "audit_logged": "Evento de seguridad registrado para auditoría",
+      "entropy_level": "Nivel de entropía: {bits} bits"
+    },
+    "resilience": {
+      "health_check": "Verificación de salud completada: {status}",
+      "fault_predicted": "Falla potencial predicha en {component}",
+      "auto_recovery": "Auto-recuperación iniciada para {component}",
+      "backup_created": "Respaldo creado: {backup_id}",
+      "failover_triggered": "Conmutación por error activada a {region}",
+      "circuit_monitoring": "Monitoreo de circuito activo"
+    }
+  },
+  "api": {
+    "welcome": "Bienvenido a la API de Fundición Fotónica",
+    "health": {
+      "healthy": "Servicio saludable",
+      "degraded": "Servicio degradado",
+      "unhealthy": "Servicio no saludable"
+    },
+    "errors": {
+      "not_found": "Recurso no encontrado",
+      "unauthorized": "Acceso no autorizado",
+      "forbidden": "Acceso prohibido",
+      "rate_limit": "Límite de tasa excedido",
+      "internal_error": "Error interno del servidor",
+      "validation_error": "Error de validación: {details}",
+      "quantum_error": "Error de procesamiento cuántico: {details}"
+    },
+    "responses": {
+      "success": "Operación completada exitosamente",
+      "created": "Recurso creado exitosamente",
+      "updated": "Recurso actualizado exitosamente",
+      "deleted": "Recurso eliminado exitosamente"
+    }
+  },
+  "compliance": {
+    "ccpa": {
+      "notice": "Aviso de la Ley de Privacidad del Consumidor de California (CCPA)",
+      "rights": "Sus Derechos de Privacidad",
+      "data_collection": "Recopilamos y procesamos información personal como se describe en nuestra política de privacidad",
+      "opt_out": "Tiene derecho a optar por no participar en la venta de información personal",
+      "request_info": "Tiene derecho a solicitar información sobre la información personal que recopilamos",
+      "delete_data": "Tiene derecho a solicitar la eliminación de información personal",
+      "non_discrimination": "No discriminaremos contra usted por ejercer sus derechos de privacidad",
+      "contact": "Contáctenos en privacy@photonic-foundry.com para solicitudes de privacidad"
+    }
+  },
+  "regions": {
+    "us-east-1": "Estados Unidos Este (N. Virginia)",
+    "us-west-2": "Estados Unidos Oeste (Oregón)",
+    "eu-west-1": "Europa (Irlanda)",
+    "eu-central-1": "Europa (Frankfurt)",
+    "ap-southeast-1": "Asia Pacífico (Singapur)",
+    "ap-northeast-1": "Asia Pacífico (Tokio)",
+    "global": "Global"
+  },
+  "monitoring": {
+    "metrics": {
+      "latency": "Latencia: {value}ms",
+      "throughput": "Rendimiento: {value} GOPS",
+      "energy": "Consumo de energía: {value} pJ",
+      "temperature": "Temperatura: {value}°C",
+      "accuracy": "Precisión: {value}%",
+      "uptime": "Tiempo de actividad: {value}",
+      "memory": "Uso de memoria: {value}GB",
+      "cpu": "Uso de CPU: {value}%",
+      "gpu": "Utilización de GPU: {value}%"
+    },
+    "alerts": {
+      "high_latency": "Alta latencia detectada: {value}ms",
+      "high_temperature": "Alerta de alta temperatura: {value}°C",
+      "low_accuracy": "Degradación de precisión: {value}%",
+      "resource_limit": "Límite de recursos alcanzado: {resource}",
+      "connection_lost": "Conexión perdida a {service}",
+      "failover_initiated": "Conmutación por error iniciada a {region}",
+      "security_incident": "Incidente de seguridad detectado: {type}"
+    }
+  },
+  "deployment": {
+    "status": {
+      "deploying": "Despliegue en progreso",
+      "healthy": "Despliegue saludable",
+      "degraded": "Despliegue degradado",
+      "failed": "Despliegue fallido",
+      "rolling_update": "Actualización progresiva en curso",
+      "scaling": "Operación de escalado en progreso"
+    }
+  },
+  "ui": {
+    "common": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "create": "Crear",
+      "update": "Actualizar",
+      "loading": "Cargando...",
+      "error": "Error",
+      "success": "Éxito",
+      "warning": "Advertencia",
+      "info": "Información",
+      "confirm": "Confirmar",
+      "yes": "Sí",
+      "no": "No",
+      "close": "Cerrar",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "previous": "Anterior",
+      "search": "Buscar",
+      "filter": "Filtrar",
+      "sort": "Ordenar",
+      "refresh": "Actualizar"
+    },
+    "navigation": {
+      "dashboard": "Panel de Control",
+      "quantum_optimizer": "Optimizador Cuántico",
+      "quantum_planner": "Planificador Cuántico",
+      "security": "Seguridad",
+      "compliance": "Cumplimiento",
+      "monitoring": "Monitoreo",
+      "settings": "Configuración",
+      "help": "Ayuda",
+      "about": "Acerca de"
+    },
+    "forms": {
+      "required_field": "Este campo es obligatorio",
+      "invalid_email": "Ingrese una dirección de correo válida",
+      "password_strength": "La contraseña debe tener al menos 8 caracteres",
+      "passwords_match": "Las contraseñas deben coincidir",
+      "invalid_format": "Formato inválido",
+      "value_too_large": "El valor es muy grande",
+      "value_too_small": "El valor es muy pequeño"
+    }
+  },
+  "datetime": {
+    "formats": {
+      "short_date": "DD/MM/YYYY",
+      "long_date": "DD de MMMM de YYYY",
+      "short_time": "H:mm",
+      "long_time": "H:mm:ss",
+      "datetime": "DD/MM/YYYY H:mm"
+    },
+    "relative": {
+      "just_now": "ahora mismo",
+      "minutes_ago": "hace {minutes} minutos",
+      "hours_ago": "hace {hours} horas",
+      "days_ago": "hace {days} días",
+      "weeks_ago": "hace {weeks} semanas",
+      "months_ago": "hace {months} meses",
+      "years_ago": "hace {years} años"
+    }
+  }
+}

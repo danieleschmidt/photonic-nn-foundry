@@ -3,9 +3,11 @@ Input validation and error handling utilities for photonic circuits.
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Union, Tuple
-from dataclasses import dataclass
+from typing import Dict, Any, List, Optional, Union, Tuple, Callable
+from dataclasses import dataclass, field
 from enum import Enum
+import re
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -30,18 +32,33 @@ class ValidationError(Exception):
 class ValidationResult:
     """Result of validation operation."""
     is_valid: bool
-    errors: List[str]
-    warnings: List[str]
+    errors: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
     sanitized_data: Optional[Dict[str, Any]] = None
+    performance_metrics: Optional[Dict[str, Any]] = None
     
-    def add_error(self, error: str):
-        """Add validation error."""
+    def add_error(self, error: str, field_name: str = None):
+        """Add validation error with optional field context."""
+        if field_name:
+            error = f"{field_name}: {error}"
         self.errors.append(error)
         self.is_valid = False
         
-    def add_warning(self, warning: str):
-        """Add validation warning."""
+    def add_warning(self, warning: str, field_name: str = None):
+        """Add validation warning with optional field context."""
+        if field_name:
+            warning = f"{field_name}: {warning}"
         self.warnings.append(warning)
+        
+    def merge(self, other: 'ValidationResult'):
+        """Merge another validation result into this one."""
+        self.is_valid = self.is_valid and other.is_valid
+        self.errors.extend(other.errors)
+        self.warnings.extend(other.warnings)
+        if other.sanitized_data:
+            if self.sanitized_data is None:
+                self.sanitized_data = {}
+            self.sanitized_data.update(other.sanitized_data)
 
 
 class CircuitValidator:
@@ -441,3 +458,185 @@ class SecurityValidator:
         elif isinstance(data, list):
             for item in data:
                 self._check_nesting_depth(item, result, depth + 1)
+
+
+class APIValidator:
+    """Specialized validator for API requests."""
+    
+    def __init__(self):
+        self.max_request_size = 10 * 1024 * 1024  # 10MB
+        self.max_string_length = 10000
+        self.max_array_length = 1000
+        self.allowed_file_extensions = {'.py', '.json', '.yaml', '.yml', '.txt'}
+        
+    def validate_api_request(self, request_data: Dict[str, Any], endpoint: str) -> ValidationResult:
+        """Validate API request data."""
+        result = ValidationResult(is_valid=True, errors=[], warnings=[])
+        
+        # Size check
+        try:
+            import json
+            request_size = len(json.dumps(request_data))
+            if request_size > self.max_request_size:
+                result.add_error(f"Request size ({request_size} bytes) exceeds limit ({self.max_request_size} bytes)")
+        except (TypeError, ValueError) as e:
+            result.add_error(f"Invalid request data format: {e}")
+            
+        # Content validation based on endpoint
+        if 'model_data' in request_data:
+            model_result = self._validate_model_data(request_data['model_data'])
+            result.merge(model_result)
+            
+        if 'circuit_data' in request_data:
+            circuit_result = self._validate_circuit_data(request_data['circuit_data'])
+            result.merge(circuit_result)
+            
+        # Common field validation
+        self._validate_common_fields(request_data, result)
+        
+        return result
+        
+    def _validate_model_data(self, model_data: str) -> ValidationResult:
+        """Validate base64-encoded model data."""
+        result = ValidationResult(is_valid=True, errors=[], warnings=[])
+        
+        if not isinstance(model_data, str):
+            result.add_error("Model data must be a base64-encoded string", "model_data")
+            return result
+            
+        try:
+            import base64
+            decoded = base64.b64decode(model_data)
+            
+            # Size check on decoded data
+            if len(decoded) > 500 * 1024 * 1024:  # 500MB limit
+                result.add_error("Decoded model exceeds 500MB limit", "model_data")
+                
+        except Exception as e:
+            result.add_error(f"Invalid base64 encoding: {e}", "model_data")
+            
+        return result
+        
+    def _validate_circuit_data(self, circuit_data: Dict[str, Any]) -> ValidationResult:
+        """Validate circuit data structure."""
+        result = ValidationResult(is_valid=True, errors=[], warnings=[])
+        
+        # Use CircuitValidator for detailed validation
+        circuit_validator = CircuitValidator()
+        circuit_result = circuit_validator.validate_circuit(circuit_data)
+        result.merge(circuit_result)
+        
+        return result
+        
+    def _validate_common_fields(self, data: Dict[str, Any], result: ValidationResult):
+        """Validate common API fields."""
+        # Precision validation
+        if 'precision' in data:
+            precision = data['precision']
+            if not isinstance(precision, int) or precision < 1 or precision > 64:
+                result.add_error("Precision must be an integer between 1 and 64", "precision")
+                
+        # Wavelength validation  
+        if 'wavelength' in data:
+            wavelength = data['wavelength']
+            if not isinstance(wavelength, (int, float)) or wavelength < 200 or wavelength > 10000:
+                result.add_error("Wavelength must be a number between 200 and 10000 nm", "wavelength")
+                
+        # PDK validation
+        if 'pdk' in data:
+            pdk = data['pdk']
+            valid_pdks = {'skywater130', 'gf180mcu', 'tsmc28', 'generic'}
+            if pdk not in valid_pdks:
+                result.add_warning(f"PDK '{pdk}' not in recommended list: {valid_pdks}", "pdk")
+                
+        # Input shape validation
+        if 'input_shape' in data:
+            shape = data['input_shape']
+            if not isinstance(shape, list) or not all(isinstance(dim, int) and dim > 0 for dim in shape):
+                result.add_error("Input shape must be a list of positive integers", "input_shape")
+            elif len(shape) > 6:  # Reasonable dimensionality limit
+                result.add_warning("Input shape has many dimensions (>6) - may cause performance issues", "input_shape")
+
+
+class PerformanceValidator:
+    """Validator for performance-related constraints."""
+    
+    def __init__(self):
+        self.max_model_parameters = 1e9  # 1 billion parameters
+        self.max_layer_size = 10000
+        self.max_circuit_components = 100000
+        
+    def validate_model_performance(self, model_info: Dict[str, Any]) -> ValidationResult:
+        """Validate model for performance constraints."""
+        result = ValidationResult(is_valid=True, errors=[], warnings=[])
+        
+        # Parameter count check
+        param_count = model_info.get('total_parameters', 0)
+        if param_count > self.max_model_parameters:
+            result.add_error(
+                f"Model has {param_count:,} parameters, exceeds limit of {self.max_model_parameters:,.0f}",
+                "total_parameters"
+            )
+        elif param_count > self.max_model_parameters * 0.5:
+            result.add_warning(
+                f"Model has {param_count:,} parameters, approaching limit",
+                "total_parameters"
+            )
+            
+        # Layer size check
+        for i, layer in enumerate(model_info.get('layers', [])):
+            input_size = layer.get('input_size', 0)
+            output_size = layer.get('output_size', 0)
+            
+            if input_size > self.max_layer_size:
+                result.add_error(
+                    f"Layer {i} input size {input_size} exceeds limit of {self.max_layer_size}",
+                    f"layer_{i}_input_size"
+                )
+                
+            if output_size > self.max_layer_size:
+                result.add_error(
+                    f"Layer {i} output size {output_size} exceeds limit of {self.max_layer_size}",
+                    f"layer_{i}_output_size"
+                )
+                
+        # Circuit complexity check
+        total_components = model_info.get('total_components', 0)
+        if total_components > self.max_circuit_components:
+            result.add_error(
+                f"Circuit has {total_components:,} components, exceeds limit of {self.max_circuit_components:,}",
+                "total_components"
+            )
+            
+        return result
+
+
+def create_comprehensive_validator() -> callable:
+    """Create a comprehensive validator function combining all validation types."""
+    circuit_validator = CircuitValidator()
+    security_validator = SecurityValidator()
+    api_validator = APIValidator()
+    performance_validator = PerformanceValidator()
+    
+    def comprehensive_validate(data: Dict[str, Any], context: str = "general") -> ValidationResult:
+        """Perform comprehensive validation on data."""
+        result = ValidationResult(is_valid=True, errors=[], warnings=[])
+        
+        # Security validation
+        security_result = security_validator.validate_safe_input(data)
+        result.merge(security_result)
+        
+        # Context-specific validation
+        if context == "api_request":
+            api_result = api_validator.validate_api_request(data, "general")
+            result.merge(api_result)
+        elif context == "circuit":
+            circuit_result = circuit_validator.validate_circuit(data)
+            result.merge(circuit_result)
+        elif context == "performance":
+            perf_result = performance_validator.validate_model_performance(data)
+            result.merge(perf_result)
+            
+        return result
+        
+    return comprehensive_validate

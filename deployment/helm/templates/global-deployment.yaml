@@ -1,0 +1,333 @@
+{{/*
+Global Deployment Template for Multi-Region Photonic Foundry
+This template generates deployments for all enabled regions
+*/}}
+
+{{- if .Values.global.deployment.strategy }}
+{{- $globalValues := .Values -}}
+{{- range $regionName, $regionConfig := .Values.regions }}
+{{- if $regionConfig.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "quantum-photonic-foundry.fullname" $ }}-{{ $regionName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "quantum-photonic-foundry.labels" $ | nindent 4 }}
+    app.kubernetes.io/region: {{ $regionName }}
+    app.kubernetes.io/compliance: {{ $regionConfig.compliance.framework }}
+    app.kubernetes.io/jurisdiction: {{ $regionConfig.compliance.jurisdiction }}
+    {{- if $regionConfig.primary }}
+    app.kubernetes.io/role: primary
+    {{- else }}
+    app.kubernetes.io/role: secondary
+    {{- end }}
+  annotations:
+    deployment.kubernetes.io/revision: "{{ $.Values.global.deployment.revision | default "1" }}"
+    config.kubernetes.io/depends-on: "configmap/{{ include "quantum-photonic-foundry.fullname" $ }}-{{ $regionName }}-config"
+spec:
+  replicas: {{ $regionConfig.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ div $regionConfig.replicas 2 | add 1 }}
+      maxUnavailable: {{ div $regionConfig.replicas 4 | add 1 }}
+  selector:
+    matchLabels:
+      {{- include "quantum-photonic-foundry.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/region: {{ $regionName }}
+  template:
+    metadata:
+      labels:
+        {{- include "quantum-photonic-foundry.labels" $ | nindent 8 }}
+        app.kubernetes.io/region: {{ $regionName }}
+        app.kubernetes.io/compliance: {{ $regionConfig.compliance.framework }}
+        app.kubernetes.io/jurisdiction: {{ $regionConfig.compliance.jurisdiction }}
+        {{- if $regionConfig.primary }}
+        app.kubernetes.io/role: primary
+        {{- else }}
+        app.kubernetes.io/role: secondary
+        {{- end }}
+        networking/traffic-policy: "{{ $regionName }}-local"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "9090"
+        {{- if eq $regionConfig.compliance.framework "gdpr" }}
+        gdpr.compliance/enabled: "true"
+        gdpr.compliance/controller: "{{ $regionConfig.compliance.controller }}"
+        gdpr.compliance/dpo: "{{ $regionConfig.compliance.dpo }}"
+        {{- else if eq $regionConfig.compliance.framework "ccpa" }}
+        ccpa.compliance/enabled: "true"
+        ccpa.compliance/jurisdiction: "{{ $regionConfig.compliance.jurisdiction }}"
+        {{- else if eq $regionConfig.compliance.framework "pdpa" }}
+        pdpa.compliance/enabled: "true"
+        pdpa.compliance/organization: "{{ $regionConfig.compliance.organization }}"
+        pdpa.compliance/dpo: "{{ $regionConfig.compliance.dpo }}"
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "quantum-photonic-foundry.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      
+      # Node selection and affinity
+      nodeSelector:
+        {{- toYaml $regionConfig.nodeSelector | nindent 8 }}
+      
+      tolerations:
+        {{- toYaml $regionConfig.tolerations | nindent 8 }}
+      
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/region
+                operator: In
+                values:
+                - {{ $regionName }}
+              - key: node.photonic-foundry.com/quantum-compute
+                operator: In
+                values:
+                - "true"
+              {{- if eq $regionConfig.compliance.framework "gdpr" }}
+              - key: node.photonic-foundry.com/gdpr-compliant
+                operator: In
+                values:
+                - "true"
+              {{- else if eq $regionConfig.compliance.framework "pdpa" }}
+              - key: node.photonic-foundry.com/pdpa-compliant
+                operator: In
+                values:
+                - "true"
+              {{- end }}
+        
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - {{ include "quantum-photonic-foundry.name" $ }}
+                - key: app.kubernetes.io/region
+                  operator: In
+                  values:
+                  - {{ $regionName }}
+              topologyKey: kubernetes.io/hostname
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - {{ include "quantum-photonic-foundry.name" $ }}
+              topologyKey: topology.kubernetes.io/zone
+      
+      # Container configuration
+      containers:
+      - name: {{ $.Chart.Name }}
+        securityContext:
+          {{- toYaml $.Values.securityContext | nindent 12 }}
+        image: "{{ $globalValues.global.imageRegistry }}/{{ include "quantum-photonic-foundry.name" $ }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}-{{ $regionName }}"
+        imagePullPolicy: {{ $.Values.image.pullPolicy }}
+        
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: https
+          containerPort: 8443
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        - name: quantum-api
+          containerPort: 8888
+          protocol: TCP
+        
+        # Environment variables
+        env:
+        - name: REGION
+          value: "{{ $regionName }}"
+        - name: REGION_PRIMARY
+          value: "{{ $regionConfig.primary }}"
+        - name: JURISDICTION
+          value: "{{ $regionConfig.compliance.jurisdiction }}"
+        - name: COMPLIANCE_FRAMEWORK
+          value: "{{ $regionConfig.compliance.framework }}"
+        - name: DATA_RESIDENCY_REQUIRED
+          value: "{{ $regionConfig.compliance.dataResidency }}"
+        - name: QUANTUM_COMPUTE_ENABLED
+          value: "true"
+        - name: MULTI_REGION_ENABLED
+          value: "true"
+        - name: GLOBAL_DEPLOYMENT
+          value: "true"
+        
+        {{- if $regionConfig.edgeComputing }}
+        {{- if $regionConfig.edgeComputing.enabled }}
+        - name: EDGE_COMPUTING_ENABLED
+          value: "true"
+        - name: LOW_LATENCY_MODE
+          value: "{{ $regionConfig.edgeComputing.lowLatencyMode }}"
+        {{- end }}
+        {{- end }}
+        
+        {{- if eq $regionConfig.compliance.framework "gdpr" }}
+        - name: GDPR_MODE_ENABLED
+          value: "true"
+        - name: GDPR_CONTROLLER
+          value: "{{ $regionConfig.compliance.controller }}"
+        - name: GDPR_DPO_CONTACT
+          value: "{{ $regionConfig.compliance.dpo }}"
+        - name: RIGHT_TO_BE_FORGOTTEN_ENABLED
+          value: "true"
+        - name: CONSENT_MANAGEMENT_ENABLED
+          value: "true"
+        {{- else if eq $regionConfig.compliance.framework "ccpa" }}
+        - name: CCPA_MODE_ENABLED
+          value: "true"
+        - name: CCPA_JURISDICTION
+          value: "{{ $regionConfig.compliance.jurisdiction }}"
+        - name: PRIVACY_NOTICE_ENABLED
+          value: "true"
+        - name: DATA_DISCLOSURE_ENABLED
+          value: "true"
+        {{- else if eq $regionConfig.compliance.framework "pdpa" }}
+        - name: PDPA_MODE_ENABLED
+          value: "true"
+        - name: PDPA_ORGANIZATION
+          value: "{{ $regionConfig.compliance.organization }}"
+        - name: PDPA_DPO_CONTACT
+          value: "{{ $regionConfig.compliance.dpo }}"
+        - name: DATA_CORRECTION_ENABLED
+          value: "true"
+        {{- end }}
+        
+        # Configuration from ConfigMaps and Secrets
+        envFrom:
+        - configMapRef:
+            name: {{ include "quantum-photonic-foundry.fullname" $ }}-global-config
+        - configMapRef:
+            name: {{ include "quantum-photonic-foundry.fullname" $ }}-{{ $regionName }}-config
+        - secretRef:
+            name: {{ include "quantum-photonic-foundry.fullname" $ }}-global-secrets
+        - secretRef:
+            name: {{ include "quantum-photonic-foundry.fullname" $ }}-{{ $regionName }}-secrets
+        
+        # Resource requirements
+        resources:
+          {{- toYaml $regionConfig.resources | nindent 12 }}
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 5
+          successThreshold: 1
+        
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        
+        startupProbe:
+          httpGet:
+            path: /startup
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+          successThreshold: 1
+        
+        # Volume mounts
+        volumeMounts:
+        - name: quantum-data
+          mountPath: /app/data
+        - name: compliance-logs
+          mountPath: /app/logs/compliance
+        - name: global-config
+          mountPath: /app/config/global
+          readOnly: true
+        - name: region-config
+          mountPath: /app/config/region
+          readOnly: true
+        - name: region-secrets
+          mountPath: /app/secrets
+          readOnly: true
+        {{- if eq $regionConfig.compliance.framework "gdpr" }}
+        - name: consent-records
+          mountPath: /app/data/consent
+        - name: gdpr-audit-logs
+          mountPath: /app/logs/gdpr
+        {{- else if eq $regionConfig.compliance.framework "pdpa" }}
+        - name: consent-records
+          mountPath: /app/data/consent
+        - name: pdpa-audit-logs
+          mountPath: /app/logs/pdpa
+        {{- end }}
+        - name: cache
+          mountPath: /app/cache
+        
+      # Volumes
+      volumes:
+      - name: quantum-data
+        persistentVolumeClaim:
+          claimName: {{ include "quantum-photonic-foundry.fullname" $ }}-quantum-data-{{ $regionName }}
+      - name: compliance-logs
+        persistentVolumeClaim:
+          claimName: {{ include "quantum-photonic-foundry.fullname" $ }}-compliance-logs-{{ $regionName }}
+      - name: global-config
+        configMap:
+          name: {{ include "quantum-photonic-foundry.fullname" $ }}-global-config
+          defaultMode: 0444
+      - name: region-config
+        configMap:
+          name: {{ include "quantum-photonic-foundry.fullname" $ }}-{{ $regionName }}-config
+          defaultMode: 0444
+      - name: region-secrets
+        secret:
+          secretName: {{ include "quantum-photonic-foundry.fullname" $ }}-{{ $regionName }}-secrets
+          defaultMode: 0400
+      {{- if or (eq $regionConfig.compliance.framework "gdpr") (eq $regionConfig.compliance.framework "pdpa") }}
+      - name: consent-records
+        persistentVolumeClaim:
+          claimName: {{ include "quantum-photonic-foundry.fullname" $ }}-consent-records-{{ $regionName }}
+      {{- end }}
+      {{- if eq $regionConfig.compliance.framework "gdpr" }}
+      - name: gdpr-audit-logs
+        persistentVolumeClaim:
+          claimName: {{ include "quantum-photonic-foundry.fullname" $ }}-gdpr-audit-logs-{{ $regionName }}
+      {{- else if eq $regionConfig.compliance.framework "pdpa" }}
+      - name: pdpa-audit-logs
+        persistentVolumeClaim:
+          claimName: {{ include "quantum-photonic-foundry.fullname" $ }}-pdpa-audit-logs-{{ $regionName }}
+      {{- end }}
+      - name: cache
+        emptyDir:
+          sizeLimit: {{ $regionConfig.storage.cache | default "1Gi" }}
+      
+      imagePullSecrets:
+        {{- toYaml $globalValues.global.imagePullSecrets | nindent 8 }}
+
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,227 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: photonic-foundry-us-east-1-config
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+    region: us-east-1
+    jurisdiction: usa
+    compliance: ccpa
+data:
+  # Regional configuration
+  region.name: "us-east-1"
+  region.display.name: "US East (N. Virginia)"
+  region.timezone: "America/New_York"
+  region.jurisdiction: "USA"
+  
+  # Compliance settings
+  compliance.primary: "ccpa"
+  compliance.secondary: "hipaa,sox"
+  data.residency.required: "true"
+  data.export.restrictions: "none"
+  
+  # Resource allocation
+  quantum.nodes.min: "3"
+  quantum.nodes.max: "50"
+  quantum.compute.priority: "high"
+  gpu.acceleration: "nvidia-a100"
+  
+  # Networking
+  vpc.cidr: "10.1.0.0/16"
+  availability.zones: "us-east-1a,us-east-1b,us-east-1c"
+  load.balancer.type: "application"
+  
+  # Performance targets
+  latency.target.ms: "50"
+  throughput.target.gops: "2000"
+  availability.target: "99.99"
+  
+  # Monitoring
+  monitoring.endpoint: "https://monitoring-us-east-1.photonic-foundry.com"
+  logs.retention.days: "90"
+  metrics.granularity: "1m"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photonic-foundry-us-east-1
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+    region: us-east-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: photonic-foundry
+      region: us-east-1
+  template:
+    metadata:
+      labels:
+        app: photonic-foundry
+        region: us-east-1
+        jurisdiction: usa
+    spec:
+      nodeSelector:
+        kubernetes.io/region: us-east-1
+        node.photonic-foundry.com/quantum-compute: "true"
+        node.photonic-foundry.com/gpu-type: nvidia-a100
+      
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/region
+                operator: In
+                values:
+                - us-east-1
+              - key: node.photonic-foundry.com/quantum-compute
+                operator: In
+                values:
+                - "true"
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - photonic-foundry
+              topologyKey: kubernetes.io/hostname
+      
+      tolerations:
+      - key: node.photonic-foundry.com/quantum-workload
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      
+      containers:
+      - name: photonic-foundry
+        image: photonic-foundry:1.0.0-amd64
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        - containerPort: 9090
+          name: metrics
+          protocol: TCP
+        
+        env:
+        - name: REGION
+          value: "us-east-1"
+        - name: JURISDICTION
+          value: "USA"
+        - name: COMPLIANCE_PRIMARY
+          value: "ccpa"
+        - name: DATA_RESIDENCY_REQUIRED
+          value: "true"
+        - name: QUANTUM_COMPUTE_ENABLED
+          value: "true"
+        - name: GPU_ACCELERATION
+          value: "nvidia-a100"
+        
+        envFrom:
+        - configMapRef:
+            name: photonic-foundry-global-config
+        - configMapRef:
+            name: photonic-foundry-us-east-1-config
+        - secretRef:
+            name: photonic-foundry-global-secrets
+        
+        resources:
+          requests:
+            cpu: "2000m"
+            memory: "4Gi"
+            nvidia.com/gpu: "1"
+          limits:
+            cpu: "8000m"
+            memory: "16Gi"
+            nvidia.com/gpu: "2"
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+          successThreshold: 1
+        
+        volumeMounts:
+        - name: quantum-data
+          mountPath: /app/data
+        - name: compliance-logs
+          mountPath: /app/logs/compliance
+        - name: region-secrets
+          mountPath: /app/secrets
+          readOnly: true
+      
+      volumes:
+      - name: quantum-data
+        persistentVolumeClaim:
+          claimName: quantum-data-us-east-1
+      - name: compliance-logs
+        persistentVolumeClaim:
+          claimName: compliance-logs-us-east-1
+      - name: region-secrets
+        secret:
+          secretName: photonic-foundry-us-east-1-secrets
+          defaultMode: 0400
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: photonic-foundry-us-east-1
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+    region: us-east-1
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+spec:
+  type: LoadBalancer
+  selector:
+    app: photonic-foundry
+    region: us-east-1
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 8443
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP

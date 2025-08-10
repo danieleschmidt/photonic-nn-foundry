@@ -1,8 +1,8 @@
 apiVersion: v2
 name: quantum-photonic-foundry
-description: A Helm chart for Quantum-Inspired Photonic Neural Network Foundry
+description: A Helm chart for Quantum-Inspired Photonic Neural Network Foundry - Global Multi-Region Deployment
 type: application
-version: 1.0.0
+version: 2.0.0
 appVersion: "1.0.0"
 home: https://github.com/danieleschmidt/photonic-nn-foundry
 sources:
@@ -11,6 +11,8 @@ maintainers:
   - name: Daniel Schmidt
     email: daniel@photonic-foundry.com
     url: https://photonic-foundry.com
+  - name: Global DevOps Team
+    email: devops@photonic-foundry.com
 keywords:
   - quantum
   - photonic
@@ -18,11 +20,44 @@ keywords:
   - ai
   - optimization
   - task-planning
+  - multi-region
+  - global-deployment
+  - compliance
+  - gdpr
+  - ccpa
+  - pdpa
 annotations:
   category: AI/ML
   licenses: MIT
   images: |
-    - name: photonic-foundry
-      image: photonic-foundry:1.0.0
-dependencies: []
-kubeVersion: ">=1.20.0"
+    - name: photonic-foundry-global
+      image: photonic-foundry:1.0.0-global
+    - name: photonic-foundry-us-east-1
+      image: photonic-foundry:1.0.0-us-east-1
+    - name: photonic-foundry-eu-west-1
+      image: photonic-foundry:1.0.0-eu-west-1
+    - name: photonic-foundry-ap-southeast-1
+      image: photonic-foundry:1.0.0-ap-southeast-1
+  global-deployment: "true"
+  multi-region: "true"
+  compliance-ready: "gdpr,ccpa,pdpa"
+  quantum-compute: "enabled"
+  edge-computing: "supported"
+dependencies:
+  - name: redis
+    version: "^17.0.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+  - name: postgresql
+    version: "^12.0.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: nginx-ingress
+    version: "^4.0.0"
+    repository: "https://kubernetes.github.io/ingress-nginx"
+    condition: ingress.nginx.enabled
+  - name: cert-manager
+    version: "^1.12.0"
+    repository: "https://charts.jetstack.io"
+    condition: certManager.enabled
+kubeVersion: ">=1.25.0"

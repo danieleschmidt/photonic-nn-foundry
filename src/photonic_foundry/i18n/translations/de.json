@@ -1,0 +1,199 @@
+{
+  "app": {
+    "name": "Photonische Gießerei",
+    "description": "Quanteninspirierte Photonische Neuronale Netzwerk-Gießerei",
+    "version": "1.0.0",
+    "tagline": "KI mit quanteninspirierter photonischer Datenverarbeitung transformieren"
+  },
+  "quantum": {
+    "optimization": {
+      "started": "Quantenoptimierung für {model_name} gestartet",
+      "completed": "Quantenoptimierung in {duration}ms abgeschlossen",
+      "failed": "Quantenoptimierung fehlgeschlagen: {error}",
+      "progress": "Optimierungsfortschritt: {percentage}% abgeschlossen",
+      "convergence": "Konvergenz mit Schwellenwert {threshold} erreicht",
+      "parallel": "{count} parallele Auswertungen werden ausgeführt",
+      "gpu_acceleration": "GPU-Beschleunigung mit {gpu_type} aktiviert"
+    },
+    "planner": {
+      "task_created": "Quantenplanungsaufgabe mit ID {task_id} erstellt",
+      "task_started": "Planungsaufgabe {task_id} gestartet",
+      "task_completed": "Planungsaufgabe {task_id} erfolgreich abgeschlossen",
+      "task_failed": "Planungsaufgabe {task_id} fehlgeschlagen: {error}",
+      "resource_allocated": "Ressourcen zugewiesen: {cpu} CPU, {memory} Speicher, {gpu} GPU",
+      "thermal_limit": "Thermisches Limit erreicht: {temperature}°C",
+      "auto_scaling": "Automatische Skalierung ausgelöst: {action}"
+    },
+    "security": {
+      "key_generated": "Quantenverschlüsselungsschlüssel generiert",
+      "authentication_required": "Quantenauthentifizierung erforderlich",
+      "adversarial_detected": "Adversarialer Angriff erkannt und abgemildert",
+      "side_channel_protected": "Seitenkanalschutz aktiv",
+      "audit_logged": "Sicherheitsereignis für Prüfung protokolliert",
+      "entropy_level": "Entropieniveau: {bits} Bits"
+    },
+    "resilience": {
+      "health_check": "Gesundheitsprüfung abgeschlossen: {status}",
+      "fault_predicted": "Potentieller Fehler in {component} vorhergesagt",
+      "auto_recovery": "Automatische Wiederherstellung für {component} eingeleitet",
+      "backup_created": "Sicherung erstellt: {backup_id}",
+      "failover_triggered": "Failover zu {region} ausgelöst",
+      "circuit_monitoring": "Schaltungsüberwachung aktiv"
+    }
+  },
+  "api": {
+    "welcome": "Willkommen bei der Photonischen Gießerei API",
+    "health": {
+      "healthy": "Service ist gesund",
+      "degraded": "Service ist beeinträchtigt",
+      "unhealthy": "Service ist ungesund"
+    },
+    "errors": {
+      "not_found": "Ressource nicht gefunden",
+      "unauthorized": "Unberechtigter Zugriff",
+      "forbidden": "Zugriff verboten",
+      "rate_limit": "Rate-Limit überschritten",
+      "internal_error": "Interner Serverfehler",
+      "validation_error": "Validierungsfehler: {details}",
+      "quantum_error": "Quantenverarbeitungsfehler: {details}"
+    },
+    "responses": {
+      "success": "Vorgang erfolgreich abgeschlossen",
+      "created": "Ressource erfolgreich erstellt",
+      "updated": "Ressource erfolgreich aktualisiert",
+      "deleted": "Ressource erfolgreich gelöscht"
+    }
+  },
+  "compliance": {
+    "gdpr": {
+      "notice": "Datenschutz-Grundverordnung (DSGVO) Hinweis",
+      "controller": "Datenverantwortlicher: {controller}",
+      "dpo": "Datenschutzbeauftragter: {dpo}",
+      "lawful_basis": "Rechtsgrundlage für die Verarbeitung",
+      "consent": "Einverständnisverwaltung",
+      "consent_given": "Einverständnis für Datenverarbeitung erteilt",
+      "consent_withdrawn": "Einverständnis widerrufen",
+      "legitimate_interest": "Berechtigtes Interesse bewertet",
+      "data_subject_rights": "Betroffenenrechte",
+      "right_access": "Auskunftsrecht zu personenbezogenen Daten",
+      "right_rectification": "Recht auf Berichtigung unrichtiger Daten",
+      "right_erasure": "Recht auf Löschung (Recht auf Vergessenwerden)",
+      "right_restrict": "Recht auf Einschränkung der Verarbeitung",
+      "right_portability": "Recht auf Datenübertragbarkeit",
+      "right_object": "Widerspruchsrecht gegen Verarbeitung",
+      "right_automated": "Recht auf Schutz vor automatisierter Entscheidungsfindung",
+      "breach_notification": "Datenschutzverletzung binnen 72 Stunden melden",
+      "privacy_by_design": "Datenschutz durch Technikgestaltung und datenschutzfreundliche Voreinstellungen",
+      "impact_assessment": "Datenschutz-Folgenabschätzung abgeschlossen",
+      "cross_border": "Schutzmaßnahmen für grenzüberschreitende Datenübertragung",
+      "adequacy_decision": "Angemessenheitsbeschluss für Datenübertragung erforderlich",
+      "bcr": "Verbindliche Unternehmensvorschriften gelten",
+      "scc": "Standardvertragsklauseln in Kraft"
+    }
+  },
+  "regions": {
+    "us-east-1": "US Ost (N. Virginia)",
+    "us-west-2": "US West (Oregon)",
+    "eu-west-1": "Europa (Irland)",
+    "eu-central-1": "Europa (Frankfurt)",
+    "ap-southeast-1": "Asien-Pazifik (Singapur)",
+    "ap-northeast-1": "Asien-Pazifik (Tokio)",
+    "global": "Global"
+  },
+  "monitoring": {
+    "metrics": {
+      "latency": "Latenz: {value}ms",
+      "throughput": "Durchsatz: {value} GOPS",
+      "energy": "Energieverbrauch: {value} pJ",
+      "temperature": "Temperatur: {value}°C",
+      "accuracy": "Genauigkeit: {value}%",
+      "uptime": "Betriebszeit: {value}",
+      "memory": "Speicherverbrauch: {value}GB",
+      "cpu": "CPU-Auslastung: {value}%",
+      "gpu": "GPU-Auslastung: {value}%"
+    },
+    "alerts": {
+      "high_latency": "Hohe Latenz erkannt: {value}ms",
+      "high_temperature": "Hohe Temperaturwarnung: {value}°C",
+      "low_accuracy": "Genauigkeitsverschlechterung: {value}%",
+      "resource_limit": "Ressourcenlimit erreicht: {resource}",
+      "connection_lost": "Verbindung zu {service} verloren",
+      "failover_initiated": "Failover zu {region} eingeleitet",
+      "security_incident": "Sicherheitsvorfall erkannt: {type}"
+    }
+  },
+  "deployment": {
+    "status": {
+      "deploying": "Bereitstellung läuft",
+      "healthy": "Bereitstellung gesund",
+      "degraded": "Bereitstellung beeinträchtigt",
+      "failed": "Bereitstellung fehlgeschlagen",
+      "rolling_update": "Rolling Update läuft",
+      "scaling": "Skalierungsvorgang läuft"
+    }
+  },
+  "ui": {
+    "common": {
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "create": "Erstellen",
+      "update": "Aktualisieren",
+      "loading": "Laden...",
+      "error": "Fehler",
+      "success": "Erfolg",
+      "warning": "Warnung",
+      "info": "Information",
+      "confirm": "Bestätigen",
+      "yes": "Ja",
+      "no": "Nein",
+      "close": "Schließen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "previous": "Vorherige",
+      "search": "Suchen",
+      "filter": "Filtern",
+      "sort": "Sortieren",
+      "refresh": "Aktualisieren"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "quantum_optimizer": "Quantenoptimierer",
+      "quantum_planner": "Quantenplaner",
+      "security": "Sicherheit",
+      "compliance": "Compliance",
+      "monitoring": "Überwachung",
+      "settings": "Einstellungen",
+      "help": "Hilfe",
+      "about": "Über"
+    },
+    "forms": {
+      "required_field": "Dieses Feld ist erforderlich",
+      "invalid_email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "password_strength": "Passwort muss mindestens 8 Zeichen lang sein",
+      "passwords_match": "Passwörter müssen übereinstimmen",
+      "invalid_format": "Ungültiges Format",
+      "value_too_large": "Wert ist zu groß",
+      "value_too_small": "Wert ist zu klein"
+    }
+  },
+  "datetime": {
+    "formats": {
+      "short_date": "DD.MM.YYYY",
+      "long_date": "DD. MMMM YYYY",
+      "short_time": "HH:mm",
+      "long_time": "HH:mm:ss",
+      "datetime": "DD.MM.YYYY HH:mm"
+    },
+    "relative": {
+      "just_now": "gerade eben",
+      "minutes_ago": "vor {minutes} Minuten",
+      "hours_ago": "vor {hours} Stunden",
+      "days_ago": "vor {days} Tagen",
+      "weeks_ago": "vor {weeks} Wochen",
+      "months_ago": "vor {months} Monaten",
+      "years_ago": "vor {years} Jahren"
+    }
+  }
+}

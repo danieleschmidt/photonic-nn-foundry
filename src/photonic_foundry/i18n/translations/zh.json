@@ -1,0 +1,193 @@
+{
+  "app": {
+    "name": "光子代工厂",
+    "description": "量子启发的光子神经网络代工厂",
+    "version": "1.0.0",
+    "tagline": "用量子启发的光子计算改变AI"
+  },
+  "quantum": {
+    "optimization": {
+      "started": "{model_name}的量子优化已开始",
+      "completed": "量子优化在{duration}ms内完成",
+      "failed": "量子优化失败: {error}",
+      "progress": "优化进度: {percentage}%完成",
+      "convergence": "已达到阈值{threshold}的收敛",
+      "parallel": "正在运行{count}个并行评估",
+      "gpu_acceleration": "已启用{gpu_type} GPU加速"
+    },
+    "planner": {
+      "task_created": "已创建ID为{task_id}的量子规划任务",
+      "task_started": "规划任务{task_id}已开始",
+      "task_completed": "规划任务{task_id}成功完成",
+      "task_failed": "规划任务{task_id}失败: {error}",
+      "resource_allocated": "已分配资源: {cpu} CPU，{memory}内存，{gpu} GPU",
+      "thermal_limit": "已达到热限制: {temperature}°C",
+      "auto_scaling": "自动扩展已触发: {action}"
+    },
+    "security": {
+      "key_generated": "量子加密密钥已生成",
+      "authentication_required": "需要量子身份验证",
+      "adversarial_detected": "检测到对抗性攻击并已缓解",
+      "side_channel_protected": "侧信道保护已激活",
+      "audit_logged": "安全事件已记录用于审计",
+      "entropy_level": "熵水平: {bits}位"
+    },
+    "resilience": {
+      "health_check": "健康检查完成: {status}",
+      "fault_predicted": "预测{component}存在潜在故障",
+      "auto_recovery": "已为{component}启动自动恢复",
+      "backup_created": "已创建备份: {backup_id}",
+      "failover_triggered": "故障转移到{region}已触发",
+      "circuit_monitoring": "电路监控已激活"
+    }
+  },
+  "api": {
+    "welcome": "欢迎使用光子代工厂API",
+    "health": {
+      "healthy": "服务健康",
+      "degraded": "服务降级",
+      "unhealthy": "服务不健康"
+    },
+    "errors": {
+      "not_found": "资源未找到",
+      "unauthorized": "未经授权的访问",
+      "forbidden": "访问被禁止",
+      "rate_limit": "超出速率限制",
+      "internal_error": "内部服务器错误",
+      "validation_error": "验证错误: {details}",
+      "quantum_error": "量子处理错误: {details}"
+    },
+    "responses": {
+      "success": "操作成功完成",
+      "created": "资源成功创建",
+      "updated": "资源成功更新",
+      "deleted": "资源成功删除"
+    }
+  },
+  "compliance": {
+    "pdpa": {
+      "notice": "个人数据保护法案（PDPA）通知",
+      "organization": "组织: {organization}",
+      "dpo": "数据保护官: {dpo}",
+      "collection_notice": "个人数据收集通知",
+      "purpose_limitation": "个人数据仅用于声明的目的",
+      "consent_required": "数据处理需要同意",
+      "notification_obligation": "数据泄露通知义务",
+      "access_request": "个人数据访问请求",
+      "correction_request": "个人数据更正请求",
+      "data_portability": "应要求提供数据可携性",
+      "retention_policy": "数据保留政策有效",
+      "cross_border_transfer": "跨境数据传输限制",
+      "do_not_call": "请勿致电（DNC）登记合规",
+      "marketing_consent": "营销传播需要同意",
+      "automated_decision": "自动决策保护措施",
+      "data_accuracy": "数据准确性维护义务",
+      "security_measures": "已实施适当的安全措施"
+    }
+  },
+  "regions": {
+    "us-east-1": "美国东部（弗吉尼亚北部）",
+    "us-west-2": "美国西部（俄勒冈）",
+    "eu-west-1": "欧洲（爱尔兰）",
+    "eu-central-1": "欧洲（法兰克福）",
+    "ap-southeast-1": "亚太地区（新加坡）",
+    "ap-northeast-1": "亚太地区（东京）",
+    "global": "全球"
+  },
+  "monitoring": {
+    "metrics": {
+      "latency": "延迟: {value}ms",
+      "throughput": "吞吐量: {value} GOPS",
+      "energy": "能耗: {value} pJ",
+      "temperature": "温度: {value}°C",
+      "accuracy": "准确率: {value}%",
+      "uptime": "正常运行时间: {value}",
+      "memory": "内存使用: {value}GB",
+      "cpu": "CPU使用率: {value}%",
+      "gpu": "GPU利用率: {value}%"
+    },
+    "alerts": {
+      "high_latency": "检测到高延迟: {value}ms",
+      "high_temperature": "高温警报: {value}°C",
+      "low_accuracy": "准确率下降: {value}%",
+      "resource_limit": "资源限制已达到: {resource}",
+      "connection_lost": "与{service}的连接丢失",
+      "failover_initiated": "故障转移到{region}已启动",
+      "security_incident": "检测到安全事件: {type}"
+    }
+  },
+  "deployment": {
+    "status": {
+      "deploying": "部署进行中",
+      "healthy": "部署健康",
+      "degraded": "部署降级",
+      "failed": "部署失败",
+      "rolling_update": "滚动更新进行中",
+      "scaling": "扩展操作进行中"
+    }
+  },
+  "ui": {
+    "common": {
+      "save": "保存",
+      "cancel": "取消",
+      "delete": "删除",
+      "edit": "编辑",
+      "create": "创建",
+      "update": "更新",
+      "loading": "加载中...",
+      "error": "错误",
+      "success": "成功",
+      "warning": "警告",
+      "info": "信息",
+      "confirm": "确认",
+      "yes": "是",
+      "no": "否",
+      "close": "关闭",
+      "back": "返回",
+      "next": "下一步",
+      "previous": "上一步",
+      "search": "搜索",
+      "filter": "筛选",
+      "sort": "排序",
+      "refresh": "刷新"
+    },
+    "navigation": {
+      "dashboard": "仪表板",
+      "quantum_optimizer": "量子优化器",
+      "quantum_planner": "量子规划器",
+      "security": "安全",
+      "compliance": "合规性",
+      "monitoring": "监控",
+      "settings": "设置",
+      "help": "帮助",
+      "about": "关于"
+    },
+    "forms": {
+      "required_field": "此字段是必需的",
+      "invalid_email": "请输入有效的电子邮件地址",
+      "password_strength": "密码必须至少8个字符",
+      "passwords_match": "密码必须匹配",
+      "invalid_format": "格式无效",
+      "value_too_large": "值太大",
+      "value_too_small": "值太小"
+    }
+  },
+  "datetime": {
+    "formats": {
+      "short_date": "YYYY/MM/DD",
+      "long_date": "YYYY年MM月DD日",
+      "short_time": "H:mm",
+      "long_time": "H:mm:ss",
+      "datetime": "YYYY/MM/DD H:mm"
+    },
+    "relative": {
+      "just_now": "刚才",
+      "minutes_ago": "{minutes}分钟前",
+      "hours_ago": "{hours}小时前",
+      "days_ago": "{days}天前",
+      "weeks_ago": "{weeks}周前",
+      "months_ago": "{months}个月前",
+      "years_ago": "{years}年前"
+    }
+  }
+}

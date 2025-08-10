@@ -1,0 +1,175 @@
+# Multi-region and multi-architecture Dockerfile for Photonic Foundry
+# Supports AMD64, ARM64, and quantum compute platforms with regional optimizations
+
+# Use multi-stage build for optimal image size and security
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+ARG REGION=global
+
+FROM --platform=$BUILDPLATFORM python:3.11-slim as builder
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set build arguments
+ARG TARGETARCH
+ARG REGION
+
+# Copy requirements and install dependencies
+WORKDIR /build
+COPY requirements.txt requirements-dev.txt ./
+
+# Install Python dependencies based on architecture
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        pip install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu/torch_stable.html; \
+    else \
+        pip install --no-cache-dir -r requirements.txt; \
+    fi
+
+# Copy source code
+COPY src/ ./src/
+COPY pyproject.toml ./
+
+# Build the package
+RUN pip install --no-cache-dir -e .
+
+# Production stage - region-specific optimizations
+FROM --platform=$TARGETPLATFORM python:3.11-slim as production
+
+# Install runtime dependencies based on region and architecture
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Install region-specific packages
+ARG REGION
+RUN if [ "$REGION" = "ap-southeast-1" ] || [ "$REGION" = "ap-northeast-1" ]; then \
+        apt-get update && apt-get install -y \
+        locales \
+        && locale-gen en_US.UTF-8 ja_JP.UTF-8 zh_CN.UTF-8 \
+        && rm -rf /var/lib/apt/lists/*; \
+    elif [ "$REGION" = "eu-west-1" ] || [ "$REGION" = "eu-central-1" ]; then \
+        apt-get update && apt-get install -y \
+        locales \
+        && locale-gen en_US.UTF-8 de_DE.UTF-8 fr_FR.UTF-8 es_ES.UTF-8 \
+        && rm -rf /var/lib/apt/lists/*; \
+    fi
+
+# Create non-root user for security
+RUN groupadd -r photonic && useradd -r -g photonic -u 1000 -m -s /bin/bash photonic
+
+# Set up directories
+WORKDIR /app
+RUN mkdir -p /app/data /app/logs /app/secrets /app/config /app/cache \
+    && chown -R photonic:photonic /app
+
+# Copy built application from builder stage
+COPY --from=builder --chown=photonic:photonic /build/src /app/src
+COPY --from=builder --chown=photonic:photonic /build/pyproject.toml /app/
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy region-specific configuration
+COPY deployment/config/ /app/config/
+COPY deployment/k8s/global/global-config.yaml /app/config/global-config.yaml
+
+# Set region-specific configuration
+ARG REGION
+RUN if [ -f "/app/config/regions/${REGION}.yaml" ]; then \
+        cp /app/config/regions/${REGION}.yaml /app/config/region-config.yaml; \
+    else \
+        cp /app/config/regions/global.yaml /app/config/region-config.yaml; \
+    fi
+
+# Install region and architecture specific optimizations
+ARG TARGETARCH
+ARG REGION
+
+# AMD64 optimizations
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        pip install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118; \
+    fi
+
+# ARM64 optimizations (for edge computing)
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        pip install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu; \
+    fi
+
+# RISC-V optimizations (for quantum compute platforms)
+RUN if [ "$TARGETARCH" = "riscv64" ]; then \
+        pip install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu; \
+        # Install quantum-specific libraries optimized for RISC-V \
+        pip install --no-cache-dir qiskit cirq pennylane; \
+    fi
+
+# Copy health check script
+COPY scripts/healthcheck.sh /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
+
+# Switch to non-root user
+USER photonic
+
+# Set environment variables
+ENV PYTHONPATH=/app/src
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV APP_ENV=production
+ENV REGION=${REGION}
+ENV ARCHITECTURE=${TARGETARCH}
+
+# Region-specific environment variables
+RUN if [ "$REGION" = "eu-west-1" ] || [ "$REGION" = "eu-central-1" ]; then \
+        echo "export GDPR_MODE=true" >> ~/.bashrc && \
+        echo "export DATA_RESIDENCY_REQUIRED=true" >> ~/.bashrc && \
+        echo "export COMPLIANCE_FRAMEWORK=gdpr" >> ~/.bashrc; \
+    elif [ "$REGION" = "us-east-1" ] || [ "$REGION" = "us-west-2" ]; then \
+        echo "export CCPA_MODE=true" >> ~/.bashrc && \
+        echo "export DATA_RESIDENCY_REQUIRED=true" >> ~/.bashrc && \
+        echo "export COMPLIANCE_FRAMEWORK=ccpa" >> ~/.bashrc; \
+    elif [ "$REGION" = "ap-southeast-1" ] || [ "$REGION" = "ap-northeast-1" ]; then \
+        echo "export PDPA_MODE=true" >> ~/.bashrc && \
+        echo "export DATA_RESIDENCY_REQUIRED=true" >> ~/.bashrc && \
+        echo "export COMPLIANCE_FRAMEWORK=pdpa" >> ~/.bashrc; \
+    fi
+
+# Expose ports
+EXPOSE 8080 8443 9090
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh
+
+# Volume mounts for persistent data
+VOLUME ["/app/data", "/app/logs", "/app/cache"]
+
+# Default command
+CMD ["python", "-m", "photonic_foundry.api.server"]
+
+# Multi-platform build metadata
+LABEL org.opencontainers.image.title="Photonic Foundry"
+LABEL org.opencontainers.image.description="Quantum-Inspired Photonic Neural Network Foundry - Multi-region deployment"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.vendor="Photonic Foundry"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.url="https://photonic-foundry.com"
+LABEL org.opencontainers.image.documentation="https://docs.photonic-foundry.com"
+LABEL org.opencontainers.image.source="https://github.com/danieleschmidt/photonic-nn-foundry"
+
+# Platform and region specific labels
+LABEL platform=${TARGETPLATFORM}
+LABEL architecture=${TARGETARCH}
+LABEL region=${REGION}
+LABEL quantum.compute.enabled=true
+LABEL compliance.frameworks="gdpr,ccpa,pdpa"
+LABEL deployment.type=multi-region
+LABEL security.level=enterprise

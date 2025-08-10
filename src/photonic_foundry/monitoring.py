@@ -13,6 +13,11 @@ from collections import defaultdict, deque
 import logging
 from pathlib import Path
 import numpy as np
+import socket
+import requests
+from typing import List, Callable, Protocol
+import asyncio
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 logger = logging.getLogger(__name__)
 
@@ -462,15 +467,392 @@ def stop_monitoring():
     logger.info("All monitoring services stopped")
 
 
+class HealthCheckProtocol(Protocol):
+    """Protocol for health check functions."""
+    
+    def __call__(self) -> bool:
+        """Perform health check and return success status."""
+        ...
+
+
+@dataclass
+class HealthCheckResult:
+    """Result of a health check."""
+    name: str
+    success: bool
+    response_time_ms: float
+    message: str = ""
+    details: Dict[str, Any] = None
+    timestamp: datetime = None
+    
+    def __post_init__(self):
+        if self.timestamp is None:
+            self.timestamp = datetime.now()
+        if self.details is None:
+            self.details = {}
+
+
+class DatabaseHealthCheck:
+    """Health check for database connectivity."""
+    
+    def __init__(self, connection_string: str = None, timeout: float = 5.0):
+        self.connection_string = connection_string
+        self.timeout = timeout
+        
+    def __call__(self) -> HealthCheckResult:
+        """Check database health."""
+        start_time = time.time()
+        
+        try:
+            # Import here to avoid dependency issues
+            from ..database.connection import DatabaseManager
+            
+            db_manager = DatabaseManager()
+            with db_manager.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT 1")
+                result = cursor.fetchone()
+                
+            response_time = (time.time() - start_time) * 1000
+            
+            return HealthCheckResult(
+                name="database",
+                success=result is not None,
+                response_time_ms=response_time,
+                message="Database connection successful" if result else "Database query failed"
+            )
+            
+        except Exception as e:
+            response_time = (time.time() - start_time) * 1000
+            return HealthCheckResult(
+                name="database",
+                success=False,
+                response_time_ms=response_time,
+                message=f"Database health check failed: {e}",
+                details={'error_type': type(e).__name__, 'error_message': str(e)}
+            )
+
+
+class NetworkHealthCheck:
+    """Health check for network connectivity."""
+    
+    def __init__(self, target_hosts: List[str] = None, timeout: float = 5.0):
+        self.target_hosts = target_hosts or ['8.8.8.8', 'google.com']
+        self.timeout = timeout
+        
+    def __call__(self) -> HealthCheckResult:
+        """Check network connectivity."""
+        start_time = time.time()
+        results = {}
+        
+        for host in self.target_hosts:
+            try:
+                if self._is_ip(host):
+                    # Ping IP address
+                    success = self._ping_host(host)
+                else:
+                    # DNS resolution test
+                    socket.gethostbyname(host)
+                    success = True
+                    
+                results[host] = success
+                
+            except Exception as e:
+                results[host] = False
+                logger.warning(f"Network check failed for {host}: {e}")
+                
+        response_time = (time.time() - start_time) * 1000
+        success_count = sum(results.values())
+        total_count = len(results)
+        
+        return HealthCheckResult(
+            name="network",
+            success=success_count > 0,
+            response_time_ms=response_time,
+            message=f"Network connectivity: {success_count}/{total_count} hosts reachable",
+            details={'host_results': results, 'success_rate': success_count / total_count}
+        )
+        
+    def _is_ip(self, address: str) -> bool:
+        """Check if string is an IP address."""
+        try:
+            socket.inet_aton(address)
+            return True
+        except socket.error:
+            return False
+            
+    def _ping_host(self, host: str) -> bool:
+        """Ping a host using socket connection."""
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(self.timeout)
+            result = sock.connect_ex((host, 80))
+            sock.close()
+            return result == 0
+        except Exception:
+            return False
+
+
+class DiskSpaceHealthCheck:
+    """Health check for disk space availability."""
+    
+    def __init__(self, paths: List[str] = None, warning_threshold: float = 0.8, critical_threshold: float = 0.95):
+        self.paths = paths or ['/']
+        self.warning_threshold = warning_threshold
+        self.critical_threshold = critical_threshold
+        
+    def __call__(self) -> HealthCheckResult:
+        """Check disk space health."""
+        start_time = time.time()
+        results = {}
+        overall_success = True
+        messages = []
+        
+        for path in self.paths:
+            try:
+                usage = psutil.disk_usage(path)
+                usage_percent = usage.used / usage.total
+                
+                status = "healthy"
+                if usage_percent >= self.critical_threshold:
+                    status = "critical"
+                    overall_success = False
+                elif usage_percent >= self.warning_threshold:
+                    status = "warning"
+                    
+                results[path] = {
+                    'usage_percent': usage_percent,
+                    'total_gb': usage.total / (1024**3),
+                    'used_gb': usage.used / (1024**3),
+                    'free_gb': usage.free / (1024**3),
+                    'status': status
+                }
+                
+                if status != "healthy":
+                    messages.append(f"{path}: {usage_percent:.1%} used ({status})")
+                    
+            except Exception as e:
+                results[path] = {'error': str(e)}
+                overall_success = False
+                messages.append(f"{path}: Error - {e}")
+                
+        response_time = (time.time() - start_time) * 1000
+        message = "Disk space healthy" if not messages else "; ".join(messages)
+        
+        return HealthCheckResult(
+            name="disk_space",
+            success=overall_success,
+            response_time_ms=response_time,
+            message=message,
+            details={'path_results': results}
+        )
+
+
+class ComponentHealthCheck:
+    """Health check for specific photonic foundry components."""
+    
+    def __init__(self, components: Dict[str, Callable] = None):
+        self.components = components or {}
+        self._register_default_components()
+        
+    def _register_default_components(self):
+        """Register default component health checks."""
+        self.components.update({
+            'circuit_validator': self._check_circuit_validator,
+            'transpiler': self._check_transpiler,
+            'error_handler': self._check_error_handler,
+        })
+        
+    def __call__(self) -> HealthCheckResult:
+        """Check component health."""
+        start_time = time.time()
+        results = {}
+        overall_success = True
+        messages = []
+        
+        for component_name, check_func in self.components.items():
+            try:
+                success = check_func()
+                results[component_name] = {'status': 'healthy' if success else 'unhealthy'}
+                if not success:
+                    overall_success = False
+                    messages.append(f"{component_name}: unhealthy")
+            except Exception as e:
+                results[component_name] = {'status': 'error', 'error': str(e)}
+                overall_success = False
+                messages.append(f"{component_name}: error - {e}")
+                
+        response_time = (time.time() - start_time) * 1000
+        message = "All components healthy" if not messages else "; ".join(messages)
+        
+        return HealthCheckResult(
+            name="components",
+            success=overall_success,
+            response_time_ms=response_time,
+            message=message,
+            details={'component_results': results}
+        )
+        
+    def _check_circuit_validator(self) -> bool:
+        """Check circuit validator functionality."""
+        try:
+            from ..validation import CircuitValidator
+            validator = CircuitValidator()
+            # Test with minimal circuit data
+            test_circuit = {
+                'name': 'test_circuit',
+                'layers': [{'type': 'linear', 'input_size': 2, 'output_size': 2}],
+                'total_components': 1
+            }
+            result = validator.validate_circuit(test_circuit)
+            return True  # If no exception, validator is working
+        except Exception:
+            return False
+            
+    def _check_transpiler(self) -> bool:
+        """Check transpiler functionality."""
+        try:
+            from ..transpiler import analyze_model_compatibility
+            # This is a basic check - in practice you might want a more comprehensive test
+            return True
+        except Exception:
+            return False
+            
+    def _check_error_handler(self) -> bool:
+        """Check error handler functionality."""
+        try:
+            from ..error_handling import ErrorHandler
+            handler = ErrorHandler()
+            # Test basic error handling
+            test_error = ValueError("test error")
+            error_info = handler.handle_error(test_error)
+            return error_info is not None
+        except Exception:
+            return False
+
+
+class HealthCheckManager:
+    """Manager for coordinating health checks."""
+    
+    def __init__(self):
+        self.health_checks: Dict[str, HealthCheckProtocol] = {}
+        self.check_interval = 60  # seconds
+        self.running = False
+        self.results_history = deque(maxlen=100)  # Keep last 100 results
+        self._executor = ThreadPoolExecutor(max_workers=4)
+        
+        # Register default health checks
+        self._register_default_checks()
+        
+    def _register_default_checks(self):
+        """Register default health checks."""
+        self.health_checks.update({
+            'database': DatabaseHealthCheck(),
+            'network': NetworkHealthCheck(),
+            'disk_space': DiskSpaceHealthCheck(),
+            'components': ComponentHealthCheck()
+        })
+        
+    def register_health_check(self, name: str, check_func: HealthCheckProtocol):
+        """Register a custom health check."""
+        self.health_checks[name] = check_func
+        logger.info(f"Registered health check: {name}")
+        
+    def run_health_checks(self, parallel: bool = True) -> Dict[str, HealthCheckResult]:
+        """Run all health checks."""
+        if parallel:
+            return self._run_parallel_checks()
+        else:
+            return self._run_sequential_checks()
+            
+    def _run_parallel_checks(self) -> Dict[str, HealthCheckResult]:
+        """Run health checks in parallel."""
+        results = {}
+        futures = {
+            self._executor.submit(check_func): name
+            for name, check_func in self.health_checks.items()
+        }
+        
+        for future in as_completed(futures, timeout=30):
+            name = futures[future]
+            try:
+                result = future.result()
+                results[name] = result
+            except Exception as e:
+                results[name] = HealthCheckResult(
+                    name=name,
+                    success=False,
+                    response_time_ms=0,
+                    message=f"Health check execution failed: {e}",
+                    details={'error_type': type(e).__name__, 'error_message': str(e)}
+                )
+                
+        return results
+        
+    def _run_sequential_checks(self) -> Dict[str, HealthCheckResult]:
+        """Run health checks sequentially."""
+        results = {}
+        
+        for name, check_func in self.health_checks.items():
+            try:
+                results[name] = check_func()
+            except Exception as e:
+                results[name] = HealthCheckResult(
+                    name=name,
+                    success=False,
+                    response_time_ms=0,
+                    message=f"Health check execution failed: {e}",
+                    details={'error_type': type(e).__name__, 'error_message': str(e)}
+                )
+                
+        return results
+        
+    def get_health_summary(self) -> Dict[str, Any]:
+        """Get overall health summary."""
+        results = self.run_health_checks()
+        
+        total_checks = len(results)
+        successful_checks = sum(1 for result in results.values() if result.success)
+        
+        overall_health = "healthy"
+        if successful_checks == 0:
+            overall_health = "critical"
+        elif successful_checks < total_checks:
+            overall_health = "degraded"
+            
+        return {
+            'timestamp': datetime.now().isoformat(),
+            'overall_health': overall_health,
+            'total_checks': total_checks,
+            'successful_checks': successful_checks,
+            'success_rate': successful_checks / total_checks if total_checks > 0 else 0,
+            'individual_results': {name: asdict(result) for name, result in results.items()}
+        }
+
+
+# Global health check manager
+_health_check_manager = None
+
+
+def get_health_check_manager() -> HealthCheckManager:
+    """Get global health check manager instance."""
+    global _health_check_manager
+    if _health_check_manager is None:
+        _health_check_manager = HealthCheckManager()
+    return _health_check_manager
+
+
 def get_system_status() -> Dict[str, Any]:
     """Get comprehensive system status."""
     collector = get_metrics_collector()
     perf_monitor = get_performance_monitor()
     alert_mgr = get_alert_manager()
+    health_mgr = get_health_check_manager()
     
     return {
         'timestamp': datetime.now().isoformat(),
         'system_health': asdict(collector.get_system_health()),
+        'health_checks': health_mgr.get_health_summary(),
         'active_alerts': alert_mgr.get_active_alerts(),
         'photonic_operations': perf_monitor.get_operation_stats(),
         'metric_summary': {
