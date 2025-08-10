@@ -1,0 +1,254 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: photonic-foundry-ap-southeast-1-config
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+    region: ap-southeast-1
+    jurisdiction: singapore
+    compliance: pdpa
+data:
+  # Regional configuration
+  region.name: "ap-southeast-1"
+  region.display.name: "Asia Pacific (Singapore)"
+  region.timezone: "Asia/Singapore"
+  region.jurisdiction: "Singapore"
+  
+  # Compliance settings
+  compliance.primary: "pdpa"
+  compliance.secondary: "cybersecurity-act-singapore"
+  data.residency.required: "true"
+  data.export.restrictions: "apac-region-only"
+  pdpa.organization: "Photonic Foundry Singapore Pte Ltd"
+  pdpa.dpo.contact: "dpo-apac@photonic-foundry.com"
+  
+  # Resource allocation
+  quantum.nodes.min: "2"
+  quantum.nodes.max: "25"
+  quantum.compute.priority: "medium"
+  gpu.acceleration: "nvidia-a100"
+  
+  # Networking
+  vpc.cidr: "10.3.0.0/16"
+  availability.zones: "ap-southeast-1a,ap-southeast-1b,ap-southeast-1c"
+  load.balancer.type: "application"
+  
+  # Performance targets
+  latency.target.ms: "40"
+  throughput.target.gops: "1500"
+  availability.target: "99.9"
+  
+  # PDPA specific settings
+  pdpa.consent.required: "true"
+  pdpa.data.portability: "enabled"
+  pdpa.data.correction: "enabled"
+  pdpa.data.access: "enabled"
+  pdpa.notification.required: "true"
+  pdpa.retention.policy: "business-purpose-only"
+  
+  # Regional optimization
+  apac.data.locality: "enforced"
+  quantum.edge.computing: "enabled"
+  low.latency.mode: "true"
+  
+  # Monitoring
+  monitoring.endpoint: "https://monitoring-ap-southeast-1.photonic-foundry.com"
+  logs.retention.days: "2555"  # 7 years for regulatory compliance
+  metrics.granularity: "1m"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photonic-foundry-ap-southeast-1
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+    region: ap-southeast-1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: photonic-foundry
+      region: ap-southeast-1
+  template:
+    metadata:
+      labels:
+        app: photonic-foundry
+        region: ap-southeast-1
+        jurisdiction: singapore
+        compliance: pdpa
+    spec:
+      nodeSelector:
+        kubernetes.io/region: ap-southeast-1
+        node.photonic-foundry.com/quantum-compute: "true"
+        node.photonic-foundry.com/gpu-type: nvidia-a100
+        node.photonic-foundry.com/pdpa-compliant: "true"
+      
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/region
+                operator: In
+                values:
+                - ap-southeast-1
+              - key: node.photonic-foundry.com/pdpa-compliant
+                operator: In
+                values:
+                - "true"
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - photonic-foundry
+              topologyKey: kubernetes.io/hostname
+      
+      tolerations:
+      - key: node.photonic-foundry.com/quantum-workload
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+      - key: node.photonic-foundry.com/apac-workload
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+      
+      containers:
+      - name: photonic-foundry
+        image: photonic-foundry:1.0.0-arm64
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        - containerPort: 9090
+          name: metrics
+          protocol: TCP
+        
+        env:
+        - name: REGION
+          value: "ap-southeast-1"
+        - name: JURISDICTION
+          value: "Singapore"
+        - name: COMPLIANCE_PRIMARY
+          value: "pdpa"
+        - name: DATA_RESIDENCY_REQUIRED
+          value: "true"
+        - name: PDPA_MODE_ENABLED
+          value: "true"
+        - name: DATA_EXPORT_RESTRICTIONS
+          value: "apac-region-only"
+        - name: APAC_DATA_LOCALITY
+          value: "enforced"
+        - name: QUANTUM_EDGE_COMPUTING
+          value: "enabled"
+        - name: LOW_LATENCY_MODE
+          value: "true"
+        
+        envFrom:
+        - configMapRef:
+            name: photonic-foundry-global-config
+        - configMapRef:
+            name: photonic-foundry-ap-southeast-1-config
+        - secretRef:
+            name: photonic-foundry-global-secrets
+        
+        resources:
+          requests:
+            cpu: "1500m"
+            memory: "3Gi"
+            nvidia.com/gpu: "1"
+          limits:
+            cpu: "4000m"
+            memory: "8Gi"
+            nvidia.com/gpu: "2"
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        volumeMounts:
+        - name: quantum-data
+          mountPath: /app/data
+        - name: pdpa-audit-logs
+          mountPath: /app/logs/pdpa
+        - name: consent-records
+          mountPath: /app/data/consent
+        - name: region-secrets
+          mountPath: /app/secrets
+          readOnly: true
+      
+      volumes:
+      - name: quantum-data
+        persistentVolumeClaim:
+          claimName: quantum-data-ap-southeast-1
+      - name: pdpa-audit-logs
+        persistentVolumeClaim:
+          claimName: pdpa-audit-logs-ap-southeast-1
+      - name: consent-records
+        persistentVolumeClaim:
+          claimName: consent-records-ap-southeast-1
+      - name: region-secrets
+        secret:
+          secretName: photonic-foundry-ap-southeast-1-secrets
+          defaultMode: 0400
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: photonic-foundry-ap-southeast-1
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+    region: ap-southeast-1
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+spec:
+  type: LoadBalancer
+  selector:
+    app: photonic-foundry
+    region: ap-southeast-1
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 8443
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP

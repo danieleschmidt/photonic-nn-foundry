@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: photonic-foundry-global-config
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+    component: global-config
+data:
+  # Global application settings
+  app.name: "photonic-foundry"
+  app.version: "1.0.0"
+  app.environment: "production"
+  
+  # Multi-region configuration
+  deployment.strategy: "multi-region"
+  deployment.regions: "us-east-1,us-west-2,eu-west-1,eu-central-1,ap-southeast-1,ap-northeast-1"
+  
+  # Global networking
+  networking.mesh.enabled: "true"
+  networking.encryption.enabled: "true"
+  networking.quantum.secure: "true"
+  
+  # Data sovereignty settings
+  data.sovereignty.enabled: "true"
+  data.residency.enforcement: "strict"
+  data.cross.border.transfer: "restricted"
+  
+  # Compliance frameworks
+  compliance.gdpr.enabled: "true"
+  compliance.ccpa.enabled: "true"
+  compliance.pdpa.enabled: "true"
+  compliance.audit.retention: "7years"
+  
+  # Global load balancing
+  lb.strategy: "geographic"
+  lb.health.check.interval: "10s"
+  lb.failover.automatic: "true"
+  
+  # CDN and edge settings
+  cdn.enabled: "true"
+  cdn.edge.computing: "true"
+  cdn.quantum.distribution: "enabled"
+  
+  # Regional optimization
+  quantum.processing.regional: "true"
+  quantum.resource.locality: "enforced"
+  quantum.computation.distribution: "intelligent"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: photonic-foundry-global-secrets
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+    component: global-secrets
+type: Opaque
+data:
+  # Quantum encryption keys (base64 encoded)
+  quantum.master.key: UXVhbnR1bUVuaGFuY2VkTWFzdGVyS2V5Rm9yR2xvYmFsRGVwbG95bWVudA==
+  quantum.region.key: UXVhbnR1bVJlZ2lvbmFsS2V5Rm9yRGF0YVNvdmVyZWlnbnR5QW5kUHJpdmFjeQ==
+  
+  # Service mesh certificates
+  mesh.ca.cert: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJBQ0NRRFl0eGtRd1kzRGtqQU5CZ2txaGtpRzl3MEJBUTBGQURCSE1Rc3dDUVlEVlFRR0V3SlYKUXpFVE1CRUdBMVVFQ0F3S1FtRnpZV3hyWVhac2FXNHhEekFOQmdOVkJBY01CbkJ2Ynk1YWFYUTFPREF6TURBeApNakF3SURBeU5EQXdWVU5VQlNJQmdOVkJBb01BbXhsZDBOQk1SSXdFQVlEVlFRTERBbDBaWE4wTFdOaGRHRXcKSUJjTk1qQXdNakF3TURJMVNTQlhEVEk1TXpNd01UQXpORGRMZ2QKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==
+  mesh.tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRRERsTTczS2w5cTUwWnUKa3JMakdhRmFLTks0YWNNRWttT3FBZ05CYWhtUm1KV3Jrd0Qxb0I5aGVDNStWVmRhRWlHY01QZWFxVXdFYUtyWAotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0t
+  
+  # Global API keys
+  api.global.key: R2xvYmFsQVBJS2V5Rm9yUGhvdG9uaWNGb3VuZHJ5SW50ZXJSZWdpb25Db21tdW5pY2F0aW9u
+  
+  # Compliance audit keys
+  gdpr.audit.key: R0RQUkF1ZGl0S2V5Rm9yRXVyb3BlYW5EYXRhUHJvdGVjdGlvbkNvbXBsaWFuY2U=
+  ccpa.audit.key: Q0NQQUF1ZGl0S2V5Rm9yQ2FsaWZvcm5pYURhdGFQcml2YWN5Q29tcGxpYW5jZQ==
+  pdpa.audit.key: UERQQUF1ZGl0S2V5Rm9yU2luZ2Fwb3JlRGF0YVByb3RlY3Rpb25Db21wbGlhbmNl

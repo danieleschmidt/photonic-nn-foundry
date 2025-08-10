@@ -14,3 +14,9 @@ cryptography>=3.4.8
 
 # Performance and scaling dependencies
 psutil>=5.8.0
+zstandard>=0.20.0
+aiohttp>=3.8.0
+scikit-learn>=1.2.0
+plotly>=5.0.0
+fastapi>=0.100.0
+uvicorn>=0.20.0

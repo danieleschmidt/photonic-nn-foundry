@@ -1,0 +1,193 @@
+{
+  "app": {
+    "name": "フォトニックファウンドリ",
+    "description": "量子インスパイア型フォトニックニューラルネットワークファウンドリ",
+    "version": "1.0.0",
+    "tagline": "量子インスパイア型フォトニックコンピューティングでAIを変革"
+  },
+  "quantum": {
+    "optimization": {
+      "started": "{model_name}の量子最適化を開始しました",
+      "completed": "量子最適化が{duration}msで完了しました",
+      "failed": "量子最適化が失敗しました: {error}",
+      "progress": "最適化進捗: {percentage}%完了",
+      "convergence": "閾値{threshold}で収束しました",
+      "parallel": "{count}個の並列評価を実行中",
+      "gpu_acceleration": "{gpu_type}によるGPU加速が有効です"
+    },
+    "planner": {
+      "task_created": "ID {task_id}で量子プランニングタスクを作成しました",
+      "task_started": "プランニングタスク{task_id}を開始しました",
+      "task_completed": "プランニングタスク{task_id}が正常に完了しました",
+      "task_failed": "プランニングタスク{task_id}が失敗しました: {error}",
+      "resource_allocated": "リソース割り当て: CPU {cpu}、メモリ {memory}、GPU {gpu}",
+      "thermal_limit": "熱制限に到達しました: {temperature}°C",
+      "auto_scaling": "自動スケーリングが実行されました: {action}"
+    },
+    "security": {
+      "key_generated": "量子暗号化キーを生成しました",
+      "authentication_required": "量子認証が必要です",
+      "adversarial_detected": "敵対的攻撃を検出し軽減しました",
+      "side_channel_protected": "サイドチャネル保護が有効です",
+      "audit_logged": "監査用セキュリティイベントをログに記録しました",
+      "entropy_level": "エントロピーレベル: {bits}ビット"
+    },
+    "resilience": {
+      "health_check": "ヘルスチェック完了: {status}",
+      "fault_predicted": "{component}の潜在的障害を予測しました",
+      "auto_recovery": "{component}の自動復旧を開始しました",
+      "backup_created": "バックアップを作成しました: {backup_id}",
+      "failover_triggered": "{region}へのフェイルオーバーを実行しました",
+      "circuit_monitoring": "回路監視が有効です"
+    }
+  },
+  "api": {
+    "welcome": "フォトニックファウンドリAPIへようこそ",
+    "health": {
+      "healthy": "サービスは正常です",
+      "degraded": "サービスが劣化しています",
+      "unhealthy": "サービスが異常です"
+    },
+    "errors": {
+      "not_found": "リソースが見つかりません",
+      "unauthorized": "未承認のアクセス",
+      "forbidden": "アクセスが禁止されています",
+      "rate_limit": "レート制限を超過しました",
+      "internal_error": "内部サーバーエラー",
+      "validation_error": "検証エラー: {details}",
+      "quantum_error": "量子処理エラー: {details}"
+    },
+    "responses": {
+      "success": "操作が正常に完了しました",
+      "created": "リソースが正常に作成されました",
+      "updated": "リソースが正常に更新されました",
+      "deleted": "リソースが正常に削除されました"
+    }
+  },
+  "compliance": {
+    "pdpa": {
+      "notice": "個人データ保護法（PDPA）通知",
+      "organization": "組織: {organization}",
+      "dpo": "データ保護責任者: {dpo}",
+      "collection_notice": "個人データ収集通知",
+      "purpose_limitation": "個人データは明示された目的にのみ使用されます",
+      "consent_required": "データ処理には同意が必要です",
+      "notification_obligation": "データ侵害通知義務",
+      "access_request": "個人データアクセス要求",
+      "correction_request": "個人データ訂正要求",
+      "data_portability": "要求に応じてデータポータビリティが利用可能です",
+      "retention_policy": "データ保持ポリシーが有効です",
+      "cross_border_transfer": "国境を越えたデータ転送の制限",
+      "do_not_call": "コールなし（DNC）登録の遵守",
+      "marketing_consent": "マーケティング通信には同意が必要です",
+      "automated_decision": "自動意思決定の保護措置",
+      "data_accuracy": "データ精度維持義務",
+      "security_measures": "適切なセキュリティ対策を実装済み"
+    }
+  },
+  "regions": {
+    "us-east-1": "米国東部（バージニア北部）",
+    "us-west-2": "米国西部（オレゴン）",
+    "eu-west-1": "欧州（アイルランド）",
+    "eu-central-1": "欧州（フランクフルト）",
+    "ap-southeast-1": "アジア太平洋（シンガポール）",
+    "ap-northeast-1": "アジア太平洋（東京）",
+    "global": "グローバル"
+  },
+  "monitoring": {
+    "metrics": {
+      "latency": "レイテンシ: {value}ms",
+      "throughput": "スループット: {value} GOPS",
+      "energy": "消費エネルギー: {value} pJ",
+      "temperature": "温度: {value}°C",
+      "accuracy": "精度: {value}%",
+      "uptime": "稼働時間: {value}",
+      "memory": "メモリ使用量: {value}GB",
+      "cpu": "CPU使用率: {value}%",
+      "gpu": "GPU使用率: {value}%"
+    },
+    "alerts": {
+      "high_latency": "高レイテンシを検出: {value}ms",
+      "high_temperature": "高温アラート: {value}°C",
+      "low_accuracy": "精度劣化: {value}%",
+      "resource_limit": "リソース制限に到達: {resource}",
+      "connection_lost": "{service}への接続が失われました",
+      "failover_initiated": "{region}へのフェイルオーバーを開始",
+      "security_incident": "セキュリティインシデントを検出: {type}"
+    }
+  },
+  "deployment": {
+    "status": {
+      "deploying": "デプロイメント進行中",
+      "healthy": "デプロイメント正常",
+      "degraded": "デプロイメント劣化",
+      "failed": "デプロイメント失敗",
+      "rolling_update": "ローリングアップデート進行中",
+      "scaling": "スケーリング操作進行中"
+    }
+  },
+  "ui": {
+    "common": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "edit": "編集",
+      "create": "作成",
+      "update": "更新",
+      "loading": "読み込み中...",
+      "error": "エラー",
+      "success": "成功",
+      "warning": "警告",
+      "info": "情報",
+      "confirm": "確認",
+      "yes": "はい",
+      "no": "いいえ",
+      "close": "閉じる",
+      "back": "戻る",
+      "next": "次へ",
+      "previous": "前へ",
+      "search": "検索",
+      "filter": "フィルター",
+      "sort": "並べ替え",
+      "refresh": "更新"
+    },
+    "navigation": {
+      "dashboard": "ダッシュボード",
+      "quantum_optimizer": "量子オプティマイザー",
+      "quantum_planner": "量子プランナー",
+      "security": "セキュリティ",
+      "compliance": "コンプライアンス",
+      "monitoring": "監視",
+      "settings": "設定",
+      "help": "ヘルプ",
+      "about": "について"
+    },
+    "forms": {
+      "required_field": "この項目は必須です",
+      "invalid_email": "有効なメールアドレスを入力してください",
+      "password_strength": "パスワードは8文字以上である必要があります",
+      "passwords_match": "パスワードが一致しません",
+      "invalid_format": "無効な形式",
+      "value_too_large": "値が大きすぎます",
+      "value_too_small": "値が小さすぎます"
+    }
+  },
+  "datetime": {
+    "formats": {
+      "short_date": "YYYY/MM/DD",
+      "long_date": "YYYY年MM月DD日",
+      "short_time": "H:mm",
+      "long_time": "H:mm:ss",
+      "datetime": "YYYY/MM/DD H:mm"
+    },
+    "relative": {
+      "just_now": "たった今",
+      "minutes_ago": "{minutes}分前",
+      "hours_ago": "{hours}時間前",
+      "days_ago": "{days}日前",
+      "weeks_ago": "{weeks}週間前",
+      "months_ago": "{months}ヶ月前",
+      "years_ago": "{years}年前"
+    }
+  }
+}

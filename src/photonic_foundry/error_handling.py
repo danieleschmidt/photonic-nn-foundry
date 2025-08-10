@@ -152,6 +152,90 @@ class ResourceException(PhotonicException):
         self.available = available
 
 
+class NetworkException(PhotonicException):
+    """Exception for network-related errors."""
+    
+    def __init__(self, message: str, endpoint: str = None, status_code: int = None):
+        error_info = ErrorInfo(
+            severity=ErrorSeverity.WARNING,
+            category=ErrorCategory.NETWORK,
+            message=message,
+            context={'endpoint': endpoint, 'status_code': status_code},
+            recoverable=True,
+            recovery_suggestions=[
+                "Check network connectivity",
+                "Verify endpoint availability",
+                "Consider retry with exponential backoff"
+            ]
+        )
+        super().__init__(message, error_info)
+        self.endpoint = endpoint
+        self.status_code = status_code
+
+
+class ConfigurationException(PhotonicException):
+    """Exception for configuration errors."""
+    
+    def __init__(self, message: str, config_key: str = None, expected_type: type = None):
+        error_info = ErrorInfo(
+            severity=ErrorSeverity.ERROR,
+            category=ErrorCategory.CONFIGURATION,
+            message=message,
+            context={'config_key': config_key, 'expected_type': expected_type.__name__ if expected_type else None},
+            recoverable=True,
+            recovery_suggestions=[
+                "Check configuration file syntax",
+                "Verify all required configuration values are set",
+                "Ensure configuration values match expected types"
+            ]
+        )
+        super().__init__(message, error_info)
+        self.config_key = config_key
+        self.expected_type = expected_type
+
+
+class SecurityException(PhotonicException):
+    """Exception for security-related errors."""
+    
+    def __init__(self, message: str, threat_type: str = None, severity: str = "high"):
+        error_severity = ErrorSeverity.CRITICAL if severity == "critical" else ErrorSeverity.ERROR
+        error_info = ErrorInfo(
+            severity=error_severity,
+            category=ErrorCategory.USER_INPUT,
+            message=message,
+            context={'threat_type': threat_type, 'security_severity': severity},
+            recoverable=False,
+            recovery_suggestions=[
+                "Review input validation and sanitization",
+                "Check for malicious patterns",
+                "Implement additional security controls"
+            ]
+        )
+        super().__init__(message, error_info)
+        self.threat_type = threat_type
+
+
+class TranspilationException(PhotonicException):
+    """Exception for transpilation and code generation errors."""
+    
+    def __init__(self, message: str, source_layer: str = None, target_format: str = None):
+        error_info = ErrorInfo(
+            severity=ErrorSeverity.ERROR,
+            category=ErrorCategory.COMPUTATION,
+            message=message,
+            context={'source_layer': source_layer, 'target_format': target_format},
+            recoverable=True,
+            recovery_suggestions=[
+                "Check model compatibility",
+                "Simplify model architecture",
+                "Use supported layer types"
+            ]
+        )
+        super().__init__(message, error_info)
+        self.source_layer = source_layer
+        self.target_format = target_format
+
+
 class ErrorHandler:
     """Centralized error handling and recovery."""
     
@@ -226,22 +310,30 @@ class ErrorHandler:
         error_type = type(error).__name__
         message = str(error)
         
-        # Classification rules
-        if isinstance(error, (ValueError, TypeError)):
+        # Classification rules with more comprehensive coverage
+        if isinstance(error, (ValueError, TypeError, AssertionError)):
             category = ErrorCategory.VALIDATION
             severity = ErrorSeverity.ERROR
             recoverable = True
-        elif isinstance(error, (MemoryError, OSError)):
+        elif isinstance(error, (MemoryError, OSError, RuntimeError)):
             category = ErrorCategory.RESOURCE
-            severity = ErrorSeverity.CRITICAL
-            recoverable = False
-        elif isinstance(error, (KeyError, AttributeError)):
+            severity = ErrorSeverity.CRITICAL if isinstance(error, MemoryError) else ErrorSeverity.ERROR
+            recoverable = not isinstance(error, MemoryError)
+        elif isinstance(error, (KeyError, AttributeError, ImportError, ModuleNotFoundError)):
             category = ErrorCategory.CONFIGURATION
             severity = ErrorSeverity.ERROR
             recoverable = True
-        elif isinstance(error, (ConnectionError, TimeoutError)):
+        elif isinstance(error, (ConnectionError, TimeoutError, BrokenPipeError)):
             category = ErrorCategory.NETWORK
             severity = ErrorSeverity.WARNING
+            recoverable = True
+        elif isinstance(error, (PermissionError, FileNotFoundError)):
+            category = ErrorCategory.SYSTEM
+            severity = ErrorSeverity.ERROR
+            recoverable = isinstance(error, FileNotFoundError)
+        elif isinstance(error, (ZeroDivisionError, OverflowError, FloatingPointError)):
+            category = ErrorCategory.COMPUTATION
+            severity = ErrorSeverity.ERROR
             recoverable = True
         else:
             category = ErrorCategory.SYSTEM
@@ -283,12 +375,27 @@ class ErrorHandler:
         for key, value in sanitized_inputs.items():
             if value is None:
                 # Provide defaults for None values
-                if 'size' in key:
+                if 'size' in key or 'dimension' in key:
                     sanitized_inputs[key] = 1
-                elif 'count' in key:
+                elif 'count' in key or 'number' in key:
                     sanitized_inputs[key] = 0
-                elif 'name' in key:
+                elif 'name' in key or 'id' in key:
                     sanitized_inputs[key] = 'default'
+                elif 'wavelength' in key:
+                    sanitized_inputs[key] = 1550  # Default telecom wavelength
+                elif 'precision' in key:
+                    sanitized_inputs[key] = 8  # Default precision
+            elif isinstance(value, str):
+                # Clean string values
+                sanitized_inputs[key] = value.strip()
+            elif isinstance(value, (int, float)):
+                # Ensure numeric values are within reasonable bounds
+                if 'wavelength' in key and (value < 1000 or value > 2000):
+                    sanitized_inputs[key] = 1550
+                elif 'precision' in key and (value < 1 or value > 64):
+                    sanitized_inputs[key] = 8
+                elif key.endswith('_size') and value <= 0:
+                    sanitized_inputs[key] = 1
                     
         return sanitized_inputs
         

@@ -1,0 +1,199 @@
+{
+  "app": {
+    "name": "Fonderie Photonique",
+    "description": "Fonderie de Réseaux de Neurones Photoniques Inspirés de la Quantique",
+    "version": "1.0.0",
+    "tagline": "Transformer l'IA avec l'Informatique Photonique Inspirée de la Quantique"
+  },
+  "quantum": {
+    "optimization": {
+      "started": "Optimisation quantique démarrée pour {model_name}",
+      "completed": "Optimisation quantique terminée en {duration}ms",
+      "failed": "Échec de l'optimisation quantique : {error}",
+      "progress": "Progrès de l'optimisation : {percentage}% terminé",
+      "convergence": "Convergence atteinte avec le seuil {threshold}",
+      "parallel": "Exécution de {count} évaluations parallèles",
+      "gpu_acceleration": "Accélération GPU activée avec {gpu_type}"
+    },
+    "planner": {
+      "task_created": "Tâche de planification quantique créée avec l'ID {task_id}",
+      "task_started": "Tâche de planification {task_id} démarrée",
+      "task_completed": "Tâche de planification {task_id} terminée avec succès",
+      "task_failed": "Échec de la tâche de planification {task_id} : {error}",
+      "resource_allocated": "Ressources allouées : {cpu} CPU, {memory} mémoire, {gpu} GPU",
+      "thermal_limit": "Limite thermique atteinte : {temperature}°C",
+      "auto_scaling": "Mise à l'échelle automatique déclenchée : {action}"
+    },
+    "security": {
+      "key_generated": "Clé de chiffrement quantique générée",
+      "authentication_required": "Authentification quantique requise",
+      "adversarial_detected": "Attaque adversariale détectée et atténuée",
+      "side_channel_protected": "Protection contre les canaux auxiliaires active",
+      "audit_logged": "Événement de sécurité enregistré pour audit",
+      "entropy_level": "Niveau d'entropie : {bits} bits"
+    },
+    "resilience": {
+      "health_check": "Vérification de santé terminée : {status}",
+      "fault_predicted": "Défaut potentiel prédit dans {component}",
+      "auto_recovery": "Auto-récupération initiée pour {component}",
+      "backup_created": "Sauvegarde créée : {backup_id}",
+      "failover_triggered": "Basculement déclenché vers {region}",
+      "circuit_monitoring": "Surveillance des circuits active"
+    }
+  },
+  "api": {
+    "welcome": "Bienvenue dans l'API Fonderie Photonique",
+    "health": {
+      "healthy": "Service en bonne santé",
+      "degraded": "Service dégradé",
+      "unhealthy": "Service défaillant"
+    },
+    "errors": {
+      "not_found": "Ressource non trouvée",
+      "unauthorized": "Accès non autorisé",
+      "forbidden": "Accès interdit",
+      "rate_limit": "Limite de taux dépassée",
+      "internal_error": "Erreur interne du serveur",
+      "validation_error": "Erreur de validation : {details}",
+      "quantum_error": "Erreur de traitement quantique : {details}"
+    },
+    "responses": {
+      "success": "Opération terminée avec succès",
+      "created": "Ressource créée avec succès",
+      "updated": "Ressource mise à jour avec succès",
+      "deleted": "Ressource supprimée avec succès"
+    }
+  },
+  "compliance": {
+    "gdpr": {
+      "notice": "Avis du Règlement Général sur la Protection des Données (RGPD)",
+      "controller": "Responsable du traitement : {controller}",
+      "dpo": "Délégué à la protection des données : {dpo}",
+      "lawful_basis": "Base légale du traitement",
+      "consent": "Gestion du consentement",
+      "consent_given": "Consentement donné pour le traitement des données",
+      "consent_withdrawn": "Consentement retiré",
+      "legitimate_interest": "Évaluation de l'intérêt légitime",
+      "data_subject_rights": "Droits des personnes concernées",
+      "right_access": "Droit d'accès aux données personnelles",
+      "right_rectification": "Droit de rectification des données inexactes",
+      "right_erasure": "Droit à l'effacement (droit à l'oubli)",
+      "right_restrict": "Droit à la limitation du traitement",
+      "right_portability": "Droit à la portabilité des données",
+      "right_object": "Droit d'opposition au traitement",
+      "right_automated": "Droit de ne pas faire l'objet de décisions automatisées",
+      "breach_notification": "Notification de violation de données sous 72 heures",
+      "privacy_by_design": "Confidentialité dès la conception et par défaut",
+      "impact_assessment": "Analyse d'impact sur la protection des données terminée",
+      "cross_border": "Garanties pour les transferts transfrontaliers de données",
+      "adequacy_decision": "Décision d'adéquation requise pour le transfert de données",
+      "bcr": "Les Règles d'entreprise contraignantes s'appliquent",
+      "scc": "Clauses contractuelles types en vigueur"
+    }
+  },
+  "regions": {
+    "us-east-1": "États-Unis Est (N. Virginie)",
+    "us-west-2": "États-Unis Ouest (Oregon)",
+    "eu-west-1": "Europe (Irlande)",
+    "eu-central-1": "Europe (Francfort)",
+    "ap-southeast-1": "Asie-Pacifique (Singapour)",
+    "ap-northeast-1": "Asie-Pacifique (Tokyo)",
+    "global": "Mondial"
+  },
+  "monitoring": {
+    "metrics": {
+      "latency": "Latence : {value}ms",
+      "throughput": "Débit : {value} GOPS",
+      "energy": "Consommation d'énergie : {value} pJ",
+      "temperature": "Température : {value}°C",
+      "accuracy": "Précision : {value}%",
+      "uptime": "Temps de fonctionnement : {value}",
+      "memory": "Utilisation mémoire : {value}GB",
+      "cpu": "Utilisation CPU : {value}%",
+      "gpu": "Utilisation GPU : {value}%"
+    },
+    "alerts": {
+      "high_latency": "Latence élevée détectée : {value}ms",
+      "high_temperature": "Alerte de température élevée : {value}°C",
+      "low_accuracy": "Dégradation de la précision : {value}%",
+      "resource_limit": "Limite de ressources atteinte : {resource}",
+      "connection_lost": "Connexion perdue vers {service}",
+      "failover_initiated": "Basculement initié vers {region}",
+      "security_incident": "Incident de sécurité détecté : {type}"
+    }
+  },
+  "deployment": {
+    "status": {
+      "deploying": "Déploiement en cours",
+      "healthy": "Déploiement sain",
+      "degraded": "Déploiement dégradé",
+      "failed": "Échec du déploiement",
+      "rolling_update": "Mise à jour progressive en cours",
+      "scaling": "Opération de mise à l'échelle en cours"
+    }
+  },
+  "ui": {
+    "common": {
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "create": "Créer",
+      "update": "Mettre à jour",
+      "loading": "Chargement...",
+      "error": "Erreur",
+      "success": "Succès",
+      "warning": "Avertissement",
+      "info": "Information",
+      "confirm": "Confirmer",
+      "yes": "Oui",
+      "no": "Non",
+      "close": "Fermer",
+      "back": "Retour",
+      "next": "Suivant",
+      "previous": "Précédent",
+      "search": "Rechercher",
+      "filter": "Filtrer",
+      "sort": "Trier",
+      "refresh": "Actualiser"
+    },
+    "navigation": {
+      "dashboard": "Tableau de bord",
+      "quantum_optimizer": "Optimiseur Quantique",
+      "quantum_planner": "Planificateur Quantique",
+      "security": "Sécurité",
+      "compliance": "Conformité",
+      "monitoring": "Surveillance",
+      "settings": "Paramètres",
+      "help": "Aide",
+      "about": "À propos"
+    },
+    "forms": {
+      "required_field": "Ce champ est obligatoire",
+      "invalid_email": "Veuillez saisir une adresse e-mail valide",
+      "password_strength": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwords_match": "Les mots de passe doivent correspondre",
+      "invalid_format": "Format invalide",
+      "value_too_large": "La valeur est trop grande",
+      "value_too_small": "La valeur est trop petite"
+    }
+  },
+  "datetime": {
+    "formats": {
+      "short_date": "DD/MM/YYYY",
+      "long_date": "DD MMMM YYYY",
+      "short_time": "HH:mm",
+      "long_time": "HH:mm:ss",
+      "datetime": "DD/MM/YYYY HH:mm"
+    },
+    "relative": {
+      "just_now": "à l'instant",
+      "minutes_ago": "il y a {minutes} minutes",
+      "hours_ago": "il y a {hours} heures",
+      "days_ago": "il y a {days} jours",
+      "weeks_ago": "il y a {weeks} semaines",
+      "months_ago": "il y a {months} mois",
+      "years_ago": "il y a {years} ans"
+    }
+  }
+}
