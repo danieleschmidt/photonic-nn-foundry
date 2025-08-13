@@ -1,0 +1,366 @@
+{
+  "overall_passed": false,
+  "overall_score": 0.7645759996582365,
+  "total_gates": 8,
+  "gates_passed": 5,
+  "pass_rate": 0.625,
+  "execution_time": 1.0661752223968506,
+  "category_scores": {
+    "code_quality": 0.9647727272727273,
+    "testing": 0.24947368421052632,
+    "security": 0.875,
+    "performance": 1.0,
+    "documentation": 0.9373615857826385,
+    "breakthrough_validation": 1.1733333333333333,
+    "production_readiness": 0.9166666666666666,
+    "integration": 0.0
+  },
+  "summary_recommendations": [
+    "Improve system integration test coverage",
+    "Add more comprehensive end-to-end tests",
+    "Test error handling and edge cases",
+    "Validate performance under load",
+    "Implement proper secret management",
+    "Update dependencies with known vulnerabilities",
+    "Include integration and edge case tests",
+    "Add more comprehensive unit tests",
+    "Increase test coverage to at least 85.0%",
+    "Address security vulnerabilities found by scanners",
+    "Enhance quantum-resistant security measures"
+  ],
+  "results": [
+    {
+      "name": "code_quality",
+      "passed": true,
+      "score": 0.9647727272727273,
+      "details": {
+        "checks": {
+          "flake8": {
+            "passed": true,
+            "score": 1.0,
+            "error_count": 0,
+            "output": "",
+            "stderr": "/usr/bin/python3: No module named flake8\n"
+          },
+          "mypy": {
+            "passed": true,
+            "score": 1.0,
+            "error_count": 0,
+            "output": ""
+          },
+          "imports": {
+            "passed": true,
+            "score": 1.0,
+            "total_files": 55,
+            "issues": [],
+            "circular_imports": []
+          },
+          "patterns": {
+            "passed": true,
+            "score": 0.8590909090909091,
+            "files_analyzed": 55,
+            "average_pattern_score": 0.8590909090909091
+          }
+        },
+        "overall_score": 0.9647727272727273,
+        "threshold": 0.85
+      },
+      "recommendations": [],
+      "timestamp": 1755093814.7881672
+    },
+    {
+      "name": "testing",
+      "passed": false,
+      "score": 0.24947368421052632,
+      "details": {
+        "coverage": {
+          "coverage_percentage": 0.0,
+          "tests_passed": 0,
+          "tests_failed": 0,
+          "tests_skipped": 0,
+          "coverage_data": {},
+          "test_output": "",
+          "return_code": 1
+        },
+        "test_quality": {
+          "score": 0.8315789473684211,
+          "test_files_analyzed": 19,
+          "average_quality": 0.8315789473684211,
+          "analysis": "Analyzed 19 test files"
+        },
+        "combined_score": 0.24947368421052632,
+        "threshold": 0.85
+      },
+      "recommendations": [
+        "Increase test coverage to at least 85.0%",
+        "Add more comprehensive unit tests",
+        "Include integration and edge case tests"
+      ],
+      "timestamp": 1755093814.8311996
+    },
+    {
+      "name": "security",
+      "passed": false,
+      "score": 0.875,
+      "details": {
+        "checks": {
+          "bandit": {
+            "passed": true,
+            "score": 1.0,
+            "issue_count": 0,
+            "output": ""
+          },
+          "secrets": {
+            "passed": false,
+            "score": 0.0,
+            "potential_secrets": 379,
+            "secrets_found": [
+              {
+                "file": "advanced_research_framework.py",
+                "line": 194,
+                "pattern": "key",
+                "content": "groups = list(data.keys())"
+              },
+              {
+                "file": "advanced_research_framework.py",
+                "line": 237,
+                "pattern": "key",
+                "content": "results['post_hoc'] = self._tukey_hsd_analysis(data)"
+              },
+              {
+                "file": "advanced_research_framework.py",
+                "line": 243,
+                "pattern": "key",
+                "content": "groups = list(data.keys())"
+              }
+            ]
+          },
+          "quantum_security": {
+            "passed": true,
+            "score": 1.5,
+            "features_implemented": [
+              "quantum_key_distribution",
+              "side_channel_protection",
+              "post_quantum_cryptography",
+              "quantum_key_distribution",
+              "zero_knowledge_proofs",
+              "side_channel_protection"
+            ],
+            "total_features": 6
+          },
+          "dependencies": {
+            "passed": true,
+            "score": 1.0,
+            "dependencies_checked": 22,
+            "vulnerabilities_found": 0,
+            "vulnerable_deps": []
+          }
+        },
+        "overall_score": 0.875,
+        "threshold": 0.95
+      },
+      "recommendations": [
+        "Address security vulnerabilities found by scanners",
+        "Implement proper secret management",
+        "Update dependencies with known vulnerabilities",
+        "Enhance quantum-resistant security measures"
+      ],
+      "timestamp": 1755093814.932579
+    },
+    {
+      "name": "performance",
+      "passed": true,
+      "score": 1.0,
+      "details": {
+        "benchmarks": {
+          "passed": false,
+          "score": 0.0,
+          "error": "No module named 'numpy'"
+        },
+        "validation": {
+          "passed": true,
+          "score": 2.5,
+          "features_found": [
+            "asynchronous_processing",
+            "parallel_processing",
+            "caching",
+            "optimization_algorithms",
+            "parallel_processing",
+            "caching",
+            "optimization_algorithms",
+            "parallel_processing",
+            "caching",
+            "optimization_algorithms"
+          ],
+          "total_features": 10
+        },
+        "combined_score": 1.0,
+        "threshold": 0.9
+      },
+      "recommendations": [],
+      "timestamp": 1755093814.9340475
+    },
+    {
+      "name": "documentation",
+      "passed": true,
+      "score": 0.9373615857826385,
+      "details": {
+        "score": 0.9373615857826385,
+        "metrics": {
+          "files_with_docstrings": 53,
+          "functions_with_docstrings": 1158,
+          "classes_with_docstrings": 323,
+          "total_functions": 1330,
+          "total_classes": 323,
+          "total_files": 55
+        },
+        "coverage_ratios": {
+          "files": 0.9636363636363636,
+          "functions": 0.8706766917293233,
+          "classes": 1.0
+        },
+        "threshold": 0.8
+      },
+      "recommendations": [],
+      "timestamp": 1755093815.7219086
+    },
+    {
+      "name": "breakthrough_validation",
+      "passed": true,
+      "score": 1.1733333333333333,
+      "details": {
+        "component_validation": {
+          "passed": true,
+          "score": 2.5,
+          "components_found": [
+            "breakthrough_detection",
+            "meta_learning",
+            "experimental_validation",
+            "research_output",
+            "breakthrough_detection",
+            "meta_learning",
+            "experimental_validation",
+            "research_output",
+            "experimental_validation",
+            "research_output"
+          ],
+          "total_components": 10
+        },
+        "functionality_test": {
+          "passed": false,
+          "score": 0.0,
+          "test_results": [
+            [
+              "meta_learner",
+              false
+            ],
+            [
+              "discovery_system",
+              false
+            ]
+          ],
+          "successful_tests": 0,
+          "total_tests": 2
+        },
+        "output_analysis": {
+          "passed": true,
+          "score": 0.8666666666666667,
+          "metrics": {
+            "research_directories": 2,
+            "output_files": 10,
+            "json_results": 3,
+            "visualization_files": 0
+          }
+        },
+        "combined_score": 1.1733333333333333,
+        "threshold": 0.9
+      },
+      "recommendations": [],
+      "timestamp": 1755093815.7423663
+    },
+    {
+      "name": "production_readiness",
+      "passed": true,
+      "score": 0.9166666666666666,
+      "details": {
+        "configuration": {
+          "passed": true,
+          "score": 1.0,
+          "configs_found": 3,
+          "total_configs": 3
+        },
+        "deployment": {
+          "passed": true,
+          "score": 1.0,
+          "features": [
+            "docker_support",
+            "kubernetes_support",
+            "deployment_automation",
+            "monitoring_ready"
+          ],
+          "total_features": 4
+        },
+        "monitoring": {
+          "passed": true,
+          "score": 0.75,
+          "components": [
+            "structured_logging",
+            "system_monitoring",
+            "metrics_infrastructure"
+          ],
+          "total_components": 3
+        },
+        "combined_score": 0.9166666666666666,
+        "threshold": 0.8
+      },
+      "recommendations": [],
+      "timestamp": 1755093815.744555
+    },
+    {
+      "name": "integration",
+      "passed": false,
+      "score": 0.0,
+      "details": {
+        "end_to_end": {
+          "passed": false,
+          "score": 0.0,
+          "workflow_tests": [
+            [
+              "photonic_workflow",
+              false
+            ],
+            [
+              "quantum_planning_workflow",
+              false
+            ]
+          ],
+          "successful_workflows": 0,
+          "total_workflows": 2
+        },
+        "system_integration": {
+          "passed": false,
+          "score": 0.0,
+          "components_integrated": [],
+          "total_components": 0
+        },
+        "combined_score": 0.0,
+        "threshold": 0.75
+      },
+      "recommendations": [
+        "Add more comprehensive end-to-end tests",
+        "Improve system integration test coverage",
+        "Test error handling and edge cases",
+        "Validate performance under load"
+      ],
+      "timestamp": 1755093815.7488575
+    }
+  ],
+  "quality_thresholds": {
+    "test_coverage": 0.85,
+    "security_score": 0.95,
+    "performance_score": 0.9,
+    "code_quality": 0.85,
+    "documentation_coverage": 0.8,
+    "breakthrough_validation": 0.9
+  }
+}
