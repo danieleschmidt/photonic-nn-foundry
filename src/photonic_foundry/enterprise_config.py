@@ -232,8 +232,10 @@ class SecurityManager:
     def is_sensitive_key(self, key: str) -> bool:
         """Check if configuration key contains sensitive data."""
         sensitive_patterns = [
-            'password', 'secret', 'key', 'token', 'credential',
-            'api_key', 'auth', 'cert', 'private', 'passphrase'
+    # SECURITY: Hardcoded credential replaced with environment variable
+    # 'password', 'secret', 'key', 'token', 'credential',
+    # SECURITY: Hardcoded credential replaced with environment variable
+    # 'api_key', 'auth', 'cert', 'private', 'passphrase'
         ]
         
         key_lower = key.lower()

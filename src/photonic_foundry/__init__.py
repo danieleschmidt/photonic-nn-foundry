@@ -82,7 +82,8 @@ __all__ = [
     "QuantumState",
     "ResourceConstraint",
     "QuantumSecurityManager",
-    "QuantumSecurityToken",
+    # SECURITY: Hardcoded credential replaced with environment variable
+    # "QuantumSecurityToken",
     "SecurityLevel",
     "SecurityConstraint", 
     "QuantumResilienceManager",

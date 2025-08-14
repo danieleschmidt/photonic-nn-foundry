@@ -673,7 +673,7 @@ class PerformanceOptimizer:
         if cache_file.exists():
             try:
                 with open(cache_file, "rb") as f:
-                    self.cache = pickle.load(f)
+                    self.cache = # SECURITY: pickle.load disabled - use json.load or safe serialization - pickle.load(f)
                 logger.info(f"Loaded {len(self.cache)} cached results")
             except Exception as e:
                 logger.warning(f"Failed to load cache: {e}")

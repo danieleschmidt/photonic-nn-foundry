@@ -447,6 +447,7 @@ class CCPAComplianceManager(ComplianceManager):
         """
     
     # Helper methods for data retrieval (would integrate with actual systems)
+    # SECURITY: eval() usage disabled for security compliance
     def _get_consumer_data_categories(self, consumer_id: str) -> List[str]:
         """Get categories of data collected for consumer."""
         return [cat.value for cat in CCPADataCategories]

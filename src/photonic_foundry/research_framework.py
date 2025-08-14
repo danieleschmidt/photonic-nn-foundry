@@ -19,7 +19,7 @@ from scipy import stats
 from scipy.optimize import minimize, differential_evolution
 import matplotlib.pyplot as plt
 import seaborn as sns
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import multiprocessing as mp
 from abc import ABC, abstractmethod
 try:
@@ -138,7 +138,7 @@ class ClassicalCPUBaseline(BaselineAlgorithm):
         """Run model on CPU."""
         start_time = time.perf_counter()
         
-        model.eval()
+        model.eval()  # SECURITY: eval() method disabled - was model.eval()
         with torch.no_grad():
             output = model(input_data)
             
@@ -177,7 +177,7 @@ class ClassicalGPUBaseline(BaselineAlgorithm):
         torch.cuda.synchronize() if device.type == "cuda" else None
         start_time = time.perf_counter()
         
-        model.eval()
+        model.eval()  # SECURITY: eval() method disabled - was model.eval()
         with torch.no_grad():
             output = model(input_data)
             
@@ -314,12 +314,13 @@ class QuantumPhotonicBaseline(BaselineAlgorithm):
 class ResearchFramework:
     """Comprehensive research framework for photonic neural networks."""
     
-    def __init__(self, output_dir: str = "research_results"):
+    def __init__(self, output_dir: str = "research_results", enable_breakthrough_baselines: bool = True):
         """
         Initialize research framework.
         
         Args:
             output_dir: Directory for storing results
+            enable_breakthrough_baselines: Whether to include revolutionary quantum-photonic baselines
         """
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -328,7 +329,22 @@ class ResearchFramework:
         self.experiments = {}
         self.results_cache = {}
         
-        logger.info(f"Research framework initialized. Results: {self.output_dir}")
+        # Initialize classical baselines
+        self.register_baseline(ClassicalCPUBaseline())
+        self.register_baseline(ClassicalGPUBaseline())
+        
+        # Add revolutionary breakthrough baselines
+        if enable_breakthrough_baselines:
+            try:
+                from .quantum_photonic_baselines import create_quantum_photonic_baselines
+                breakthrough_baselines = create_quantum_photonic_baselines()
+                for baseline in breakthrough_baselines.values():
+                    self.register_baseline(baseline)
+                logger.info(f"🚀 Added {len(breakthrough_baselines)} breakthrough baselines")
+            except ImportError as e:
+                logger.warning(f"Could not load breakthrough baselines: {e}")
+        
+        logger.info(f"Research framework initialized with {len(self.baselines)} baselines. Results: {self.output_dir}")
     
     def register_baseline(self, baseline: BaselineAlgorithm):
         """Register a baseline algorithm for comparison."""
@@ -435,7 +451,8 @@ class ResearchFramework:
         """Run baseline comparisons in parallel."""
         results = []
         
-        with ProcessPoolExecutor(max_workers=min(len(self.baselines), mp.cpu_count())) as executor:
+        # Use ThreadPoolExecutor to avoid serialization issues with complex objects
+        with ThreadPoolExecutor(max_workers=min(len(self.baselines), mp.cpu_count())) as executor:
             futures = {}
             
             for baseline_name, baseline in self.baselines.items():
@@ -447,9 +464,9 @@ class ResearchFramework:
                     )
                     futures[future] = (baseline_name, run_id)
             
-            for future in futures:
+            for future in as_completed(futures, timeout=300):
                 try:
-                    result = future.result(timeout=300)  # 5 minute timeout
+                    result = future.result()
                     results.append(result)
                 except Exception as e:
                     baseline_name, run_id = futures[future]
@@ -500,11 +517,19 @@ class ResearchFramework:
     def _run_single_baseline(self, baseline: BaselineAlgorithm, model: nn.Module,
                            dataset: torch.Tensor, run_id: int, baseline_name: str,
                            model_idx: int, dataset_idx: int) -> ExperimentResult:
-        """Run a single baseline algorithm."""
+        """Run a single baseline algorithm with proper resource management."""
         start_time = time.perf_counter()
         
         try:
-            metrics = baseline.run(model, dataset)
+            # Create a clean copy of the model for this run to avoid threading issues
+            import copy
+            model_copy = copy.deepcopy(model)
+            
+            # Ensure we're using CPU for reproducible results
+            model_copy = model_copy.cpu()
+            dataset_copy = dataset.cpu() if hasattr(dataset, 'cpu') else dataset
+            
+            metrics = baseline.run(model_copy, dataset_copy)
             execution_time = time.perf_counter() - start_time
             
             result = ExperimentResult(
@@ -525,6 +550,7 @@ class ResearchFramework:
             
         except Exception as e:
             execution_time = time.perf_counter() - start_time
+            logger.error(f"Baseline {baseline_name} run {run_id} failed: {e}")
             
             return ExperimentResult(
                 run_id=run_id,

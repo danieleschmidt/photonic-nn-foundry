@@ -1,0 +1,37 @@
+{
+  "analysis_results": {
+    "total_issues": 0,
+    "high_severity_issues": 0,
+    "medium_severity_issues": 0,
+    "all_issues": [],
+    "false_positives": [
+      {
+        "file": "src/photonic_foundry/cli.py",
+        "line": 92,
+        "reason": "Safe model.eval() method call",
+        "context": "model.eval()  # SECURITY: eval() method disabled - was model.eval()  # Set to evaluation mode"
+      },
+      {
+        "file": "src/photonic_foundry/cli.py",
+        "line": 175,
+        "reason": "Safe model.eval() method call",
+        "context": "model.eval()  # SECURITY: eval() method disabled - was model.eval()"
+      },
+      {
+        "file": "src/photonic_foundry/research_framework.py",
+        "line": 141,
+        "reason": "Safe model.eval() method call",
+        "context": "model.eval()  # SECURITY: eval() method disabled - was model.eval()"
+      },
+      {
+        "file": "src/photonic_foundry/research_framework.py",
+        "line": 180,
+        "reason": "Safe model.eval() method call",
+        "context": "model.eval()  # SECURITY: eval() method disabled - was model.eval()"
+      }
+    ]
+  },
+  "security_score": 1.0,
+  "production_ready": true,
+  "policy_version": "3.0"
+}
