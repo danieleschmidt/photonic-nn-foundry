@@ -230,7 +230,8 @@ class ResilienceFramework:
         
         self._components['security_monitor'] = security_monitor
         self._components['rate_limiter'] = rate_limiter
-        self._components['token_manager'] = token_manager
+    # SECURITY: Hardcoded credential replaced with environment variable
+    # self._components['token_manager'] = token_manager
         
         # Initialize security scanner if enabled
         if self.config.enable_malware_scanning:

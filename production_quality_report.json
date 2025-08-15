@@ -1,0 +1,173 @@
+{
+  "execution_time": 0.9007232189178467,
+  "timestamp": 1755214372.9015813,
+  "overall_success": false,
+  "production_ready": false,
+  "overall_score": 0.8077906678035282,
+  "pass_rate": 0.6,
+  "total_gates": 5,
+  "passed_gates": 3,
+  "failed_gates": 2,
+  "gate_results": [
+    {
+      "gate_name": "Enhanced Code Quality",
+      "success": false,
+      "score": 0.6737470879190386,
+      "details": {
+        "summary": "59 files, 37067 lines, 74.6% documented",
+        "metrics": {
+          "total_files": 59,
+          "total_lines": 37067,
+          "total_functions": 1581,
+          "documented_functions": 1180,
+          "complex_functions": 794,
+          "documentation_coverage": 0.7463630613535737,
+          "complexity_score": 0.49778621125869704
+        }
+      }
+    },
+    {
+      "gate_name": "Production Security",
+      "success": true,
+      "score": 1.0,
+      "details": {
+        "summary": "0 issues, 0 high severity, 4 false positives",
+        "analysis_results": {
+          "total_issues": 0,
+          "high_severity_issues": 0,
+          "medium_severity_issues": 0,
+          "all_issues": [],
+          "false_positives": [
+            {
+              "file": "src/photonic_foundry/cli.py",
+              "line": 92,
+              "reason": "Safe model.eval() method call",
+              "context": "model.eval()  # SECURITY: eval() method disabled - was model.eval()  # Set to evaluation mode"
+            },
+            {
+              "file": "src/photonic_foundry/cli.py",
+              "line": 175,
+              "reason": "Safe model.eval() method call",
+              "context": "model.eval()  # SECURITY: eval() method disabled - was model.eval()"
+            },
+            {
+              "file": "src/photonic_foundry/research_framework.py",
+              "line": 141,
+              "reason": "Safe model.eval() method call",
+              "context": "model.eval()  # SECURITY: eval() method disabled - was model.eval()"
+            },
+            {
+              "file": "src/photonic_foundry/research_framework.py",
+              "line": 180,
+              "reason": "Safe model.eval() method call",
+              "context": "model.eval()  # SECURITY: eval() method disabled - was model.eval()"
+            }
+          ]
+        },
+        "security_files": {
+          "security_policy": true,
+          "security_guidelines": true,
+          "env_template": true
+        },
+        "production_criteria": {
+          "high_severity_issues": 0,
+          "security_score": 1.0,
+          "policy_files_present": true
+        }
+      }
+    },
+    {
+      "gate_name": "Performance",
+      "success": true,
+      "score": 0.9849999999999999,
+      "details": {
+        "summary": "187.2 ops/sec, 88.0ms latency",
+        "metrics": {
+          "quantum_algorithms_tested": 4,
+          "average_throughput": 187.24728455750136,
+          "average_latency": 87.99266815185547,
+          "breakthrough_rate": 1.0,
+          "memory_efficiency": 0.85,
+          "scalability_factor": 1.0
+        },
+        "algorithm_results": [
+          {
+            "algorithm": "QEVPE",
+            "throughput": 99.43845291240615,
+            "latency": 100.56471824645996,
+            "breakthrough_detected": true,
+            "quantum_efficiency": 0.85
+          },
+          {
+            "algorithm": "MQSS",
+            "throughput": 186.54340059004048,
+            "latency": 80.41024208068848,
+            "breakthrough_detected": true,
+            "quantum_advantage": 0.75
+          },
+          {
+            "algorithm": "SOPM",
+            "throughput": 396.6582498746938,
+            "latency": 50.42123794555664,
+            "breakthrough_detected": true,
+            "optimization_gain": 15.0
+          },
+          {
+            "algorithm": "QCVC",
+            "throughput": 66.34903485286499,
+            "latency": 120.5744743347168,
+            "breakthrough_detected": true,
+            "quantum_speedup": 22.0
+          }
+        ],
+        "requirements_met": {
+          "throughput": true,
+          "latency": true,
+          "breakthrough_rate": true
+        }
+      }
+    },
+    {
+      "gate_name": "Compliance",
+      "success": true,
+      "score": 1.0,
+      "details": {
+        "summary": "Compliance score: 100.0%",
+        "metrics": {
+          "license_check_passed": true,
+          "documentation_adequate": true,
+          "ethical_ai_compliant": true,
+          "open_source_compatible": true,
+          "privacy_compliant": true
+        },
+        "license_found": true,
+        "documentation_found": true,
+        "conduct_found": true,
+        "contributing_found": true
+      }
+    },
+    {
+      "gate_name": "Production Test Coverage",
+      "success": false,
+      "score": 0.38020625109860234,
+      "details": {
+        "summary": "396 tests, 5.3% estimated coverage",
+        "metrics": {
+          "test_files_found": 40,
+          "total_tests": 396,
+          "estimated_coverage": 0.053419668150546336,
+          "unit_tests": 330,
+          "integration_tests": 11,
+          "performance_tests": 29,
+          "security_tests": 26,
+          "async_tests": 7
+        },
+        "requirements_met": {
+          "test_count": true,
+          "coverage": false,
+          "variety": false
+        }
+      }
+    }
+  ]
+}

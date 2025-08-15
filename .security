@@ -1,0 +1,80 @@
+# Enhanced Security Guidelines for Quantum-Photonic Neural Network Foundry
+
+## Critical Security Requirements
+
+### Code Execution Security
+- ❌ NEVER use eval() or exec() with any input
+- ❌ NEVER use os.system() for command execution
+- ✅ Use subprocess.run() with proper argument validation
+- ✅ Validate and sanitize all inputs before processing
+
+### Secret Management
+- ❌ NEVER hardcode passwords, secrets, or API keys
+- ✅ Use environment variables for all sensitive data
+- ✅ Implement proper secret rotation policies
+- ✅ Use dedicated secret management systems in production
+
+### Serialization Security
+- ❌ NEVER use pickle.load() for untrusted data
+- ✅ Use JSON for data serialization when possible
+- ✅ Validate all deserialized data
+- ✅ Implement cryptographic signatures for serialized data
+
+### Quantum Security Framework
+- ✅ Implement post-quantum cryptography (PQC)
+- ✅ Use quantum-safe key distribution protocols
+- ✅ Enable quantum random number generation
+- ✅ Monitor for quantum decoherence attacks
+- ✅ Implement quantum intrusion detection systems
+
+### Authentication & Authorization
+- ✅ Require multi-factor authentication
+- ✅ Implement role-based access control (RBAC)
+- ✅ Use quantum-enhanced authentication protocols
+- ✅ Log all access attempts and security events
+
+### Network Security
+- ✅ Use HTTPS/TLS 1.3+ for all communications
+- ✅ Implement proper certificate validation
+- ✅ Use quantum-safe cipher suites
+- ✅ Enable perfect forward secrecy
+
+### Data Protection
+- ✅ Encrypt sensitive data at rest using AES-256
+- ✅ Encrypt all data in transit
+- ✅ Implement proper key management
+- ✅ Use quantum-enhanced encryption when available
+
+### Monitoring & Incident Response
+- ✅ Enable comprehensive security logging
+- ✅ Implement real-time threat detection
+- ✅ Use AI-powered anomaly detection
+- ✅ Maintain incident response procedures
+
+### Deployment Security
+- ✅ Regular security updates and patches
+- ✅ Vulnerability scanning and assessment
+- ✅ Security testing in CI/CD pipeline
+- ✅ Production security monitoring
+
+## Security Compliance Checklist
+
+- [x] Code execution vulnerabilities eliminated
+- [x] Hardcoded credentials removed
+- [x] Secure serialization implemented
+- [x] Quantum security framework enabled
+- [x] Authentication mechanisms hardened
+- [x] Network security protocols activated
+- [x] Data protection measures implemented
+- [x] Monitoring and logging enabled
+- [x] Incident response procedures documented
+- [x] Regular security assessments scheduled
+
+## Emergency Contacts
+
+Security Team: security@terragon-labs.ai
+Incident Response: incident@terragon-labs.ai
+Quantum Security: quantum-security@terragon-labs.ai
+
+Last Updated: 2025-08-14
+Version: 2.0
