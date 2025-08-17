@@ -44,7 +44,7 @@ from photonic_foundry.quantum_performance_engine import (
 )
 
 # Setup logging
-setup_logging(level=logging.INFO)
+setup_logging(level="INFO")
 logger = get_logger(__name__)
 
 

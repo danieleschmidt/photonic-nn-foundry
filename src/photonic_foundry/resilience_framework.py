@@ -19,8 +19,8 @@ from datetime import datetime
 from .error_handling import ErrorHandler, ErrorSeverity, ErrorCategory
 from .validation import create_comprehensive_validator, APIValidator
 from .logging_config import (
-    setup_logging, get_logger, get_performance_logger, 
-    get_metrics_logger, get_audit_logger
+    setup_logging, get_logger, performance_logger as get_performance_logger, 
+    quantum_logger as get_metrics_logger, security_logger as get_audit_logger
 )
 from .monitoring import (
     get_metrics_collector, get_performance_monitor, 
@@ -31,8 +31,7 @@ from .security import (
     SecurityScanner, SecurityLevel
 )
 from .circuit_breaker import (
-    get_circuit_breaker_middleware, CircuitBreakerConfig,
-    DATABASE_CIRCUIT_BREAKER_CONFIG, API_CIRCUIT_BREAKER_CONFIG
+    circuit_breaker, CircuitBreakerConfig, get_circuit_breaker
 )
 
 logger = logging.getLogger(__name__)
@@ -184,18 +183,17 @@ class ResilienceFramework:
             log_dir.mkdir(parents=True, exist_ok=True)
             
         setup_logging(
-            log_level=self.config.log_level,
+            level=self.config.log_level,
             log_format=self.config.log_format,
             log_file=self.config.log_file,
-            enable_console=self.config.enable_console_logging,
-            enable_security_filter=self.config.enable_security_filter
+            enable_file_logging=True
         )
         
         # Store logging components
-        self._components['logger'] = get_logger(__name__, "resilience")
-        self._components['performance_logger'] = get_performance_logger()
-        self._components['metrics_logger'] = get_metrics_logger()
-        self._components['audit_logger'] = get_audit_logger()
+        self._components['logger'] = get_logger(__name__)
+        self._components['performance_logger'] = get_performance_logger
+        self._components['metrics_logger'] = get_metrics_logger
+        self._components['audit_logger'] = get_audit_logger
         
         logger.info("Logging system initialized")
         
@@ -235,8 +233,9 @@ class ResilienceFramework:
         
         # Initialize security scanner if enabled
         if self.config.enable_malware_scanning:
+            from .security import SecurityLevel as SecLevel
             scanner = SecurityScanner(
-                SecurityLevel(self.config.security_level.upper())
+                SecLevel(self.config.security_level.lower())
             )
             self._components['security_scanner'] = scanner
             
@@ -249,8 +248,8 @@ class ResilienceFramework:
             
         logger.info("Initializing circuit breaker system...")
         
-        middleware = get_circuit_breaker_middleware()
-        self._components['circuit_breaker_middleware'] = middleware
+        # Initialize circuit breakers
+        self._components['circuit_breakers'] = {}
         
         logger.info("Circuit breaker system initialized")
         

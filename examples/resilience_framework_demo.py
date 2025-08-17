@@ -43,7 +43,7 @@ def demonstrate_basic_usage():
     # Create configuration
     config = ResilienceConfig(
         log_level="INFO",
-        log_format="structured",
+        log_format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         enable_console_logging=True,
         enable_performance_monitoring=True,
         enable_health_checks=True,
