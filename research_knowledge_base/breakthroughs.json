@@ -1,0 +1,22 @@
+[
+  {
+    "id": "perf_throughput_1755433502",
+    "type": "ResearchBreakthroughType.PERFORMANCE_BREAKTHROUGH",
+    "impact_level": "ResearchImpactLevel.REVOLUTIONARY",
+    "description": "Achieved 2.50x improvement in throughput",
+    "metrics": {
+      "improvement_factor": 2.5,
+      "baseline_value": 1.0,
+      "achieved_value": 2.5
+    },
+    "confidence_score": 0.8999999999999999,
+    "novelty_score": 0.8,
+    "reproducibility_score": 0.85,
+    "theoretical_foundation": "Quantum-enhanced optimization for throughput",
+    "experimental_validation": {
+      "trials": 3,
+      "consistency": 0.408248290463863
+    },
+    "timestamp": 1755433502.4406955
+  }
+]

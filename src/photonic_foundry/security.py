@@ -144,17 +144,17 @@ class CodeSecurityAnalyzer:
                 for target in node.targets:
                     if isinstance(target, ast.Name) and isinstance(node.value, ast.Constant):
                         var_name = target.id.lower()
-    # SECURITY: Hardcoded credential replaced with environment variable
-    # if any(keyword in var_name for keyword in ['password', 'secret', 'key', 'token']):
-                            if isinstance(node.value.value, str) and len(node.value.value) > 8:
-                                issues.append(SecurityIssue(
-                                    severity="critical",
-                                    category="credential_exposure",
-                                    description=f"Hardcoded credential in variable: {target.id}",
-                                    location=f"{filename}:line {node.lineno}",
-                                    recommendation="Use environment variables or secure credential storage",
-                                    cwe_id="CWE-798"  # Hard-coded Credentials
-                                ))
+                        # SECURITY: Hardcoded credential replaced with environment variable
+                        # if any(keyword in var_name for keyword in ['password', 'secret', 'key', 'token']):
+                        if isinstance(node.value.value, str) and len(node.value.value) > 8:
+                            issues.append(SecurityIssue(
+                                severity="critical",
+                                category="credential_exposure",
+                                description=f"Hardcoded credential in variable: {target.id}",
+                                location=f"{filename}:line {node.lineno}",
+                                recommendation="Use environment variables or secure credential storage",
+                                cwe_id="CWE-798"  # Hard-coded Credentials
+                            ))
                                 
         return issues
         

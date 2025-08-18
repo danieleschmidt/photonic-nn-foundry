@@ -1,9 +1,9 @@
 {
-  "execution_time": 0.9007232189178467,
-  "timestamp": 1755214372.9015813,
+  "execution_time": 2.7645602226257324,
+  "timestamp": 1755433507.7687125,
   "overall_success": false,
   "production_ready": false,
-  "overall_score": 0.8077906678035282,
+  "overall_score": 0.8792055487229492,
   "pass_rate": 0.6,
   "total_gates": 5,
   "passed_gates": 3,
@@ -12,17 +12,17 @@
     {
       "gate_name": "Enhanced Code Quality",
       "success": false,
-      "score": 0.6737470879190386,
+      "score": 0.6609342157434402,
       "details": {
-        "summary": "59 files, 37067 lines, 74.6% documented",
+        "summary": "63 files, 40874 lines, 72.9% documented",
         "metrics": {
-          "total_files": 59,
-          "total_lines": 37067,
-          "total_functions": 1581,
-          "documented_functions": 1180,
-          "complex_functions": 794,
-          "documentation_coverage": 0.7463630613535737,
-          "complexity_score": 0.49778621125869704
+          "total_files": 63,
+          "total_lines": 40874,
+          "total_functions": 1715,
+          "documented_functions": 1250,
+          "complex_functions": 851,
+          "documentation_coverage": 0.7288629737609329,
+          "complexity_score": 0.5037900874635568
         }
       }
     },
@@ -81,11 +81,11 @@
       "success": true,
       "score": 0.9849999999999999,
       "details": {
-        "summary": "187.2 ops/sec, 88.0ms latency",
+        "summary": "187.3 ops/sec, 88.0ms latency",
         "metrics": {
           "quantum_algorithms_tested": 4,
-          "average_throughput": 187.24728455750136,
-          "average_latency": 87.99266815185547,
+          "average_throughput": 187.32695594227297,
+          "average_latency": 87.98056840896606,
           "breakthrough_rate": 1.0,
           "memory_efficiency": 0.85,
           "scalability_factor": 1.0
@@ -93,29 +93,29 @@
         "algorithm_results": [
           {
             "algorithm": "QEVPE",
-            "throughput": 99.43845291240615,
-            "latency": 100.56471824645996,
+            "throughput": 99.34918446721525,
+            "latency": 100.65507888793945,
             "breakthrough_detected": true,
             "quantum_efficiency": 0.85
           },
           {
             "algorithm": "MQSS",
-            "throughput": 186.54340059004048,
-            "latency": 80.41024208068848,
+            "throughput": 186.4422370261492,
+            "latency": 80.45387268066406,
             "breakthrough_detected": true,
             "quantum_advantage": 0.75
           },
           {
             "algorithm": "SOPM",
-            "throughput": 396.6582498746938,
-            "latency": 50.42123794555664,
+            "throughput": 397.0976293266682,
+            "latency": 50.365447998046875,
             "breakthrough_detected": true,
             "optimization_gain": 15.0
           },
           {
             "algorithm": "QCVC",
-            "throughput": 66.34903485286499,
-            "latency": 120.5744743347168,
+            "throughput": 66.41877294905927,
+            "latency": 120.44787406921387,
             "breakthrough_detected": true,
             "quantum_speedup": 22.0
           }
@@ -149,22 +149,22 @@
     {
       "gate_name": "Production Test Coverage",
       "success": false,
-      "score": 0.38020625109860234,
+      "score": 0.7500935278713057,
       "details": {
-        "summary": "396 tests, 5.3% estimated coverage",
+        "summary": "64152 tests, 100.0% estimated coverage",
         "metrics": {
-          "test_files_found": 40,
-          "total_tests": 396,
-          "estimated_coverage": 0.053419668150546336,
-          "unit_tests": 330,
-          "integration_tests": 11,
-          "performance_tests": 29,
+          "test_files_found": 2927,
+          "total_tests": 64152,
+          "estimated_coverage": 1.0,
+          "unit_tests": 64042,
+          "integration_tests": 34,
+          "performance_tests": 50,
           "security_tests": 26,
-          "async_tests": 7
+          "async_tests": 12
         },
         "requirements_met": {
           "test_count": true,
-          "coverage": false,
+          "coverage": true,
           "variety": false
         }
       }

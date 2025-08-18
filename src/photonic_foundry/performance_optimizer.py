@@ -668,12 +668,14 @@ class PerformanceOptimizer:
     
     def _load_cache_from_disk(self):
         """Load optimization cache from disk."""
-        cache_file = self.cache_dir / "optimization_cache.pkl"
+        cache_file = self.cache_dir / "optimization_cache.json"
         
         if cache_file.exists():
             try:
-                with open(cache_file, "rb") as f:
-                    self.cache = # SECURITY: pickle.load disabled - use json.load or safe serialization - pickle.load(f)
+                with open(cache_file, "r") as f:
+                    # SECURITY: Use safe JSON serialization instead of pickle
+                    import json
+                    self.cache = json.load(f)
                 logger.info(f"Loaded {len(self.cache)} cached results")
             except Exception as e:
                 logger.warning(f"Failed to load cache: {e}")

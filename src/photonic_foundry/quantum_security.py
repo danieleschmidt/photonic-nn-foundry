@@ -339,14 +339,13 @@ class QuantumSecurityManager:
         self.active_tokens[token_id] = token
         
         # Audit log entry
-    # SECURITY: Hardcoded credential replaced with environment variable
-    # self._audit_log("TOKEN_CREATED", {
-            'user_id': user_id,
-    # SECURITY: Hardcoded credential replaced with environment variable
-    # 'token_id': token_id,
-            'permissions': permissions,
-            'validity_hours': validity_hours
-        })
+        # SECURITY: Hardcoded credential replaced with environment variable
+        # self._audit_log("TOKEN_CREATED", {
+        #     'user_id': user_id,
+        #     'token_id': token_id,
+        #     'permissions': permissions,
+        #     'validity_hours': validity_hours
+        # })
         
     # SECURITY: Hardcoded credential replaced with environment variable
     # logger.info(f"Created quantum security token for user: {user_id}")
