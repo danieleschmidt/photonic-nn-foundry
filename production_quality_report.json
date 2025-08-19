@@ -1,42 +1,59 @@
 {
-  "execution_time": 2.7645602226257324,
-  "timestamp": 1755433507.7687125,
+  "execution_time": 2.5249788761138916,
+  "timestamp": 1755609785.5304487,
   "overall_success": false,
   "production_ready": false,
-  "overall_score": 0.8792055487229492,
-  "pass_rate": 0.6,
+  "overall_score": 0.7560412241337043,
+  "pass_rate": 0.4,
   "total_gates": 5,
-  "passed_gates": 3,
-  "failed_gates": 2,
+  "passed_gates": 2,
+  "failed_gates": 3,
   "gate_results": [
     {
       "gate_name": "Enhanced Code Quality",
       "success": false,
-      "score": 0.6609342157434402,
+      "score": 0.6451419311075782,
       "details": {
-        "summary": "63 files, 40874 lines, 72.9% documented",
+        "summary": "67 files, 45924 lines, 73.1% documented",
         "metrics": {
-          "total_files": 63,
-          "total_lines": 40874,
-          "total_functions": 1715,
-          "documented_functions": 1250,
-          "complex_functions": 851,
-          "documentation_coverage": 0.7288629737609329,
-          "complexity_score": 0.5037900874635568
+          "total_files": 67,
+          "total_lines": 45924,
+          "total_functions": 1887,
+          "documented_functions": 1379,
+          "complex_functions": 977,
+          "documentation_coverage": 0.7307896131425543,
+          "complexity_score": 0.48224695283518815
         }
       }
     },
     {
       "gate_name": "Production Security",
-      "success": true,
-      "score": 1.0,
+      "success": false,
+      "score": 0.4,
       "details": {
-        "summary": "0 issues, 0 high severity, 4 false positives",
+        "summary": "2 issues, 2 high severity, 4 false positives",
         "analysis_results": {
-          "total_issues": 0,
-          "high_severity_issues": 0,
+          "total_issues": 2,
+          "high_severity_issues": 2,
           "medium_severity_issues": 0,
-          "all_issues": [],
+          "all_issues": [
+            {
+              "file": "src/photonic_foundry/ai_singularity_engine.py",
+              "line": 319,
+              "pattern": "eval(",
+              "description": "Dangerous eval() function usage",
+              "severity": "HIGH",
+              "context": "\"eval(\","
+            },
+            {
+              "file": "src/photonic_foundry/ai_singularity_engine.py",
+              "line": 318,
+              "pattern": "exec(",
+              "description": "Dangerous exec() usage",
+              "severity": "HIGH",
+              "context": "\"exec(\","
+            }
+          ],
           "false_positives": [
             {
               "file": "src/photonic_foundry/cli.py",
@@ -70,8 +87,8 @@
           "env_template": true
         },
         "production_criteria": {
-          "high_severity_issues": 0,
-          "security_score": 1.0,
+          "high_severity_issues": 2,
+          "security_score": 0.4,
           "policy_files_present": true
         }
       }
@@ -81,11 +98,11 @@
       "success": true,
       "score": 0.9849999999999999,
       "details": {
-        "summary": "187.3 ops/sec, 88.0ms latency",
+        "summary": "187.5 ops/sec, 87.9ms latency",
         "metrics": {
           "quantum_algorithms_tested": 4,
-          "average_throughput": 187.32695594227297,
-          "average_latency": 87.98056840896606,
+          "average_throughput": 187.51836648749654,
+          "average_latency": 87.89324760437012,
           "breakthrough_rate": 1.0,
           "memory_efficiency": 0.85,
           "scalability_factor": 1.0
@@ -93,29 +110,29 @@
         "algorithm_results": [
           {
             "algorithm": "QEVPE",
-            "throughput": 99.34918446721525,
-            "latency": 100.65507888793945,
+            "throughput": 99.55575810226394,
+            "latency": 100.44622421264648,
             "breakthrough_detected": true,
             "quantum_efficiency": 0.85
           },
           {
             "algorithm": "MQSS",
-            "throughput": 186.4422370261492,
-            "latency": 80.45387268066406,
+            "throughput": 186.46544519066052,
+            "latency": 80.4438591003418,
             "breakthrough_detected": true,
             "quantum_advantage": 0.75
           },
           {
             "algorithm": "SOPM",
-            "throughput": 397.0976293266682,
-            "latency": 50.365447998046875,
+            "throughput": 397.5963940222672,
+            "latency": 50.30226707458496,
             "breakthrough_detected": true,
             "optimization_gain": 15.0
           },
           {
             "algorithm": "QCVC",
-            "throughput": 66.41877294905927,
-            "latency": 120.44787406921387,
+            "throughput": 66.45586863479451,
+            "latency": 120.38064002990723,
             "breakthrough_detected": true,
             "quantum_speedup": 22.0
           }
@@ -149,18 +166,18 @@
     {
       "gate_name": "Production Test Coverage",
       "success": false,
-      "score": 0.7500935278713057,
+      "score": 0.7500641895609435,
       "details": {
-        "summary": "64152 tests, 100.0% estimated coverage",
+        "summary": "54526 tests, 100.0% estimated coverage",
         "metrics": {
-          "test_files_found": 2927,
-          "total_tests": 64152,
+          "test_files_found": 2530,
+          "total_tests": 54526,
           "estimated_coverage": 1.0,
-          "unit_tests": 64042,
-          "integration_tests": 34,
-          "performance_tests": 50,
+          "unit_tests": 54424,
+          "integration_tests": 29,
+          "performance_tests": 47,
           "security_tests": 26,
-          "async_tests": 12
+          "async_tests": 7
         },
         "requirements_met": {
           "test_count": true,

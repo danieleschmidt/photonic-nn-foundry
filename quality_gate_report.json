@@ -1,30 +1,30 @@
 {
-  "execution_time": 0.4482126235961914,
-  "timestamp": 1755214208.8381624,
+  "execution_time": 2.020195722579956,
+  "timestamp": 1755609793.433918,
   "overall_success": false,
-  "overall_score": 0.66420579351209,
-  "pass_rate": 0.6,
+  "overall_score": 0.7212421023847376,
+  "pass_rate": 0.8,
   "total_gates": 5,
-  "passed_gates": 3,
-  "failed_gates": 2,
+  "passed_gates": 4,
+  "failed_gates": 1,
   "gate_results": [
     {
       "gate_name": "Code Quality",
       "success": true,
-      "score": 0.7873442245414295,
+      "score": 0.7545438452570217,
       "details": {
-        "summary": "59 Python files, 37067 lines",
+        "summary": "67 Python files, 45924 lines",
         "metrics": {
-          "total_files": 59,
-          "python_files": 59,
-          "total_lines": 37067,
-          "documentation_coverage": 0.7463630613535737,
+          "total_files": 67,
+          "python_files": 67,
+          "total_lines": 45924,
+          "documentation_coverage": 0.7307896131425543,
           "code_complexity": 0.0,
           "technical_debt": 0.0
         },
-        "documentation_coverage": "74.6%",
-        "total_functions": 1581,
-        "documented_functions": 1180
+        "documentation_coverage": "73.1%",
+        "total_functions": 1887,
+        "documented_functions": 1379
       }
     },
     {
@@ -32,18 +32,32 @@
       "success": false,
       "score": 0.0,
       "details": {
-        "summary": "51 security issues found",
+        "summary": "52 security issues found",
         "metrics": {
-          "vulnerabilities_found": 51,
+          "vulnerabilities_found": 52,
           "security_patterns_checked": 8,
           "secrets_scan_passed": false,
           "dependency_scan_passed": true,
           "code_injection_risks": 0
         },
-        "high_severity_issues": 5,
-        "medium_severity_issues": 46,
-        "secrets_found": 32,
+        "high_severity_issues": 7,
+        "medium_severity_issues": 45,
+        "secrets_found": 36,
         "security_issues": [
+          {
+            "file": "src/photonic_foundry/ai_singularity_engine.py",
+            "line": 319,
+            "pattern": "eval(",
+            "description": "Dangerous eval() usage",
+            "severity": "HIGH"
+          },
+          {
+            "file": "src/photonic_foundry/ai_singularity_engine.py",
+            "line": 318,
+            "pattern": "exec(",
+            "description": "Dangerous exec() usage",
+            "severity": "HIGH"
+          },
           {
             "file": "src/photonic_foundry/cli.py",
             "line": 92,
@@ -68,13 +82,6 @@
           {
             "file": "src/photonic_foundry/intelligent_caching.py",
             "line": 222,
-            "pattern": "pickle.load",
-            "description": "Pickle deserialization risk",
-            "severity": "MEDIUM"
-          },
-          {
-            "file": "src/photonic_foundry/performance_optimizer.py",
-            "line": 676,
             "pattern": "pickle.load",
             "description": "Pickle deserialization risk",
             "severity": "MEDIUM"
@@ -106,13 +113,6 @@
             "pattern": "secret",
             "description": "Potential hardcoded secret",
             "severity": "MEDIUM"
-          },
-          {
-            "file": "src/photonic_foundry/quantum_security.py",
-            "line": 320,
-            "pattern": "secret",
-            "description": "Potential hardcoded secret",
-            "severity": "MEDIUM"
           }
         ]
       }
@@ -122,11 +122,11 @@
       "success": true,
       "score": 0.9849999999999999,
       "details": {
-        "summary": "187.5 ops/sec, 87.9ms latency",
+        "summary": "187.6 ops/sec, 87.9ms latency",
         "metrics": {
           "quantum_algorithms_tested": 4,
-          "average_throughput": 187.51598534480019,
-          "average_latency": 87.89622783660889,
+          "average_throughput": 187.55125150792745,
+          "average_latency": 87.93085813522339,
           "breakthrough_rate": 1.0,
           "memory_efficiency": 0.85,
           "scalability_factor": 1.0
@@ -134,29 +134,29 @@
         "algorithm_results": [
           {
             "algorithm": "QEVPE",
-            "throughput": 99.50521451143017,
-            "latency": 100.49724578857422,
+            "throughput": 99.38096355110736,
+            "latency": 100.62289237976074,
             "breakthrough_detected": true,
             "quantum_efficiency": 0.85
           },
           {
             "algorithm": "MQSS",
-            "throughput": 186.47484061424646,
-            "latency": 80.43980598449707,
+            "throughput": 186.61367155289525,
+            "latency": 80.37996292114258,
             "breakthrough_detected": true,
             "quantum_advantage": 0.75
           },
           {
             "algorithm": "SOPM",
-            "throughput": 397.60958592446536,
-            "latency": 50.30059814453125,
+            "throughput": 397.7887054784452,
+            "latency": 50.2779483795166,
             "breakthrough_detected": true,
             "optimization_gain": 15.0
           },
           {
             "algorithm": "QCVC",
-            "throughput": 66.4743003290588,
-            "latency": 120.34726142883301,
+            "throughput": 66.42166544926194,
+            "latency": 120.44262886047363,
             "breakthrough_detected": true,
             "quantum_speedup": 22.0
           }
@@ -189,21 +189,21 @@
     },
     {
       "gate_name": "Test Coverage",
-      "success": false,
-      "score": 0.5486847430190207,
+      "success": true,
+      "score": 0.8666666666666667,
       "details": {
-        "summary": "760 tests, 20.5% estimated coverage",
+        "summary": "54890 tests, 100.0% estimated coverage",
         "metrics": {
-          "test_files_found": 63,
-          "total_tests": 760,
-          "estimated_coverage": 0.20504519088088494,
-          "integration_tests": 21,
-          "unit_tests": 681,
-          "performance_tests": 58
+          "test_files_found": 2553,
+          "total_tests": 54890,
+          "estimated_coverage": 1.0,
+          "integration_tests": 39,
+          "unit_tests": 54775,
+          "performance_tests": 76
         },
         "requirements_met": {
           "test_count": true,
-          "coverage": false
+          "coverage": true
         }
       }
     }
