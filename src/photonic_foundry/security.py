@@ -727,9 +727,9 @@ class MalwareScanner:
             meta:
                 description = "Detects suspicious script patterns"
             strings:
-                # SECURITY: eval() variable disabled for security
+                # SECURITY: # SECURITY: eval() disabled for security - original: eval() variable disabled for security
                 eval_disabled = "SECURITY_DISABLED"
-                $exec = "# SECURITY: # SECURITY: exec() disabled for security - original: exec() disabled for security # exec("
+                $exec = "# SECURITY: # SECURITY: # SECURITY: exec() disabled for security - original: exec() disabled for security - original: # SECURITY: exec() disabled for security - original: exec() disabled for security # exec("
                 $import_os = "import os"
                 $subprocess = "subprocess"
                 $dangerous = "__import__"
