@@ -1,34 +1,38 @@
 {
   "overall_passed": false,
-  "overall_score": 1.0272582384403037,
+  "overall_score": 0.8522711672027387,
   "total_gates": 8,
-  "gates_passed": 6,
-  "pass_rate": 0.75,
-  "execution_time": 6.24978494644165,
+  "gates_passed": 5,
+  "pass_rate": 0.625,
+  "execution_time": 5.310088157653809,
   "category_scores": {
-    "code_quality": 0.9751984126984127,
+    "code_quality": 0.976679104477612,
     "testing": 0.23739130434782607,
     "security": 0.875,
     "performance": 1.6,
-    "documentation": 0.9404761904761905,
-    "breakthrough_validation": 1.6733333333333333,
+    "documentation": 0.9390989287964713,
+    "breakthrough_validation": 1.2733333333333334,
     "production_readiness": 0.9166666666666666,
-    "integration": 1.0
+    "integration": 0.0
   },
   "summary_recommendations": [
     "Increase test coverage to at least 85.0%",
-    "Implement proper secret management",
-    "Enhance quantum-resistant security measures",
     "Address security vulnerabilities found by scanners",
+    "Improve system integration test coverage",
+    "Include integration and edge case tests",
+    "Validate performance under load",
     "Add more comprehensive unit tests",
     "Update dependencies with known vulnerabilities",
-    "Include integration and edge case tests"
+    "Implement proper secret management",
+    "Add more comprehensive end-to-end tests",
+    "Enhance quantum-resistant security measures",
+    "Test error handling and edge cases"
   ],
   "results": [
     {
       "name": "code_quality",
       "passed": true,
-      "score": 0.9751984126984127,
+      "score": 0.976679104477612,
       "details": {
         "checks": {
           "flake8": {
@@ -47,22 +51,22 @@
           "imports": {
             "passed": true,
             "score": 1.0,
-            "total_files": 63,
+            "total_files": 67,
             "issues": [],
             "circular_imports": []
           },
           "patterns": {
             "passed": true,
-            "score": 0.9007936507936508,
-            "files_analyzed": 63,
-            "average_pattern_score": 0.9007936507936508
+            "score": 0.9067164179104478,
+            "files_analyzed": 67,
+            "average_pattern_score": 0.9067164179104478
           }
         },
-        "overall_score": 0.9751984126984127,
+        "overall_score": 0.976679104477612,
         "threshold": 0.85
       },
       "recommendations": [],
-      "timestamp": 1755433496.2826009
+      "timestamp": 1755700687.1923053
     },
     {
       "name": "testing",
@@ -75,8 +79,8 @@
           "tests_failed": 0,
           "tests_skipped": 0,
           "coverage_data": {},
-          "test_output": "",
-          "return_code": 1
+          "test_output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /root/repo/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /root/repo\nconfigfile: pytest.ini\nplugins: xdist-3.8.0, cov-6.2.1\ncollecting ... collected 71 items / 17 errors\n\n==================================== ERRORS ====================================\n_____________ ERROR collecting tests/e2e/test_complete_workflow.py _____________\nImportError while importing test module '/root/repo/tests/e2e/test_complete_workflow.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/e2e/test_complete_workflow.py:4: in <module>\n    import torch\nE   ModuleNotFoundError: No module named 'torch'\n___________ ERROR collecting tests/integrati",
+          "return_code": 2
         },
         "test_quality": {
           "score": 0.7913043478260869,
@@ -92,7 +96,7 @@
         "Add more comprehensive unit tests",
         "Include integration and edge case tests"
       ],
-      "timestamp": 1755433496.3158455
+      "timestamp": 1755700691.1446664
     },
     {
       "name": "security",
@@ -109,7 +113,7 @@
           "secrets": {
             "passed": false,
             "score": 0.0,
-            "potential_secrets": 425,
+            "potential_secrets": 436,
             "secrets_found": [
               {
                 "file": "advanced_research_framework.py",
@@ -161,7 +165,7 @@
         "Update dependencies with known vulnerabilities",
         "Enhance quantum-resistant security measures"
       ],
-      "timestamp": 1755433496.4088426
+      "timestamp": 1755700691.2515488
     },
     {
       "name": "performance",
@@ -173,15 +177,15 @@
           "score": 1.0,
           "benchmarks": {
             "cpu_matrix_multiply": {
-              "time": 0.024680137634277344,
+              "time": 0.025293350219726562,
               "size": 500
             },
             "memory_allocation": {
-              "time": 0.11967945098876953,
+              "time": 0.15994858741760254,
               "elements": 10000000
             },
             "io_performance": {
-              "time": 0.0036191940307617188,
+              "time": 0.00395512580871582,
               "data_size": 1000000
             }
           },
@@ -212,36 +216,36 @@
         "threshold": 0.9
       },
       "recommendations": [],
-      "timestamp": 1755433496.6356745
+      "timestamp": 1755700691.5254035
     },
     {
       "name": "documentation",
       "passed": true,
-      "score": 0.9404761904761905,
+      "score": 0.9390989287964713,
       "details": {
-        "score": 0.9404761904761905,
+        "score": 0.9390989287964713,
         "metrics": {
-          "files_with_docstrings": 63,
-          "functions_with_docstrings": 1278,
-          "classes_with_docstrings": 375,
-          "total_functions": 1491,
-          "total_classes": 378,
-          "total_files": 63
+          "files_with_docstrings": 67,
+          "functions_with_docstrings": 1354,
+          "classes_with_docstrings": 411,
+          "total_functions": 1587,
+          "total_classes": 414,
+          "total_files": 67
         },
         "coverage_ratios": {
           "files": 1.0,
-          "functions": 0.8571428571428571,
-          "classes": 0.9920634920634921
+          "functions": 0.853182104599874,
+          "classes": 0.9927536231884058
         },
         "threshold": 0.8
       },
       "recommendations": [],
-      "timestamp": 1755433497.433237
+      "timestamp": 1755700692.3706553
     },
     {
       "name": "breakthrough_validation",
       "passed": true,
-      "score": 1.6733333333333333,
+      "score": 1.2733333333333334,
       "details": {
         "component_validation": {
           "passed": true,
@@ -262,19 +266,19 @@
           "total_components": 11
         },
         "functionality_test": {
-          "passed": true,
-          "score": 1.0,
+          "passed": false,
+          "score": 0.0,
           "test_results": [
             [
               "meta_learner",
-              true
+              false
             ],
             [
               "discovery_system",
-              true
+              false
             ]
           ],
-          "successful_tests": 2,
+          "successful_tests": 0,
           "total_tests": 2
         },
         "output_analysis": {
@@ -287,11 +291,11 @@
             "visualization_files": 0
           }
         },
-        "combined_score": 1.6733333333333333,
+        "combined_score": 1.2733333333333334,
         "threshold": 0.9
       },
       "recommendations": [],
-      "timestamp": 1755433502.4420576
+      "timestamp": 1755700692.3824782
     },
     {
       "name": "production_readiness",
@@ -329,44 +333,45 @@
         "threshold": 0.8
       },
       "recommendations": [],
-      "timestamp": 1755433502.4432483
+      "timestamp": 1755700692.3839674
     },
     {
       "name": "integration",
-      "passed": true,
-      "score": 1.0,
+      "passed": false,
+      "score": 0.0,
       "details": {
         "end_to_end": {
-          "passed": true,
-          "score": 1.0,
+          "passed": false,
+          "score": 0.0,
           "workflow_tests": [
             [
               "photonic_workflow",
-              true
+              false
             ],
             [
               "quantum_planning_workflow",
-              true
+              false
             ]
           ],
-          "successful_workflows": 2,
+          "successful_workflows": 0,
           "total_workflows": 2
         },
         "system_integration": {
-          "passed": true,
-          "score": 1.0,
-          "components_integrated": [
-            "core_imports",
-            "performance_engine",
-            "research_engine"
-          ],
-          "total_components": 3
+          "passed": false,
+          "score": 0.0,
+          "components_integrated": [],
+          "total_components": 0
         },
-        "combined_score": 1.0,
+        "combined_score": 0.0,
         "threshold": 0.75
       },
-      "recommendations": [],
-      "timestamp": 1755433502.4498348
+      "recommendations": [
+        "Add more comprehensive end-to-end tests",
+        "Improve system integration test coverage",
+        "Test error handling and edge cases",
+        "Validate performance under load"
+      ],
+      "timestamp": 1755700692.3876648
     }
   ],
   "quality_thresholds": {

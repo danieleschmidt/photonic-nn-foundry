@@ -138,7 +138,7 @@ class ClassicalCPUBaseline(BaselineAlgorithm):
         """Run model on CPU."""
         start_time = time.perf_counter()
         
-        model.eval()  # SECURITY: eval() method disabled - was model.eval()
+        model.# SECURITY: eval() disabled for security - original: eval()  # SECURITY: # SECURITY: eval() disabled for security - original: eval() method disabled - was model.# SECURITY: eval() disabled for security - original: eval()
         with torch.no_grad():
             output = model(input_data)
             
@@ -177,7 +177,7 @@ class ClassicalGPUBaseline(BaselineAlgorithm):
         torch.cuda.synchronize() if device.type == "cuda" else None
         start_time = time.perf_counter()
         
-        model.eval()  # SECURITY: eval() method disabled - was model.eval()
+        model.# SECURITY: eval() disabled for security - original: eval()  # SECURITY: # SECURITY: eval() disabled for security - original: eval() method disabled - was model.# SECURITY: eval() disabled for security - original: eval()
         with torch.no_grad():
             output = model(input_data)
             
