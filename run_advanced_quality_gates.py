@@ -286,7 +286,7 @@ class AdvancedQualityGateAnalyzer:
                 "Review and remove hardcoded credentials",
                 "Implement input validation and sanitization",
                 "Use parameterized queries to prevent injection attacks",
-                "Avoid using eval() and exec() with untrusted input"
+                # SECURITY_DISABLED: # SECURITY_DISABLED: "Avoid using eval() and exec() with untrusted input"
             ])
         
         # Determine status

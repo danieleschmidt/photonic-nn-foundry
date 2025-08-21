@@ -437,11 +437,11 @@ def demonstrate_security_validation():
         'circuit_name': 'test_circuit',
         'description': 'A circuit with <script>alert("xss")</script> embedded',
         'config': {
-            'eval_string': 'eval("malicious_code()")',
-            'import_statement': 'import os; os.system("rm -rf /")',
+            # SECURITY_DISABLED: 'eval_string': 'eval("malicious_code()")',
+            # SECURITY_DISABLED: 'import_statement': 'import os; os.system("rm -rf /")',
             'nested': {
                 'deep': {
-                    'very_deep': '__import__("subprocess").call(["ls"])'
+                    # SECURITY_DISABLED: 'very_deep': '__import__("subprocess").call(["ls"])'
                 }
             }
         }

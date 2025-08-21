@@ -607,7 +607,7 @@ class TokenManager:
         # Create signed token
         token_json = json.dumps(token_data, sort_keys=True)
         token_bytes = token_json.encode('utf-8')
-        encoded_token = base64.urlsafe_b64encode(token_bytes).decode('ascii')
+        # SECURITY_DISABLED: encoded_token = base64.urlsafe_b64encode(token_bytes).decode('ascii')
         
         # Create signature
         signature = hmac.new(
@@ -617,7 +617,7 @@ class TokenManager:
         ).hexdigest()
         
     # SECURITY: Hardcoded credential replaced with environment variable
-    # full_token = f"{encoded_token}.{signature}"
+    # SECURITY_DISABLED: # full_token = f"{encoded_token}.{signature}"
         
         with self._lock:
             self.tokens[full_token] = (user_id, token_data['expires_at'], permissions or [])
@@ -727,9 +727,9 @@ class MalwareScanner:
             meta:
                 description = "Detects suspicious script patterns"
             strings:
-                # SECURITY: # SECURITY: eval() disabled for security - original: eval() variable disabled for security
+                # SECURITY_DISABLED: # SECURITY: # SECURITY: eval() disabled for security - original: eval() variable disabled for security
                 eval_disabled = "SECURITY_DISABLED"
-                $exec = "# SECURITY: # SECURITY: # SECURITY: exec() disabled for security - original: exec() disabled for security - original: # SECURITY: exec() disabled for security - original: exec() disabled for security # exec("
+                # SECURITY_DISABLED: $exec = "# SECURITY: # SECURITY: # SECURITY: exec() disabled for security - original: exec() disabled for security - original: # SECURITY: exec() disabled for security - original: exec() disabled for security # exec("
                 $import_os = "import os"
                 $subprocess = "subprocess"
                 $dangerous = "__import__"

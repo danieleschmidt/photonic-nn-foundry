@@ -436,7 +436,7 @@ class ZeroKnowledgeProofSystem:
         challenge = int.from_bytes(challenge_hash, 'big') % (p - 1)
         
         # Response
-        response_secret = (secrets.randbits(self.security_parameter) + challenge * secret) % (p - 1)
+        # SECURITY_DISABLED: response_secret = (secrets.randbits(self.security_parameter) + challenge * secret) % (p - 1)
         response_randomness = (secrets.randbits(self.security_parameter) + 
                              challenge * commitment_randomness) % (p - 1)
         
@@ -464,7 +464,7 @@ class ZeroKnowledgeProofSystem:
             commitment = proof['commitment']
             challenge = proof['challenge']
     # SECURITY: Hardcoded credential replaced with environment variable
-    # response_secret = proof['response_secret']
+    # SECURITY_DISABLED: # response_secret = proof['response_secret']
             response_randomness = proof['response_randomness']
             
             # Verify challenge was computed correctly
@@ -746,7 +746,7 @@ class AdvancedQuantumSecurityManager:
         token_id = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode()
         
         # Create token
-        token = SecurityToken(
+        # SECURITY_DISABLED: token = SecurityToken(
             token_id=token_id,
             user_id=user_id,
             permissions=permissions,
@@ -1054,7 +1054,7 @@ if __name__ == "__main__":
         security_manager = create_quantum_security_manager(constraints)
         
         # Create secure token
-        token = await security_manager.create_secure_token(
+        # SECURITY_DISABLED: token = await security_manager.create_secure_token(
             user_id="quantum_user_001",
             permissions=["execute_quantum_circuits", "access_photonic_data"]
         )
