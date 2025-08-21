@@ -1,0 +1,405 @@
+{
+  "demo_summary": {
+    "execution_time": 0.7600693702697754,
+    "breakthroughs_discovered": 6,
+    "breakthrough_rate": 1.0,
+    "discovery_efficiency": 0.8412522782262969,
+    "novel_insights_total": 6
+  },
+  "discovery_results": {
+    "total_iterations": 6,
+    "breakthroughs_discovered": 6,
+    "breakthrough_rate": 1.0,
+    "breakthroughs": [
+      {
+        "iteration": 1,
+        "hypothesis": {
+          "hypothesis_id": "hyp_1755817245903_3390",
+          "description": "Novel photonic component design for ultra-low energy",
+          "breakthrough_type": "photonic_innovation",
+          "success_criteria": {
+            "performance_improvement": 0.15272798815295033,
+            "energy_efficiency": 0.4612667690497168,
+            "statistical_significance": 0.05,
+            "reproducibility": 0.9
+          },
+          "expected_impact": 0.8293800501334393,
+          "confidence_score": 0.9580821643690487,
+          "created_at": 1755817245.9032307
+        },
+        "result": {
+          "hypothesis_id": "hyp_1755817245903_3390",
+          "experiment_id": "exp_hyp_1755817245903_3390_1755817245",
+          "metrics": {
+            "energy_reduction": 0.6323207079410454,
+            "insertion_loss_db": -0.03672084269392473,
+            "bandwidth_ghz": 13.10596185557943,
+            "switching_speed_ps": 66.04853736386833
+          },
+          "statistical_significance": 1.0,
+          "p_value": 0.01890005015131692,
+          "effect_size": 199.55885192520682,
+          "reproducibility_score": 0.9174698761813744,
+          "novel_insights": [
+            "Breakthrough photonic design enables >50% energy reduction"
+          ],
+          "breakthrough_potential": 0.7658760100266878,
+          "validation_status": "breakthrough_validated",
+          "timestamp": 1755817245.9537287
+        },
+        "discovery_timestamp": 1755817245.9537354
+      },
+      {
+        "iteration": 2,
+        "hypothesis": {
+          "hypothesis_id": "hyp_1755817245953_5835",
+          "description": "Self-organizing neural architecture discovery",
+          "breakthrough_type": "architectural_breakthrough",
+          "success_criteria": {
+            "performance_improvement": 0.23877200639777166,
+            "energy_efficiency": 0.4100944868152032,
+            "statistical_significance": 0.05,
+            "reproducibility": 0.9
+          },
+          "expected_impact": 0.9884931426952388,
+          "confidence_score": 0.8556907337476659,
+          "created_at": 1755817245.9537888
+        },
+        "result": {
+          "hypothesis_id": "hyp_1755817245953_5835",
+          "experiment_id": "exp_hyp_1755817245953_5835_1755817245",
+          "metrics": {
+            "model_compression": 0.4027386935584716,
+            "accuracy_retention": 0.986945737402793,
+            "inference_speedup": 3.7738239017438997,
+            "memory_efficiency": 0.49075767213183136
+          },
+          "statistical_significance": 0.998597131709444,
+          "p_value": 0.06062300341519242,
+          "effect_size": 14.135665012092488,
+          "reproducibility_score": 1.0,
+          "novel_insights": [
+            "Self-organizing architecture enables extreme model compression"
+          ],
+          "breakthrough_potential": 0.7972777680518809,
+          "validation_status": "breakthrough_validated",
+          "timestamp": 1755817246.004242
+        },
+        "discovery_timestamp": 1755817246.004249
+      },
+      {
+        "iteration": 3,
+        "hypothesis": {
+          "hypothesis_id": "hyp_1755817246004_6493",
+          "description": "Self-organizing neural architecture discovery",
+          "breakthrough_type": "architectural_breakthrough",
+          "success_criteria": {
+            "performance_improvement": 0.21551993452389187,
+            "energy_efficiency": 0.4612861176162062,
+            "statistical_significance": 0.05,
+            "reproducibility": 0.9
+          },
+          "expected_impact": 0.8512854961042435,
+          "confidence_score": 0.9662637839806563,
+          "created_at": 1755817246.0042834
+        },
+        "result": {
+          "hypothesis_id": "hyp_1755817246004_6493",
+          "experiment_id": "exp_hyp_1755817246004_6493_1755817246",
+          "metrics": {
+            "model_compression": 0.39398643447214704,
+            "accuracy_retention": 0.981597342329253,
+            "inference_speedup": 3.4825118640684667,
+            "memory_efficiency": 0.4986170647265138
+          },
+          "statistical_significance": 0.9979663571677803,
+          "p_value": 0.06481793292643451,
+          "effect_size": 13.39178176399095,
+          "reproducibility_score": 0.8706238256646116,
+          "novel_insights": [
+            "Experimental validation confirms hypothesis with measurable improvements"
+          ],
+          "breakthrough_potential": 0.7696470063711829,
+          "validation_status": "significant_finding",
+          "timestamp": 1755817246.0546997
+        },
+        "discovery_timestamp": 1755817246.0547247
+      },
+      {
+        "iteration": 4,
+        "hypothesis": {
+          "hypothesis_id": "hyp_1755817246054_2103",
+          "description": "Quantum-enhanced photonic neural network optimization",
+          "breakthrough_type": "quantum_enhancement",
+          "success_criteria": {
+            "performance_improvement": 0.17841323398238917,
+            "energy_efficiency": 0.35619494631381426,
+            "statistical_significance": 0.05,
+            "reproducibility": 0.9
+          },
+          "expected_impact": 0.927492667776244,
+          "confidence_score": 0.9628460854880058,
+          "created_at": 1755817246.0547574
+        },
+        "result": {
+          "hypothesis_id": "hyp_1755817246054_2103",
+          "experiment_id": "exp_hyp_1755817246054_2103_1755817246",
+          "metrics": {
+            "quantum_speedup": 2.7117264359222335,
+            "coherence_time": 1241.082888074296,
+            "fidelity": 0.9944067795419125,
+            "energy_efficiency": 0.5230996900429383
+          },
+          "statistical_significance": 1.0,
+          "p_value": 0.04509077603666018,
+          "effect_size": 3113.280302449508,
+          "reproducibility_score": 0.8603660033862948,
+          "novel_insights": [
+            "Achieved extended quantum coherence through novel error mitigation"
+          ],
+          "breakthrough_potential": 0.9854985335552489,
+          "validation_status": "significant_finding",
+          "timestamp": 1755817246.105444
+        },
+        "discovery_timestamp": 1755817246.1054523
+      },
+      {
+        "iteration": 5,
+        "hypothesis": {
+          "hypothesis_id": "hyp_1755817246105_5996",
+          "description": "Novel photonic component design for ultra-low energy",
+          "breakthrough_type": "photonic_innovation",
+          "success_criteria": {
+            "performance_improvement": 0.22020084488298414,
+            "energy_efficiency": 0.34645138150340954,
+            "statistical_significance": 0.05,
+            "reproducibility": 0.9
+          },
+          "expected_impact": 0.7911204288865943,
+          "confidence_score": 0.8166130018671001,
+          "created_at": 1755817246.10555
+        },
+        "result": {
+          "hypothesis_id": "hyp_1755817246105_5996",
+          "experiment_id": "exp_hyp_1755817246105_5996_1755817246",
+          "metrics": {
+            "energy_reduction": 0.6472319003392579,
+            "insertion_loss_db": -0.03958454698549667,
+            "bandwidth_ghz": 13.484702628769053,
+            "switching_speed_ps": 56.5196561199682
+          },
+          "statistical_significance": 1.0,
+          "p_value": 0.015110204514277196,
+          "effect_size": 176.727937990155,
+          "reproducibility_score": 0.9449700044404594,
+          "novel_insights": [
+            "Breakthrough photonic design enables >50% energy reduction"
+          ],
+          "breakthrough_potential": 0.7582240857773188,
+          "validation_status": "breakthrough_validated",
+          "timestamp": 1755817246.1562629
+        },
+        "discovery_timestamp": 1755817246.1562717
+      },
+      {
+        "iteration": 6,
+        "hypothesis": {
+          "hypothesis_id": "hyp_1755817246156_9729",
+          "description": "Quantum-enhanced photonic neural network optimization",
+          "breakthrough_type": "quantum_enhancement",
+          "success_criteria": {
+            "performance_improvement": 0.1967243810161122,
+            "energy_efficiency": 0.30598661628525653,
+            "statistical_significance": 0.05,
+            "reproducibility": 0.9
+          },
+          "expected_impact": 0.8549513278773097,
+          "confidence_score": 0.992050049132467,
+          "created_at": 1755817246.1563215
+        },
+        "result": {
+          "hypothesis_id": "hyp_1755817246156_9729",
+          "experiment_id": "exp_hyp_1755817246156_9729_1755817246",
+          "metrics": {
+            "quantum_speedup": 2.509602323801868,
+            "coherence_time": 1188.256023200674,
+            "fidelity": 0.9883150223452881,
+            "energy_efficiency": 0.5537141056512174
+          },
+          "statistical_significance": 1.0,
+          "p_value": 0.002024432158389289,
+          "effect_size": 2980.7691366311806,
+          "reproducibility_score": 0.8187499290010418,
+          "novel_insights": [
+            "Experimental validation confirms hypothesis with measurable improvements"
+          ],
+          "breakthrough_potential": 0.9709902655754619,
+          "validation_status": "significant_finding",
+          "timestamp": 1755817246.2068846
+        },
+        "discovery_timestamp": 1755817246.2068937
+      }
+    ],
+    "best_breakthrough": {
+      "iteration": 4,
+      "hypothesis": {
+        "hypothesis_id": "hyp_1755817246054_2103",
+        "description": "Quantum-enhanced photonic neural network optimization",
+        "breakthrough_type": "quantum_enhancement",
+        "success_criteria": {
+          "performance_improvement": 0.17841323398238917,
+          "energy_efficiency": 0.35619494631381426,
+          "statistical_significance": 0.05,
+          "reproducibility": 0.9
+        },
+        "expected_impact": 0.927492667776244,
+        "confidence_score": 0.9628460854880058,
+        "created_at": 1755817246.0547574
+      },
+      "result": {
+        "hypothesis_id": "hyp_1755817246054_2103",
+        "experiment_id": "exp_hyp_1755817246054_2103_1755817246",
+        "metrics": {
+          "quantum_speedup": 2.7117264359222335,
+          "coherence_time": 1241.082888074296,
+          "fidelity": 0.9944067795419125,
+          "energy_efficiency": 0.5230996900429383
+        },
+        "statistical_significance": 1.0,
+        "p_value": 0.04509077603666018,
+        "effect_size": 3113.280302449508,
+        "reproducibility_score": 0.8603660033862948,
+        "novel_insights": [
+          "Achieved extended quantum coherence through novel error mitigation"
+        ],
+        "breakthrough_potential": 0.9854985335552489,
+        "validation_status": "significant_finding",
+        "timestamp": 1755817246.105444
+      },
+      "discovery_timestamp": 1755817246.1054523
+    },
+    "average_breakthrough_potential": 0.8412522782262969,
+    "discovery_efficiency": 0.8412522782262969,
+    "novel_insights_total": 6
+  },
+  "multi_domain_results": {
+    "quantum_enhancement": {
+      "hypothesis_id": "hyp_1755817246207_1163",
+      "experiment_id": "exp_hyp_1755817246207_1163_1755817246",
+      "metrics": {
+        "quantum_speedup": 2.3696160107842688,
+        "coherence_time": 1228.7269008969326,
+        "fidelity": 0.9872100828433668,
+        "energy_efficiency": 0.5297143504776269
+      },
+      "statistical_significance": 1.0,
+      "p_value": 0.0816151566769839,
+      "effect_size": 3081.5336033525946,
+      "reproducibility_score": 0.8861128438401086,
+      "novel_insights": [
+        "Achieved extended quantum coherence through novel error mitigation"
+      ],
+      "breakthrough_potential": 0.9860635912995968,
+      "validation_status": "significant_finding",
+      "timestamp": 1755817246.257687
+    },
+    "photonic_innovation": {
+      "hypothesis_id": "hyp_1755817246257_1254",
+      "experiment_id": "exp_hyp_1755817246257_1254_1755817246",
+      "metrics": {
+        "energy_reduction": 0.5599397867862378,
+        "insertion_loss_db": -0.0721677957389057,
+        "bandwidth_ghz": 14.463394612481967,
+        "switching_speed_ps": 63.807263685892295
+      },
+      "statistical_significance": 1.0,
+      "p_value": 0.001,
+      "effect_size": 197.2569147022485,
+      "reproducibility_score": 1.0,
+      "novel_insights": [
+        "Breakthrough photonic design enables >50% energy reduction"
+      ],
+      "breakthrough_potential": 0.7766940123287387,
+      "validation_status": "breakthrough_validated",
+      "timestamp": 1755817246.3083339
+    },
+    "architectural_breakthrough": {
+      "hypothesis_id": "hyp_1755817246308_8915",
+      "experiment_id": "exp_hyp_1755817246308_8915_1755817246",
+      "metrics": {
+        "model_compression": 0.3928228707633231,
+        "accuracy_retention": 0.9838423036458961,
+        "inference_speedup": 3.565498114823716,
+        "memory_efficiency": 0.5076724655598719
+      },
+      "statistical_significance": 0.9981894179605061,
+      "p_value": 0.002268027363481323,
+      "effect_size": 13.624589386982016,
+      "reproducibility_score": 0.8806398274745963,
+      "novel_insights": [
+        "Experimental validation confirms hypothesis with measurable improvements"
+      ],
+      "breakthrough_potential": 0.7770962166835267,
+      "validation_status": "significant_finding",
+      "timestamp": 1755817246.3589766
+    },
+    "algorithmic_discovery": {
+      "hypothesis_id": "hyp_1755817246359_4185",
+      "experiment_id": "exp_hyp_1755817246359_4185_1755817246",
+      "metrics": {
+        "performance_improvement": 0.26604690889020277,
+        "computational_efficiency": 0.16706777698409453,
+        "convergence_rate": 2.8313944844667254,
+        "robustness_score": 0.9372214491907213
+      },
+      "statistical_significance": 0.9914408913387267,
+      "p_value": 0.09954824756239897,
+      "effect_size": 10.504326548829358,
+      "reproducibility_score": 0.7822404012719767,
+      "novel_insights": [
+        "Experimental validation confirms hypothesis with measurable improvements"
+      ],
+      "breakthrough_potential": 0.9382501092953521,
+      "validation_status": "promising_result",
+      "timestamp": 1755817246.409647
+    }
+  },
+  "evolution_data": [
+    {
+      "iteration": 1,
+      "breakthrough_potential": 0.7784172643758718,
+      "statistical_significance": 0.9977997536687394,
+      "effect_size": 13.233966571402979,
+      "validation_status": "breakthrough_validated"
+    },
+    {
+      "iteration": 2,
+      "breakthrough_potential": 0.7529546606376423,
+      "statistical_significance": 0.9984099027842738,
+      "effect_size": 13.884737519781664,
+      "validation_status": "breakthrough_validated"
+    },
+    {
+      "iteration": 3,
+      "breakthrough_potential": 0.9697279622853339,
+      "statistical_significance": 1.0,
+      "effect_size": 2938.3873243566154,
+      "validation_status": "breakthrough_validated"
+    },
+    {
+      "iteration": 4,
+      "breakthrough_potential": 0.7533456763879134,
+      "statistical_significance": 0.9984786317428372,
+      "effect_size": 13.973245306268726,
+      "validation_status": "significant_finding"
+    },
+    {
+      "iteration": 5,
+      "breakthrough_potential": 0.995043067944537,
+      "statistical_significance": 0.9909633545469825,
+      "effect_size": 10.394779056114873,
+      "validation_status": "breakthrough_validated"
+    }
+  ],
+  "timestamp": 1755817246.663299
+}

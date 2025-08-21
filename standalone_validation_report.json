@@ -1,0 +1,69 @@
+{
+  "validation_level": "standard_validation",
+  "config": {
+    "min_sample_size": 100,
+    "significance_threshold": 0.05,
+    "effect_size_threshold": 0.5,
+    "reproducibility_threshold": 0.85,
+    "enable_advanced_tests": true,
+    "enable_cross_validation": false,
+    "enable_bootstrap": false
+  },
+  "validation_metrics": {
+    "total_validations": 5,
+    "successful_validations": 3,
+    "failed_validations": 2,
+    "error_rate": 0.4,
+    "average_validation_time": 0.00026254653930664064
+  },
+  "validation_history": [
+    {
+      "validation_id": "val_1755817246766_9683",
+      "hypothesis_id": "test_hyp_0",
+      "hypothesis_description": "Quantum-enhanced photonic neural network achieves >50% energy reduction with maintained accuracy",
+      "validation_status": "insufficient_evidence",
+      "overall_score": 0.514875974867074,
+      "timestamp": 1755817246.7662165
+    },
+    {
+      "validation_id": "val_1755817246766_1844",
+      "hypothesis_id": "test_hyp_2",
+      "hypothesis_description": "Quantum-enhanced photonic neural network achieves >50% energy reduction with maintained accuracy",
+      "validation_status": "insufficient_evidence",
+      "overall_score": 0.5146376988003077,
+      "timestamp": 1755817246.7668433
+    },
+    {
+      "validation_id": "val_1755817246767_6455",
+      "hypothesis_id": "test_hyp_4",
+      "hypothesis_description": "Quantum-enhanced photonic neural network achieves >50% energy reduction with maintained accuracy",
+      "validation_status": "preliminary_evidence",
+      "overall_score": 0.5384813173591758,
+      "timestamp": 1755817246.767605
+    }
+  ],
+  "error_log": [
+    {
+      "validation_id": "val_1755817246766_4331",
+      "hypothesis_id": "test_hyp_1",
+      "error_type": "ValidationError",
+      "error_message": "Sample size 50 below minimum 100",
+      "traceback": "Traceback (most recent call last):\n  File \"/root/repo/examples/standalone_robust_validation_demo.py\", line 123, in validate_research_hypothesis\n    self._validate_inputs(hypothesis, experimental_data)\n  File \"/root/repo/examples/standalone_robust_validation_demo.py\", line 168, in _validate_inputs\n    raise ValidationError(f\"Sample size {experimental_data['sample_size']} below minimum {self.config['min_sample_size']}\")\nValidationError: Sample size 50 below minimum 100\n",
+      "timestamp": 1755817246.7666073
+    },
+    {
+      "validation_id": "val_1755817246766_1647",
+      "hypothesis_id": "test_hyp_3",
+      "error_type": "ValidationError",
+      "error_message": "Sample size 50 below minimum 100",
+      "traceback": "Traceback (most recent call last):\n  File \"/root/repo/examples/standalone_robust_validation_demo.py\", line 123, in validate_research_hypothesis\n    self._validate_inputs(hypothesis, experimental_data)\n  File \"/root/repo/examples/standalone_robust_validation_demo.py\", line 168, in _validate_inputs\n    raise ValidationError(f\"Sample size {experimental_data['sample_size']} below minimum {self.config['min_sample_size']}\")\nValidationError: Sample size 50 below minimum 100\n",
+      "timestamp": 1755817246.76738
+    }
+  ],
+  "framework_summary": {
+    "total_validations_performed": 5,
+    "success_rate": 0.6,
+    "average_validation_time": 0.00026254653930664064
+  },
+  "generated_at": 1755817246.7677474
+}

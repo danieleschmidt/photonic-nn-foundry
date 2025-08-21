@@ -1,0 +1,158 @@
+{
+  "remediation_summary": {
+    "security_fixes": {
+      "execution_time": 1.4065566062927246,
+      "files_scanned": 151,
+      "files_with_issues": 27,
+      "files_remediated": 27,
+      "total_issues_fixed": 212,
+      "remediation_log": [
+        {
+          "file": "/root/repo/comprehensive_quality_gates.py",
+          "fixes_applied": 2,
+          "timestamp": 1755817224.5868123
+        },
+        {
+          "file": "/root/repo/enhanced_security_fix.py",
+          "fixes_applied": 3,
+          "timestamp": 1755817224.6218977
+        },
+        {
+          "file": "/root/repo/final_security_fix.py",
+          "fixes_applied": 2,
+          "timestamp": 1755817224.632517
+        },
+        {
+          "file": "/root/repo/fix_security_and_tests.py",
+          "fixes_applied": 4,
+          "timestamp": 1755817224.6817648
+        },
+        {
+          "file": "/root/repo/production_security_compliance.py",
+          "fixes_applied": 2,
+          "timestamp": 1755817224.699486
+        },
+        {
+          "file": "/root/repo/run_advanced_quality_gates.py",
+          "fixes_applied": 2,
+          "timestamp": 1755817224.7626796
+        },
+        {
+          "file": "/root/repo/run_final_quality_gates.py",
+          "fixes_applied": 1,
+          "timestamp": 1755817224.7749403
+        },
+        {
+          "file": "/root/repo/run_quality_gates_final.py",
+          "fixes_applied": 4,
+          "timestamp": 1755817224.7881548
+        },
+        {
+          "file": "/root/repo/run_autonomous_quality_gates.py",
+          "fixes_applied": 8,
+          "timestamp": 1755817225.0696669
+        },
+        {
+          "file": "/root/repo/autonomous_security_remediation.py",
+          "fixes_applied": 8,
+          "timestamp": 1755817225.126548
+        },
+        {
+          "file": "/root/repo/examples/comprehensive_research_demo.py",
+          "fixes_applied": 1,
+          "timestamp": 1755817225.1349826
+        },
+        {
+          "file": "/root/repo/examples/robust_usage.py",
+          "fixes_applied": 3,
+          "timestamp": 1755817225.1460266
+        },
+        {
+          "file": "/root/repo/examples/test_robust_standalone.py",
+          "fixes_applied": 3,
+          "timestamp": 1755817225.1664803
+        },
+        {
+          "file": "/root/repo/scripts/run_quality_gates.py",
+          "fixes_applied": 3,
+          "timestamp": 1755817225.2784126
+        },
+        {
+          "file": "/root/repo/tests/test_comprehensive.py",
+          "fixes_applied": 4,
+          "timestamp": 1755817225.3288627
+        },
+        {
+          "file": "/root/repo/tests/test_security.py",
+          "fixes_applied": 1,
+          "timestamp": 1755817225.3304267
+        },
+        {
+          "file": "/root/repo/src/photonic_foundry/ai_singularity_engine.py",
+          "fixes_applied": 2,
+          "timestamp": 1755817225.474146
+        },
+        {
+          "file": "/root/repo/src/photonic_foundry/cli.py",
+          "fixes_applied": 1,
+          "timestamp": 1755817225.4937963
+        },
+        {
+          "file": "/root/repo/src/photonic_foundry/quantum_security.py",
+          "fixes_applied": 1,
+          "timestamp": 1755817225.5204177
+        },
+        {
+          "file": "/root/repo/src/photonic_foundry/quantum_security_advanced.py",
+          "fixes_applied": 2,
+          "timestamp": 1755817225.575739
+        },
+        {
+          "file": "/root/repo/src/photonic_foundry/research_framework.py",
+          "fixes_applied": 1,
+          "timestamp": 1755817225.6271157
+        },
+        {
+          "file": "/root/repo/src/photonic_foundry/security.py",
+          "fixes_applied": 3,
+          "timestamp": 1755817225.7350144
+        },
+        {
+          "file": "/root/repo/src/photonic_foundry/compliance/ccpa.py",
+          "fixes_applied": 1,
+          "timestamp": 1755817225.7490997
+        },
+        {
+          "file": "/root/repo/tests/security/test_input_validation.py",
+          "fixes_applied": 3,
+          "timestamp": 1755817225.7899253
+        },
+        {
+          "file": "/root/repo/tests/security/test_security_validation.py",
+          "fixes_applied": 4,
+          "timestamp": 1755817225.8205283
+        },
+        {
+          "file": "/root/repo/tests/unit/test_quantum_security.py",
+          "fixes_applied": 1,
+          "timestamp": 1755817225.8300912
+        },
+        {
+          "file": "/root/repo/tests/unit/test_security.py",
+          "fixes_applied": 5,
+          "timestamp": 1755817225.857092
+        }
+      ],
+      "timestamp": 1755817225.8638654
+    },
+    "integration_fixes": {
+      "execution_time": 8.296966552734375e-05,
+      "fixes_applied": [],
+      "fixes_successful": [],
+      "timestamp": 1755817225.8645785
+    },
+    "total_execution_time": 1.406639575958252,
+    "completion_status": "success"
+  },
+  "timestamp": 1755817225.8647153
+}
