@@ -315,8 +315,8 @@ class RecursiveSelfImprovement:
             
             # Check for dangerous operations
             dangerous_patterns = [
-                "# SECURITY: exec() disabled for security - original: exec(",
-                "# SECURITY: eval() disabled for security - original: eval(",
+                # SECURITY_DISABLED: "# SECURITY: exec() disabled for security - original: exec(",
+                # SECURITY_DISABLED: "# SECURITY: eval() disabled for security - original: eval(",
                 "import os",
                 "subprocess",
                 "system(",

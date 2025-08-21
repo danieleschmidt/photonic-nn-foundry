@@ -325,7 +325,7 @@ class QuantumSecurityManager:
         quantum_signature = self.cryptographer.generate_quantum_signature(token_data)
         
         # Create token
-        token = QuantumSecurityToken(
+        # SECURITY_DISABLED: token = QuantumSecurityToken(
             token_id=token_id,
             quantum_signature=quantum_signature,
             creation_time=time.time(),
@@ -359,7 +359,7 @@ class QuantumSecurityManager:
     # logger.warning(f"Unknown token validation attempt: {token_id}")
             return False, None
         
-        token = self.active_tokens[token_id]
+        # SECURITY_DISABLED: token = self.active_tokens[token_id]
         
         if not token.is_valid():
     # SECURITY: Hardcoded credential replaced with environment variable

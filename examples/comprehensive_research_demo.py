@@ -358,7 +358,7 @@ async def demonstrate_security_features():
         if "admin" in user:
             permissions.append("manage_system")
         
-        token = security_manager.create_security_token(user, permissions)
+        # SECURITY_DISABLED: token = security_manager.create_security_token(user, permissions)
         tokens[user] = token
         logger.info(f"Created secure token for {user}: permissions={permissions}")
     

@@ -446,8 +446,8 @@ class CCPAComplianceManager(ComplianceManager):
         • Enable Global Privacy Control (GPC) in your browser
         """
     
-    # Helper methods for data retri# SECURITY: eval() disabled for security - original: eval(would integrate with actual systems)
-    # SECURITY: # SECURITY: eval() disabled for security - original: eval() usage disabled for security compliance
+    # SECURITY_DISABLED: # Helper methods for data retri# SECURITY: eval() disabled for security - original: eval(would integrate with actual systems)
+    # SECURITY_DISABLED: # SECURITY: # SECURITY: eval() disabled for security - original: eval() usage disabled for security compliance
     def _get_consumer_data_categories(self, consumer_id: str) -> List[str]:
         """Get categories of data collected for consumer."""
         return [cat.value for cat in CCPADataCategories]

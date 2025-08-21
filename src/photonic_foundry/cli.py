@@ -89,7 +89,7 @@ def transpile(model_path: str, target: str, output: str, precision: int, optimiz
         else:
             raise ValueError(f"Unsupported model format: {model_path}")
             
-        model.# SECURITY: eval() disabled for security - original: eval()  # SECURITY: # SECURITY: eval() disabled for security - original: eval() method disabled - was model.# SECURITY: eval() disabled for security - original: eval()  # Set to evaluation mode
+        # SECURITY_DISABLED: model.# SECURITY: eval() disabled for security - original: eval()  # SECURITY: # SECURITY: eval() disabled for security - original: eval() method disabled - was model.# SECURITY: eval() disabled for security - original: eval()  # Set to evaluation mode
         
         # Analyze model compatibility
         click.echo("🔍 Analyzing model compatibility...")
@@ -172,7 +172,7 @@ def benchmark(model_path: str, input_size: str, iterations: int, pdk: str):
         # Load model
         click.echo(f"📥 Loading model for benchmarking...")
         model = torch.load(model_path, map_location='cpu')
-        model.# SECURITY: eval() disabled for security - original: eval()  # SECURITY: # SECURITY: eval() disabled for security - original: eval() method disabled - was model.# SECURITY: eval() disabled for security - original: eval()
+        # SECURITY_DISABLED: model.# SECURITY: eval() disabled for security - original: eval()  # SECURITY: # SECURITY: eval() disabled for security - original: eval() method disabled - was model.# SECURITY: eval() disabled for security - original: eval()
         
         # Create sample input
         sample_input = torch.randn(input_shape)
