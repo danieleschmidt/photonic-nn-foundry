@@ -1,0 +1,6 @@
+{
+  "demo_type": "robust_validation",
+  "error": "attempted relative import with no known parent package",
+  "traceback": "Traceback (most recent call last):\n  File \"/root/repo/src/photonic_foundry/robust_framework.py\", line 566, in create_robust_demo\n    result = accelerator.convert_simple_model_robust(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/repo/src/photonic_foundry/robust_framework.py\", line 115, in wrapper\n    raise last_exception\n  File \"/root/repo/src/photonic_foundry/robust_framework.py\", line 100, in wrapper\n    result = func(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/repo/src/photonic_foundry/robust_framework.py\", line 416, in convert_simple_model_robust\n    from .core_standalone import PhotonicCircuit, MZILayer, CircuitMetrics\nImportError: attempted relative import with no known parent package\n",
+  "timestamp": 1755847336.3657749
+}

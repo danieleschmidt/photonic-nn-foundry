@@ -1,133 +1,116 @@
-//
-// Generated Photonic Neural Network: simple_demo_mlp
-// Target PDK: skywater130
-// Operating Wavelength: 1550nm
-// Total Layers: 3
-// Total Components: 56
-//
 
-module simple_demo_mlp (
+// MZI-based linear layer: 4 -> 8
+module mzi_layer_4x8 (
     input clk,
     input rst_n,
-    input [31:0] data_in,
+    input [7:0] data_in [3:0],
     input valid_in,
-    output [31:0] data_out,
+    output [7:0] data_out [7:0],
     output valid_out
 );
 
-// Parameters
-parameter INPUT_WIDTH = 32;
-parameter OUTPUT_WIDTH = 32;
-parameter PRECISION = 8;
-parameter NUM_LAYERS = 3;
-
-// Internal signals
-wire [PRECISION-1:0] layer_interconnect [NUM_LAYERS:0];
-wire layer_valid [NUM_LAYERS:0];
-
-// Input assignment
-assign layer_interconnect[0] = data_in[PRECISION-1:0];
-assign layer_valid[0] = valid_in;
-
-// Layer instantiations
-genvar i;
+// MZI mesh implementation
+genvar i, j;
 generate
-    for (i = 0; i < NUM_LAYERS; i = i + 1) begin: layer_gen
-        photonic_layer #(
-            .LAYER_TYPE(i),
-            .PRECISION(PRECISION)
-        ) layer_inst (
-            .clk(clk),
-            .rst_n(rst_n),
-            .data_in(layer_interconnect[i]),
-            .valid_in(layer_valid[i]),
-            .data_out(layer_interconnect[i+1]),
-            .valid_out(layer_valid[i+1])
-        );
+    for (i = 0; i < 8; i = i + 1) begin: row_gen
+        for (j = 0; j < 4; j = j + 1) begin: col_gen
+            mzi_unit #(
+                .PRECISION(8),
+                .WEIGHT(8'h80)
+            ) mzi_inst (
+                .clk(clk),
+                .rst_n(rst_n),
+                .data_in(data_in[j]),
+                .weight_out(intermediate[i][j])
+            );
+        end
     end
 endgenerate
 
-// Output assignment
-assign data_out = {{(INPUT_WIDTH-PRECISION){1'b0}}, layer_interconnect[NUM_LAYERS]};
-assign valid_out = layer_valid[NUM_LAYERS];
+// Accumulation network
+reg [7:0] accumulator [7:0];
+reg valid_out_reg;
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        valid_out_reg <= 1'b0;
+    end else begin
+        valid_out_reg <= valid_in;
+        for (int k = 0; k < 8; k++) begin
+            accumulator[k] <= intermediate[k][0]; // Simplified accumulation
+        end
+    end
+end
+
+assign data_out = accumulator;
+assign valid_out = valid_out_reg;
 
 endmodule
 
-// Basic photonic layer module
-module photonic_layer #(
-    parameter LAYER_TYPE = 0,
-    parameter PRECISION = 8
-) (
+
+// MZI-based linear layer: 8 -> 2
+module mzi_layer_8x2 (
     input clk,
     input rst_n,
-    input [PRECISION-1:0] data_in,
+    input [7:0] data_in [7:0],
     input valid_in,
-    output [PRECISION-1:0] data_out,
+    output [7:0] data_out [1:0],
     output valid_out
 );
 
-// Processing pipeline
-reg [PRECISION-1:0] stage1_data, stage2_data, stage3_data;
-reg stage1_valid, stage2_valid, stage3_valid;
+// MZI mesh implementation
+genvar i, j;
+generate
+    for (i = 0; i < 2; i = i + 1) begin: row_gen
+        for (j = 0; j < 8; j = j + 1) begin: col_gen
+            mzi_unit #(
+                .PRECISION(8),
+                .WEIGHT(8'h80)
+            ) mzi_inst (
+                .clk(clk),
+                .rst_n(rst_n),
+                .data_in(data_in[j]),
+                .weight_out(intermediate[i][j])
+            );
+        end
+    end
+endgenerate
+
+// Accumulation network
+reg [7:0] accumulator [1:0];
+reg valid_out_reg;
 
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-        stage1_data <= 0;
-        stage2_data <= 0;
-        stage3_data <= 0;
-        stage1_valid <= 1'b0;
-        stage2_valid <= 1'b0;
-        stage3_valid <= 1'b0;
+        valid_out_reg <= 1'b0;
     end else begin
-        // Stage 1: Input capture
-        stage1_data <= data_in;
-        stage1_valid <= valid_in;
-        
-        // Stage 2: Photonic processing (simplified)
-        if (LAYER_TYPE == 0 || LAYER_TYPE == 2) begin
-            // Linear layer: matrix multiplication simulation
-            stage2_data <= stage1_data + 1; // Simplified transformation
-        end else begin
-            // Activation layer: ReLU simulation
-            stage2_data <= (stage1_data[PRECISION-1]) ? 8'h00 : stage1_data;
+        valid_out_reg <= valid_in;
+        for (int k = 0; k < 2; k++) begin
+            accumulator[k] <= intermediate[k][0]; // Simplified accumulation
         end
-        stage2_valid <= stage1_valid;
-        
-        // Stage 3: Output
-        stage3_data <= stage2_data;
-        stage3_valid <= stage2_valid;
     end
 end
 
-assign data_out = stage3_data;
-assign valid_out = stage3_valid;
+assign data_out = accumulator;
+assign valid_out = valid_out_reg;
 
 endmodule
 
-// MZI unit for reference
-module mzi_unit #(
-    parameter PRECISION = 8,
-    parameter WEIGHT = 8'h80
-) (
+// Top-level photonic neural network: simple_model_3layers
+module simple_model_3layers_top (
     input clk,
     input rst_n,
-    input [PRECISION-1:0] data_in,
-    output [PRECISION-1:0] weight_out
+    input [7:0] data_in [3:0],
+    input valid_in,
+    output [7:0] data_out [1:0],
+    output valid_out
 );
 
-reg [PRECISION-1:0] phase_reg;
-reg [PRECISION-1:0] result;
-
-always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-        phase_reg <= WEIGHT;
-        result <= 0;
-    end else begin
-        // Simplified MZI computation: phase shift and interference
-        result <= (data_in * phase_reg) >> (PRECISION-2);
-    end
-end
-
-assign weight_out = result;
-
+    // Intermediate signals
+    wire [7:0] layer_out [1:0];
+    wire layer_valid;
+    
+    // Layer instantiations
+    layer_0_inst layer_0 (.clk(clk), .rst_n(rst_n)); layer_1_inst layer_1 (.clk(clk), .rst_n(rst_n)); 
+    
 endmodule

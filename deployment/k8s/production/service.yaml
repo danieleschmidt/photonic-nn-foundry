@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: photonic-foundry-service
+  namespace: photonic-foundry
+  labels:
+    app: photonic-foundry
+spec:
+  type: ClusterIP
+  ports:
+  - 
+    port: 80
+    targetPort: 8000
+    name: http
+  selector:
+    app: photonic-foundry
+    component: api
