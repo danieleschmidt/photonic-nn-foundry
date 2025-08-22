@@ -1,0 +1,222 @@
+{
+  "demo_type": "robust_validation",
+  "test_results": [
+    {
+      "circuit_name": "simple_mlp",
+      "success": true,
+      "circuit_info": {
+        "layers": 2,
+        "total_components": 48,
+        "layer_sizes": [
+          4,
+          8,
+          2
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 24.0,
+        "latency": 100.0,
+        "area": 0.48,
+        "power": 4.800000000000001,
+        "throughput": 10.0,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 2645,
+        "hash": "ad824d338cf25b12353ce7da9712fa8438447d89b30d4d2059dadfc4634e1e29"
+      },
+      "security": {
+        "level": "enhanced",
+        "validated": true
+      },
+      "validation_results": [
+        {
+          "passed": true,
+          "message": "Layer sizes validation passed",
+          "details": {
+            "layer_sizes": [
+              4,
+              8,
+              2
+            ]
+          },
+          "timestamp": 1755847343.9670675
+        }
+      ],
+      "timestamp": 1755847343.9728413
+    },
+    {
+      "circuit_name": "deep_network",
+      "success": true,
+      "circuit_info": {
+        "layers": 3,
+        "total_components": 2848,
+        "layer_sizes": [
+          10,
+          64,
+          32,
+          5
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 1424.0,
+        "latency": 150.0,
+        "area": 28.48,
+        "power": 284.8,
+        "throughput": 6.666666666666667,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 3820,
+        "hash": "7f9190c75cb73264390fc013676133cddb9c2ccf9173eebc4bed5421c787abb9"
+      },
+      "security": {
+        "level": "enhanced",
+        "validated": true
+      },
+      "validation_results": [
+        {
+          "passed": true,
+          "message": "Layer sizes validation passed",
+          "details": {
+            "layer_sizes": [
+              10,
+              64,
+              32,
+              5
+            ]
+          },
+          "timestamp": 1755847343.9732444
+        }
+      ],
+      "timestamp": 1755847343.9788768
+    },
+    {
+      "circuit_name": "mnist_classifier",
+      "success": true,
+      "circuit_info": {
+        "layers": 3,
+        "total_components": 234752,
+        "layer_sizes": [
+          784,
+          256,
+          128,
+          10
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 117376.0,
+        "latency": 150.0,
+        "area": 2347.52,
+        "power": 23475.2,
+        "throughput": 6.666666666666667,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 3857,
+        "hash": "ead030a08b86e8f1d1ca002f802bb2845e33cc7c16f36c167dc7ac81d7aa5209"
+      },
+      "security": {
+        "level": "enhanced",
+        "validated": true
+      },
+      "validation_results": [
+        {
+          "passed": true,
+          "message": "Layer sizes validation passed",
+          "details": {
+            "layer_sizes": [
+              784,
+              256,
+              128,
+              10
+            ]
+          },
+          "timestamp": 1755847343.9792807
+        }
+      ],
+      "timestamp": 1755847344.8790545
+    }
+  ],
+  "robustness_report": {
+    "system_status": "healthy",
+    "health_summary": {
+      "healthy": 4
+    },
+    "health_checks": [
+      {
+        "component": "validator",
+        "status": "healthy",
+        "message": "validator is operational",
+        "metrics": {
+          "last_check": 1755847344.8795397
+        },
+        "timestamp": 1755847344.8795397
+      },
+      {
+        "component": "performance_monitor",
+        "status": "healthy",
+        "message": "performance_monitor is operational",
+        "metrics": {
+          "last_check": 1755847344.8795397
+        },
+        "timestamp": 1755847344.8795397
+      },
+      {
+        "component": "security_manager",
+        "status": "healthy",
+        "message": "security_manager is operational",
+        "metrics": {
+          "last_check": 1755847344.8795397
+        },
+        "timestamp": 1755847344.8795397
+      },
+      {
+        "component": "circuit_storage",
+        "status": "healthy",
+        "message": "3 circuits stored",
+        "metrics": {
+          "circuit_count": 3
+        },
+        "timestamp": 1755847344.8795397
+      }
+    ],
+    "performance_report": {
+      "total_operations": 1,
+      "average_execution_time": 0.9001357555389404,
+      "operations": {
+        "model_conversion": {
+          "execution_time": 0.9001357555389404,
+          "start_metrics": {
+            "timestamp": 1755847343.9792924,
+            "memory_usage_mb": 0,
+            "cpu_usage_percent": 0.0
+          },
+          "end_metrics": {
+            "timestamp": 1755847344.8794289,
+            "memory_usage_mb": 0,
+            "cpu_usage_percent": 0.0
+          },
+          "timestamp": 1755847344.879428
+        }
+      },
+      "limits": {
+        "max_memory_mb": 1000,
+        "max_execution_time": 60.0
+      },
+      "report_timestamp": 1755847344.8795805
+    },
+    "security_info": {
+      "level": "enhanced",
+      "failed_attempts": 0,
+      "session_token_present": true
+    },
+    "circuit_count": 3,
+    "accelerator_config": {
+      "pdk": "skywater130",
+      "wavelength": 1550.0
+    },
+    "report_timestamp": 1755847344.8796444
+  },
+  "demo_timestamp": 1755847344.8796482
+}

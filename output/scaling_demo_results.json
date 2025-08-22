@@ -1,0 +1,319 @@
+{
+  "demo_type": "advanced_scaling",
+  "single_circuit_results": [
+    {
+      "circuit_name": "demo_mlp",
+      "circuit_info": {
+        "layers": 3,
+        "total_components": 3328,
+        "layer_sizes": [
+          16,
+          64,
+          32,
+          8
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 1664.0,
+        "latency": 150.0,
+        "area": 33.28,
+        "power": 332.8,
+        "throughput": 6.666666666666667,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 3813,
+        "hash": "b6d2f38d4328220d"
+      },
+      "generation_timestamp": 1755847457.013424,
+      "scaling_info": {
+        "cache_hit": false,
+        "concurrent_execution": false,
+        "execution_time": 0.008931159973144531,
+        "cache_key": "d9fda4f66ea2a90f9a7b19b8dd66e968"
+      }
+    },
+    {
+      "circuit_name": "demo_mlp",
+      "circuit_info": {
+        "layers": 3,
+        "total_components": 3328,
+        "layer_sizes": [
+          16,
+          64,
+          32,
+          8
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 1664.0,
+        "latency": 150.0,
+        "area": 33.28,
+        "power": 332.8,
+        "throughput": 6.666666666666667,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 3813,
+        "hash": "b6d2f38d4328220d"
+      },
+      "generation_timestamp": 1755847457.013424,
+      "scaling_info": {
+        "cache_hit": false,
+        "concurrent_execution": false,
+        "execution_time": 0.008931159973144531,
+        "cache_key": "d9fda4f66ea2a90f9a7b19b8dd66e968"
+      }
+    }
+  ],
+  "batch_results": [
+    {
+      "circuit_name": "tiny_net",
+      "circuit_info": {
+        "layers": 2,
+        "total_components": 192,
+        "layer_sizes": [
+          4,
+          16,
+          8
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 96.0,
+        "latency": 100.0,
+        "area": 1.92,
+        "power": 19.200000000000003,
+        "throughput": 10.0,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 2651,
+        "hash": "a4b5a58d673e2b9e"
+      },
+      "generation_timestamp": 1755847457.0183532,
+      "scaling_info": {
+        "cache_hit": false,
+        "concurrent_execution": false,
+        "execution_time": 0.003267049789428711,
+        "cache_key": "3460f56ec9b4a9450dcce4bd1a1683c5"
+      }
+    },
+    {
+      "circuit_name": "small_classifier",
+      "circuit_info": {
+        "layers": 3,
+        "total_components": 12416,
+        "layer_sizes": [
+          28,
+          128,
+          64,
+          10
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 6208.0,
+        "latency": 150.0,
+        "area": 124.16,
+        "power": 1241.6000000000001,
+        "throughput": 6.666666666666667,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 3843,
+        "hash": "2489a18ae4d7574d"
+      },
+      "generation_timestamp": 1755847457.1674433,
+      "scaling_info": {
+        "cache_hit": false,
+        "concurrent_execution": false,
+        "execution_time": 0.15904021263122559,
+        "cache_key": "e73a4840c021f96e71a5f86a17a2877c"
+      }
+    },
+    {
+      "circuit_name": "medium_net",
+      "circuit_info": {
+        "layers": 3,
+        "total_components": 64768,
+        "layer_sizes": [
+          100,
+          256,
+          128,
+          50
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 32384.0,
+        "latency": 150.0,
+        "area": 647.6800000000001,
+        "power": 6476.8,
+        "throughput": 6.666666666666667,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 3846,
+        "hash": "17b36eb378f83634"
+      },
+      "generation_timestamp": 1755847457.836544,
+      "scaling_info": {
+        "cache_hit": false,
+        "concurrent_execution": false,
+        "execution_time": 0.8453419208526611,
+        "cache_key": "4e30d74f3f6e110f5c13e61641eedbee"
+      }
+    },
+    {
+      "circuit_name": "large_net",
+      "circuit_info": {
+        "layers": 3,
+        "total_components": 259072,
+        "layer_sizes": [
+          200,
+          512,
+          256,
+          100
+        ]
+      },
+      "performance_metrics": {
+        "energy_per_op": 129536.0,
+        "latency": 150.0,
+        "area": 2590.7200000000003,
+        "power": 25907.2,
+        "throughput": 6.666666666666667,
+        "accuracy": 0.98
+      },
+      "verilog_stats": {
+        "length": 3849,
+        "hash": "3a0c5ba7558c3585"
+      },
+      "generation_timestamp": 1755847459.1068053,
+      "scaling_info": {
+        "cache_hit": false,
+        "concurrent_execution": false,
+        "execution_time": 2.1459054946899414,
+        "cache_key": "b1ce2433299a7d5ae9fc53ac91438ab2"
+      }
+    }
+  ],
+  "optimization_results": {
+    "optimizations_applied": [
+      "System performing optimally - no adjustments needed"
+    ],
+    "previous_metrics": {
+      "scaling_metrics": {
+        "total_operations": 5,
+        "cache_enabled_operations": 1,
+        "concurrent_operations": 0,
+        "load_balanced_operations": 0,
+        "start_time": 1755847457.0049784
+      },
+      "operation_stats": {
+        "process_circuit": {
+          "count": 5,
+          "avg_time": 0.6324971675872803,
+          "min_time": 0.003267049789428711,
+          "max_time": 2.1459054946899414,
+          "total_time": 3.1624858379364014
+        },
+        "batch_process": {
+          "count": 1,
+          "avg_time": 2.178004264831543,
+          "min_time": 2.178004264831543,
+          "max_time": 2.178004264831543,
+          "total_time": 2.178004264831543
+        }
+      },
+      "cache_stats": {
+        "hits": 1,
+        "misses": 5,
+        "evictions": 0,
+        "size": 5,
+        "total_requests": 6,
+        "hit_rate": 0.16666666666666666
+      },
+      "executor_stats": {
+        "active_tasks": 0,
+        "completed_tasks": 4,
+        "successful_tasks": 4,
+        "failed_tasks": 0,
+        "success_rate": 1.0,
+        "avg_execution_time": 0.7934200167655945,
+        "max_workers": 6,
+        "executor_type": "ThreadPool",
+        "timestamp": 1755847459.1923819
+      },
+      "load_balancer_stats": {
+        "total_nodes": 1,
+        "healthy_nodes": 1,
+        "total_capacity": 6,
+        "current_load": 0,
+        "cluster_utilization": 0.0,
+        "avg_response_time": 0.0,
+        "strategy": "resource_based",
+        "timestamp": 1755847459.19242
+      },
+      "uptime_seconds": 2.1874446868896484,
+      "report_timestamp": 1755847459.1924245
+    },
+    "optimization_timestamp": 1755847459.1924362
+  },
+  "comprehensive_metrics": {
+    "scaling_metrics": {
+      "total_operations": 5,
+      "cache_enabled_operations": 1,
+      "concurrent_operations": 0,
+      "load_balanced_operations": 0,
+      "start_time": 1755847457.0049784
+    },
+    "operation_stats": {
+      "process_circuit": {
+        "count": 5,
+        "avg_time": 0.6324971675872803,
+        "min_time": 0.003267049789428711,
+        "max_time": 2.1459054946899414,
+        "total_time": 3.1624858379364014
+      },
+      "batch_process": {
+        "count": 1,
+        "avg_time": 2.178004264831543,
+        "min_time": 2.178004264831543,
+        "max_time": 2.178004264831543,
+        "total_time": 2.178004264831543
+      }
+    },
+    "cache_stats": {
+      "hits": 1,
+      "misses": 5,
+      "evictions": 0,
+      "size": 5,
+      "total_requests": 6,
+      "hit_rate": 0.16666666666666666
+    },
+    "executor_stats": {
+      "active_tasks": 0,
+      "completed_tasks": 4,
+      "successful_tasks": 4,
+      "failed_tasks": 0,
+      "success_rate": 1.0,
+      "avg_execution_time": 0.7934200167655945,
+      "max_workers": 6,
+      "executor_type": "ThreadPool",
+      "timestamp": 1755847459.1924717
+    },
+    "load_balancer_stats": {
+      "total_nodes": 1,
+      "healthy_nodes": 1,
+      "total_capacity": 6,
+      "current_load": 0,
+      "cluster_utilization": 0.0,
+      "avg_response_time": 0.0,
+      "strategy": "resource_based",
+      "timestamp": 1755847459.1924837
+    },
+    "uptime_seconds": 2.187506914138794,
+    "report_timestamp": 1755847459.1924858
+  },
+  "cache_hit_demonstration": false,
+  "batch_success_rate": 1.0,
+  "demo_timestamp": 1755847459.192496
+}

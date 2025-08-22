@@ -1,0 +1,1580 @@
+{
+  "overall_passed": false,
+  "overall_score": 0.6444644154655673,
+  "quality_threshold": 0.85,
+  "gates_passed": 3,
+  "total_gates": 5,
+  "execution_time": 0.302579402923584,
+  "quality_gates": [
+    {
+      "gate_name": "code_quality",
+      "passed": false,
+      "score": 0.22395309882747066,
+      "message": "Code quality: 22.4% - 73 files, 50211 lines, 74.7% docstring coverage, 11 security issues",
+      "details": {
+        "total_files": 73,
+        "total_lines": 50211,
+        "total_functions": 1791,
+        "total_classes": 471,
+        "docstring_coverage": 0.7465103294249023,
+        "complexity_issues": [
+          {
+            "file": "photonic_foundry/advanced_error_recovery.py",
+            "issue": "Large file: 1126 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/advanced_research_framework.py",
+            "issue": "Large file: 2310 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/advanced_scaling.py",
+            "issue": "Large file: 1282 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/ai_singularity_engine.py",
+            "issue": "Large file: 1484 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/breakthrough_research_engine.py",
+            "issue": "Large file: 1080 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/concurrent_processing.py",
+            "issue": "Large file: 1054 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/enterprise_config.py",
+            "issue": "Large file: 1106 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/enterprise_scaling_optimization_engine.py",
+            "issue": "Large file: 1010 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/hyperspeed_photonic_processor.py",
+            "issue": "Large file: 1054 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/intelligent_caching.py",
+            "issue": "Large file: 1229 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/performance_analytics.py",
+            "issue": "Large file: 1284 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_optimizer.py",
+            "issue": "Large file: 1429 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_engine.py",
+            "issue": "Large file: 1333 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_optimizer.py",
+            "issue": "Large file: 1034 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_security_advanced.py",
+            "issue": "Large file: 1085 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "issue": "Large file: 1064 lines",
+            "severity": "medium"
+          },
+          {
+            "file": "photonic_foundry/universal_deployment_engine.py",
+            "issue": "Large file: 1818 lines",
+            "severity": "medium"
+          }
+        ],
+        "security_issues": [
+          {
+            "file": "photonic_foundry/ai_singularity_engine.py",
+            "issue": "Potentially dangerous pattern: eval(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/ai_singularity_engine.py",
+            "issue": "Potentially dangerous pattern: exec(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/cli.py",
+            "issue": "Potentially dangerous pattern: eval(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/research_framework.py",
+            "issue": "Potentially dangerous pattern: eval(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "issue": "Potentially dangerous pattern: eval(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "issue": "Potentially dangerous pattern: exec(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "issue": "Potentially dangerous pattern: os.system",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "issue": "Potentially dangerous pattern: subprocess.call",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "issue": "Potentially dangerous pattern: eval(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "issue": "Potentially dangerous pattern: exec(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/compliance/ccpa.py",
+            "issue": "Potentially dangerous pattern: eval(",
+            "severity": "high"
+          }
+        ]
+      },
+      "timestamp": 1755847573.1013932
+    },
+    {
+      "gate_name": "functional_testing",
+      "passed": true,
+      "score": 1.0,
+      "message": "Functional testing: 100.0% pass rate - 4/4 tests passed, avg execution time: 0.02s",
+      "details": {
+        "test_results": [
+          {
+            "test_name": "core_imports",
+            "passed": true,
+            "execution_time": 0.0025491714477539062,
+            "output": "All core imports successful",
+            "error": null
+          },
+          {
+            "test_name": "core_functionality",
+            "passed": true,
+            "execution_time": 0.002965211868286133,
+            "output": "Created circuit with 48 components, estimated energy: 24.00 pJ/op",
+            "error": null
+          },
+          {
+            "test_name": "robust_framework",
+            "passed": true,
+            "execution_time": 0.03003072738647461,
+            "output": "Robust framework validation, security, and monitoring working",
+            "error": null
+          },
+          {
+            "test_name": "scaling_engine",
+            "passed": true,
+            "execution_time": 0.052652835845947266,
+            "output": "Scaling engine cache, load balancing, and concurrency working",
+            "error": null
+          }
+        ],
+        "avg_execution_time": 0.02204948663711548
+      },
+      "timestamp": 1755847573.1901867
+    },
+    {
+      "gate_name": "security_scanning",
+      "passed": false,
+      "score": 0.0,
+      "message": "Security scan: 0.0% security score - 18 high-risk, 71 medium-risk issues, 73 files scanned",
+      "details": {
+        "high_risk_patterns": [
+          {
+            "file": "photonic_foundry/ai_singularity_engine.py",
+            "pattern": "eval(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/ai_singularity_engine.py",
+            "pattern": "exec(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/cli.py",
+            "pattern": "eval(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/enterprise_scaling_optimization_engine.py",
+            "pattern": "pickle.loads",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/intelligent_caching.py",
+            "pattern": "pickle.loads",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/research_framework.py",
+            "pattern": "eval(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "eval(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "exec(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "__import__",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "compile(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "os.system",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "subprocess.call",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "subprocess.run",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "pickle.loads",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "yaml.load",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "eval(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "exec(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/compliance/ccpa.py",
+            "pattern": "eval(",
+            "risk_level": "high"
+          }
+        ],
+        "medium_risk_patterns": [
+          {
+            "file": "photonic_foundry/adaptive_quantum_breakthrough_engine.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/adaptive_quantum_breakthrough_engine.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/adaptive_quantum_photonic_phase_optimizer.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/advanced_error_recovery.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/advanced_research_framework.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/advanced_research_framework.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/advanced_scaling.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/ai_singularity_engine.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/ai_singularity_engine.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/baseline_comparison_framework.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/baseline_comparison_framework.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/breakthrough_research_engine.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/breakthrough_research_engine.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/circuit_breaker.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/cli.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/cli.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/cli.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/concurrent_processing.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/core.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/core.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/core_enhanced.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/enhanced_resilience.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/enterprise_config.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/enterprise_config.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/enterprise_scaling_optimization_engine.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/hyperspeed_photonic_processor.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/monitoring.py",
+            "pattern": "socket.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/performance_analytics.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/performance_analytics.py",
+            "pattern": "socket.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/performance_optimizer.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/performance_optimizer.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/photonic_quantum_error_correction.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_breakthrough_algorithms.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_consciousness_engine.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_consciousness_engine.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_optimizer.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_engine.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_optimizer.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_photonic_baselines.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_planner.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_resilience.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_security.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/quantum_security_advanced.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/research_framework.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/research_framework.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/research_framework.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/resilience_framework.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/resilience_framework.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/robust_research_validation_framework.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/robust_research_validation_framework.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "input(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "tempfile.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/statistical_validation_framework.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/statistical_validation_framework.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/transpiler.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/universal_deployment_engine.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/validation.py",
+            "pattern": "input(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/validation.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/core_standalone.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "input(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/api/endpoints.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/api/endpoints.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/database/cache.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/database/seeds.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/database/seeds.py",
+            "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/i18n/__init__.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/utils/generators.py",
+            "pattern": "file(",
+            "risk_level": "medium"
+          }
+        ],
+        "low_risk_patterns": [
+          {
+            "file": "photonic_foundry/__init__.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/__init__.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/adaptive_quantum_breakthrough_engine.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/adaptive_quantum_breakthrough_engine.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/adaptive_quantum_photonic_phase_optimizer.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/adaptive_quantum_photonic_phase_optimizer.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_error_recovery.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_error_recovery.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_error_recovery.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_research_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_research_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_scaling.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_scaling.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_scaling.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_scaling.py",
+            "pattern": "except:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/advanced_scaling.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/ai_singularity_engine.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/baseline_comparison_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/baseline_comparison_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/breakthrough_research_engine.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/breakthrough_research_engine.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/breakthrough_research_engine.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/circuit_breaker.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/circuit_breaker.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/circuit_breaker.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/cli.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/cli.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/cli.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/concurrent_processing.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/concurrent_processing.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/concurrent_processing.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/concurrent_processing.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_enhanced.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_enhanced.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_enhanced.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/enhanced_resilience.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/enhanced_resilience.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/enterprise_config.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/enterprise_config.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/enterprise_config.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/enterprise_scaling_optimization_engine.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/enterprise_scaling_optimization_engine.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/enterprise_scaling_optimization_engine.py",
+            "pattern": "except:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/error_handling.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/error_handling.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/error_handling.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/hyperspeed_photonic_processor.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/hyperspeed_photonic_processor.py",
+            "pattern": "except:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/intelligent_caching.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/intelligent_caching.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/intelligent_caching.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/logging_config.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/monitoring.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/monitoring.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/monitoring.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance_analytics.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance_analytics.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance_analytics.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance_optimizer.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance_optimizer.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/performance_optimizer.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/photonic_quantum_error_correction.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/photonic_quantum_error_correction.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_breakthrough_algorithms.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_breakthrough_algorithms.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_consciousness_engine.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_optimizer.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_optimizer.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_optimizer.py",
+            "pattern": "except:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_engine.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_engine.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_engine.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_engine.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_engine.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_optimizer.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_optimizer.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_performance_optimizer.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_photonic_baselines.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_photonic_baselines.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_photonic_baselines.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_planner.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_planner.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_resilience.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_resilience.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_resilience.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_security.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_security.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_security.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_security_advanced.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_security_advanced.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_security_advanced.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/quantum_security_advanced.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/research_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/research_framework.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/research_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/resilience_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/resilience_framework.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/resilience_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_quantum_framework.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_quantum_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_quantum_framework.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_quantum_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_research_validation_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_research_validation_framework.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_research_validation_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling.py",
+            "pattern": "except:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/security.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/statistical_validation_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/statistical_validation_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/transpiler.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/universal_deployment_engine.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/validation.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/validation.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_standalone.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_standalone.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_standalone.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/endpoints.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/endpoints.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/middleware.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/middleware.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/middleware.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/schemas.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/schemas.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/server.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/api/server.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/compliance/__init__.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/compliance/ccpa.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/compliance/ccpa.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/compliance/gdpr.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/compliance/pdpa.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/compliance/pdpa.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/cache.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/cache.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/connection.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/connection.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/connection.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/connection.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/repositories.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/seeds.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/seeds.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/i18n/__init__.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/i18n/__init__.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/models/simple_mlp.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/utils/advanced_optimizers.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/utils/advanced_optimizers.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/utils/generators.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/utils/optimizers.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/utils/optimizers.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/utils/validators.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/utils/validators.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/utils/validators.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/migrations/001_initial_schema.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/database/migrations/001_initial_schema.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          }
+        ],
+        "files_scanned": 73,
+        "clean_files": 24
+      },
+      "timestamp": 1755847573.2904048
+    },
+    {
+      "gate_name": "performance_validation",
+      "passed": true,
+      "score": 0.9983689785003662,
+      "message": "Performance validation: 99.8% - Circuit creation: 0.004s, Verilog gen: 0.000s, Metrics: 0.000s",
+      "details": {
+        "performance_results": {
+          "circuit_creation": 0.00404810905456543,
+          "verilog_generation": 2.6702880859375e-05,
+          "metrics_estimation": 7.915496826171875e-05
+        },
+        "thresholds": {
+          "circuit_creation": 1.0,
+          "verilog_generation": 0.5,
+          "metrics_estimation": 0.1
+        }
+      },
+      "timestamp": 1755847573.2949333
+    },
+    {
+      "gate_name": "integration_testing",
+      "passed": true,
+      "score": 1.0,
+      "message": "Integration testing: 100.0% - 2/2 integrations passed",
+      "details": {
+        "integration_tests": [
+          {
+            "name": "core_robust_integration",
+            "passed": true,
+            "result": "{'circuit_name': 'robust_model_f3851f95', 'success': True, 'circuit_info': {'layers': 2, 'total_comp"
+          },
+          {
+            "name": "core_scaling_integration",
+            "passed": true,
+            "result": "{'circuit_name': 'optimized_circuit_f3851f95', 'circuit_info': {'layers': 2, 'total_components': 48,"
+          }
+        ]
+      },
+      "timestamp": 1755847573.3078
+    }
+  ],
+  "recommendations": [
+    "Improve code quality: Add more docstrings and address complexity issues",
+    "Address security issues: Review and fix high/medium risk patterns"
+  ],
+  "timestamp": 1755847573.3091674
+}

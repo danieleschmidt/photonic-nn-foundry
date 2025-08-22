@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: photonic-foundry-config
+  namespace: photonic-foundry
+data:
+  LOG_LEVEL: INFO
+  ENVIRONMENT: production
+  MAX_WORKERS: 8
+  CACHE_SIZE: 10000
+  ENABLE_MONITORING: true
+  ENABLE_SECURITY: true

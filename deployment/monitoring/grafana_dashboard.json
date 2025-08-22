@@ -1,0 +1,65 @@
+{
+  "dashboard": {
+    "title": "Photonic Neural Network Foundry - Production",
+    "tags": [
+      "photonic-foundry",
+      "production"
+    ],
+    "timezone": "UTC",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(photonic_foundry_requests_total[5m])",
+            "legendFormat": "Requests/sec"
+          }
+        ]
+      },
+      {
+        "title": "Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(photonic_foundry_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "50th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(photonic_foundry_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile"
+          }
+        ]
+      },
+      {
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(photonic_foundry_errors_total[5m])",
+            "legendFormat": "Errors/sec"
+          }
+        ]
+      },
+      {
+        "title": "Circuit Processing",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "photonic_foundry_circuits_processed_total",
+            "legendFormat": "Total Circuits"
+          },
+          {
+            "expr": "rate(photonic_foundry_circuits_processed_total[5m])",
+            "legendFormat": "Circuits/sec"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

@@ -1,16 +1,26 @@
-Photonic Neural Network Configuration
-=====================================
-Name: simple_demo_mlp
-PDK: skywater130
-Wavelength: 1550nm
-Total Components: 56
-Layers: 3
-  Layer 1: linear (4 -> 8)
-  Layer 2: activation (8 -> 8)
-  Layer 3: linear (8 -> 2)
-
-Performance Metrics:
-Energy per inference: 32.0 pJ
-Latency: 150 ps
-Area: 0.0520 mm²
-Throughput: 6666666666.7 GOPS
+{
+  "accelerator_config": {
+    "pdk": "skywater130",
+    "wavelength": 1550
+  },
+  "circuit_info": {
+    "name": "simple_model_3layers",
+    "layers": 2,
+    "total_components": 48,
+    "layer_sizes": [
+      4,
+      8,
+      2
+    ]
+  },
+  "performance_metrics": {
+    "energy_per_op": 24.0,
+    "latency": 100.0,
+    "area": 0.48,
+    "power": 4.800000000000001,
+    "throughput": 10.0,
+    "accuracy": 0.98
+  },
+  "verilog_length": 2665,
+  "timestamp": 1755847241.0116222
+}

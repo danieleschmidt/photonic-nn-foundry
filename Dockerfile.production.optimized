@@ -1,0 +1,73 @@
+# Production Dockerfile for Photonic Neural Network Foundry
+FROM python:3.12-slim AS builder
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create application user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Set work directory
+WORKDIR /app
+
+# Copy requirements first (for better caching)
+COPY requirements.txt requirements-dev.txt ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Production stage
+FROM python:3.12-slim AS production
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV ENVIRONMENT=production
+ENV LOG_LEVEL=INFO
+
+# Create application user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python environment from builder
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Set work directory
+WORKDIR /app
+
+# Copy application code
+COPY --chown=appuser:appuser src/ ./src/
+COPY --chown=appuser:appuser *.py ./
+COPY --chown=appuser:appuser *.md ./
+COPY --chown=appuser:appuser *.txt ./
+
+# Create output directory
+RUN mkdir -p output && chown -R appuser:appuser output
+
+# Switch to non-root user
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python3 -c "import src.photonic_foundry.core_standalone; print('OK')" || exit 1
+
+# Default command
+CMD ["python3", "-m", "src.photonic_foundry.api.server"]
+
+# Labels
+LABEL maintainer="Daniel Schmidt <daniel@photonic-foundry.com>"
+LABEL version="1.0.0"
+LABEL description="Production-ready Photonic Neural Network Foundry"
