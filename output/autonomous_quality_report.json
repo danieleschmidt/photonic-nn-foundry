@@ -1,10 +1,10 @@
 {
   "overall_passed": false,
-  "overall_score": 0.6444644154655673,
+  "overall_score": 0.6445967695661127,
   "quality_threshold": 0.85,
   "gates_passed": 3,
   "total_gates": 5,
-  "execution_time": 0.302579402923584,
+  "execution_time": 0.18970584869384766,
   "quality_gates": [
     {
       "gate_name": "code_quality",
@@ -126,6 +126,16 @@
             "severity": "high"
           },
           {
+            "file": "photonic_foundry/robust_framework.py",
+            "issue": "Potentially dangerous pattern: eval(",
+            "severity": "high"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "issue": "Potentially dangerous pattern: exec(",
+            "severity": "high"
+          },
+          {
             "file": "photonic_foundry/security.py",
             "issue": "Potentially dangerous pattern: eval(",
             "severity": "high"
@@ -146,23 +156,13 @@
             "severity": "high"
           },
           {
-            "file": "photonic_foundry/robust_framework.py",
-            "issue": "Potentially dangerous pattern: eval(",
-            "severity": "high"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "issue": "Potentially dangerous pattern: exec(",
-            "severity": "high"
-          },
-          {
             "file": "photonic_foundry/compliance/ccpa.py",
             "issue": "Potentially dangerous pattern: eval(",
             "severity": "high"
           }
         ]
       },
-      "timestamp": 1755847573.1013932
+      "timestamp": 1755967330.9510438
     },
     {
       "gate_name": "functional_testing",
@@ -174,35 +174,35 @@
           {
             "test_name": "core_imports",
             "passed": true,
-            "execution_time": 0.0025491714477539062,
+            "execution_time": 0.004518032073974609,
             "output": "All core imports successful",
             "error": null
           },
           {
             "test_name": "core_functionality",
             "passed": true,
-            "execution_time": 0.002965211868286133,
+            "execution_time": 0.0017533302307128906,
             "output": "Created circuit with 48 components, estimated energy: 24.00 pJ/op",
             "error": null
           },
           {
             "test_name": "robust_framework",
             "passed": true,
-            "execution_time": 0.03003072738647461,
+            "execution_time": 0.022884368896484375,
             "output": "Robust framework validation, security, and monitoring working",
             "error": null
           },
           {
             "test_name": "scaling_engine",
             "passed": true,
-            "execution_time": 0.052652835845947266,
+            "execution_time": 0.03536081314086914,
             "output": "Scaling engine cache, load balancing, and concurrency working",
             "error": null
           }
         ],
-        "avg_execution_time": 0.02204948663711548
+        "avg_execution_time": 0.016129136085510254
       },
-      "timestamp": 1755847573.1901867
+      "timestamp": 1755967331.0159416
     },
     {
       "gate_name": "security_scanning",
@@ -239,6 +239,16 @@
           {
             "file": "photonic_foundry/research_framework.py",
             "pattern": "eval(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "eval(",
+            "risk_level": "high"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "exec(",
             "risk_level": "high"
           },
           {
@@ -284,16 +294,6 @@
           {
             "file": "photonic_foundry/security.py",
             "pattern": "yaml.load",
-            "risk_level": "high"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "eval(",
-            "risk_level": "high"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "exec(",
             "risk_level": "high"
           },
           {
@@ -406,6 +406,11 @@
           {
             "file": "photonic_foundry/core_enhanced.py",
             "pattern": "file(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/core_standalone.py",
+            "pattern": "open(",
             "risk_level": "medium"
           },
           {
@@ -544,6 +549,16 @@
             "risk_level": "medium"
           },
           {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "input(",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "open(",
+            "risk_level": "medium"
+          },
+          {
             "file": "photonic_foundry/robust_research_validation_framework.py",
             "pattern": "open(",
             "risk_level": "medium"
@@ -551,6 +566,11 @@
           {
             "file": "photonic_foundry/robust_research_validation_framework.py",
             "pattern": "random.",
+            "risk_level": "medium"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "open(",
             "risk_level": "medium"
           },
           {
@@ -600,26 +620,6 @@
           },
           {
             "file": "photonic_foundry/validation.py",
-            "pattern": "open(",
-            "risk_level": "medium"
-          },
-          {
-            "file": "photonic_foundry/core_standalone.py",
-            "pattern": "open(",
-            "risk_level": "medium"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "input(",
-            "risk_level": "medium"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "open(",
-            "risk_level": "medium"
-          },
-          {
-            "file": "photonic_foundry/scaling_engine.py",
             "pattern": "open(",
             "risk_level": "medium"
           },
@@ -843,6 +843,21 @@
           {
             "file": "photonic_foundry/core_enhanced.py",
             "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_standalone.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_standalone.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/core_standalone.py",
+            "pattern": "raise ",
             "risk_level": "low"
           },
           {
@@ -1181,6 +1196,31 @@
             "risk_level": "low"
           },
           {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/robust_framework.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
             "file": "photonic_foundry/robust_quantum_framework.py",
             "pattern": "print(",
             "risk_level": "low"
@@ -1231,6 +1271,31 @@
             "risk_level": "low"
           },
           {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "print(",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "logging.",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "raise ",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "try:",
+            "risk_level": "low"
+          },
+          {
+            "file": "photonic_foundry/scaling_engine.py",
+            "pattern": "finally:",
+            "risk_level": "low"
+          },
+          {
             "file": "photonic_foundry/security.py",
             "pattern": "logging.",
             "risk_level": "low"
@@ -1273,71 +1338,6 @@
           {
             "file": "photonic_foundry/validation.py",
             "pattern": "try:",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/core_standalone.py",
-            "pattern": "print(",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/core_standalone.py",
-            "pattern": "logging.",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/core_standalone.py",
-            "pattern": "raise ",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "print(",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "logging.",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "raise ",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "try:",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/robust_framework.py",
-            "pattern": "finally:",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/scaling_engine.py",
-            "pattern": "print(",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/scaling_engine.py",
-            "pattern": "logging.",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/scaling_engine.py",
-            "pattern": "raise ",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/scaling_engine.py",
-            "pattern": "try:",
-            "risk_level": "low"
-          },
-          {
-            "file": "photonic_foundry/scaling_engine.py",
-            "pattern": "finally:",
             "risk_level": "low"
           },
           {
@@ -1529,18 +1529,18 @@
         "files_scanned": 73,
         "clean_files": 24
       },
-      "timestamp": 1755847573.2904048
+      "timestamp": 1755967331.0768223
     },
     {
       "gate_name": "performance_validation",
       "passed": true,
-      "score": 0.9983689785003662,
-      "message": "Performance validation: 99.8% - Circuit creation: 0.004s, Verilog gen: 0.000s, Metrics: 0.000s",
+      "score": 0.9990307490030924,
+      "message": "Performance validation: 99.9% - Circuit creation: 0.002s, Verilog gen: 0.000s, Metrics: 0.000s",
       "details": {
         "performance_results": {
-          "circuit_creation": 0.00404810905456543,
-          "verilog_generation": 2.6702880859375e-05,
-          "metrics_estimation": 7.915496826171875e-05
+          "circuit_creation": 0.002399444580078125,
+          "verilog_generation": 2.0503997802734375e-05,
+          "metrics_estimation": 4.673004150390625e-05
         },
         "thresholds": {
           "circuit_creation": 1.0,
@@ -1548,7 +1548,7 @@
           "metrics_estimation": 0.1
         }
       },
-      "timestamp": 1755847573.2949333
+      "timestamp": 1755967331.0795362
     },
     {
       "gate_name": "integration_testing",
@@ -1569,12 +1569,12 @@
           }
         ]
       },
-      "timestamp": 1755847573.3078
+      "timestamp": 1755967331.0878227
     }
   ],
   "recommendations": [
     "Improve code quality: Add more docstrings and address complexity issues",
     "Address security issues: Review and fix high/medium risk patterns"
   ],
-  "timestamp": 1755847573.3091674
+  "timestamp": 1755967331.0888689
 }
