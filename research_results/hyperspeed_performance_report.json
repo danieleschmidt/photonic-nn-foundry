@@ -1,0 +1,41 @@
+{
+  "experiment_summary": {
+    "total_results": 0,
+    "total_time_seconds": 0.04226279258728027,
+    "throughput_exp_per_sec": 0.0,
+    "average_latency_ms": 0.0,
+    "peak_cpu_utilization": 0.0,
+    "peak_memory_usage_mb": 0.0
+  },
+  "caching_performance": {
+    "hit_rate": 0.0,
+    "hits": 0,
+    "misses": 240,
+    "size_mb": 0.0,
+    "entries": 0,
+    "max_size_mb": 256.0
+  },
+  "memoization_performance": {
+    "baseline_methods": {
+      "call_count": 60,
+      "total_time": 0.00336456298828125,
+      "average_time": 5.60760498046875e-05
+    },
+    "quantum_methods": {
+      "call_count": 60,
+      "total_time": 0.004082679748535156,
+      "average_time": 6.804466247558593e-05
+    }
+  },
+  "scaling_events": [],
+  "configuration": {
+    "max_workers": 4,
+    "profile": "throughput",
+    "scaling_strategy": "adaptive",
+    "enable_caching": true,
+    "enable_memoization": true,
+    "batch_size": 50,
+    "cache_size_mb": 256
+  },
+  "timestamp": "2025-08-25T12:04:42.399127"
+}

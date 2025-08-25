@@ -1,0 +1,35 @@
+{
+  "experiment_metadata": {
+    "framework": "Quantum-Inspired Photonic Neural Network Research",
+    "timestamp": "2025-08-25 11:59:05",
+    "total_experiments": 240,
+    "statistical_method": "Simplified statistical analysis",
+    "confidence_level": 0.95
+  },
+  "hypotheses_tested": 3,
+  "breakthrough_discoveries": [],
+  "statistical_significance": {
+    "quantum_optimization_speedup": {
+      "p_value": 0.0020000000000000018,
+      "is_significant": true,
+      "effect_size_category": "large"
+    },
+    "photonic_energy_efficiency": {
+      "p_value": 1.0,
+      "is_significant": false,
+      "effect_size_category": "negligible"
+    },
+    "quantum_resilience_breakthrough": {
+      "p_value": 1.0,
+      "is_significant": false,
+      "effect_size_category": "negligible"
+    }
+  },
+  "research_impact": {
+    "total_breakthroughs": 0,
+    "significant_results": 1,
+    "success_rate": 0.3333333333333333,
+    "average_improvement_factor": 17.380097225522096,
+    "publication_ready": false
+  }
+}
