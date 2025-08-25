@@ -1,0 +1,137 @@
+{
+  "execution_metadata": {
+    "timestamp": "2025-08-25T12:06:37.650826",
+    "total_execution_time": 0.8275856971740723,
+    "project_directory": ".",
+    "gates_executed": 4
+  },
+  "overall_status": "failed",
+  "overall_score": 54.19152385363594,
+  "gate_summary": {
+    "passed": 1,
+    "failed": 2,
+    "warnings": 1,
+    "total": 4
+  },
+  "gate_results": [
+    {
+      "name": "security_scan",
+      "status": "failed",
+      "score": 0,
+      "execution_time": 0.7745721340179443,
+      "details": {
+        "total_findings": 216,
+        "critical_findings": 14,
+        "high_findings": 180,
+        "medium_findings": 22,
+        "low_findings": 0,
+        "scanned_files": 170,
+        "findings_by_category": {
+          "command_injection": 179,
+          "hardcoded_secrets": 14,
+          "unsafe_imports": 22,
+          "sql_injection_patterns": 1
+        }
+      },
+      "recommendations": [
+        "URGENT: Address all critical security vulnerabilities immediately",
+        "Address high-severity security issues before production",
+        "Improve overall security posture to achieve 85+ score"
+      ],
+      "error_message": null
+    },
+    {
+      "name": "performance_benchmark",
+      "status": "passed",
+      "score": 100.0,
+      "execution_time": 0.0010204315185546875,
+      "details": {
+        "total_benchmarks": 4,
+        "passed_benchmarks": 4,
+        "failed_benchmarks": 0,
+        "benchmark_results": [
+          {
+            "metric": "simple_experiment_latency",
+            "value": 0.0438690185546875,
+            "unit": "ms",
+            "target": 100.0,
+            "passed": true
+          },
+          {
+            "metric": "memory_efficiency",
+            "value": 25.5,
+            "unit": "MB",
+            "target": 50.0,
+            "passed": true
+          },
+          {
+            "metric": "experiment_throughput",
+            "value": 62676.38971906754,
+            "unit": "exp/sec",
+            "target": 10.0,
+            "passed": true
+          },
+          {
+            "metric": "cache_hit_rate",
+            "value": 85.0,
+            "unit": "%",
+            "target": 80.0,
+            "passed": true
+          }
+        ]
+      },
+      "recommendations": [],
+      "error_message": null
+    },
+    {
+      "name": "code_quality",
+      "status": "warning",
+      "score": 71.41176470588236,
+      "execution_time": 0.032930612564086914,
+      "details": {
+        "total_files": 170,
+        "total_lines": 92089,
+        "documented_files": 170,
+        "documentation_rate": 100.0,
+        "avg_lines_per_file": 541.7,
+        "complex_files": 81,
+        "complexity_rate": 47.647058823529406
+      },
+      "recommendations": [
+        "Consider breaking down large modules into smaller ones",
+        "Refactor complex modules to improve maintainability"
+      ],
+      "error_message": null
+    },
+    {
+      "name": "testing_validation",
+      "status": "failed",
+      "score": 45.35433070866142,
+      "execution_time": 0.01804184913635254,
+      "details": {
+        "total_test_files": 36,
+        "total_test_functions": 450,
+        "source_files": 127,
+        "test_coverage_estimate": 28.346456692913385,
+        "test_density": 3.543307086614173
+      },
+      "recommendations": [
+        "Increase test coverage by adding more test files"
+      ],
+      "error_message": null
+    }
+  ],
+  "critical_issues": [
+    "security_scan: Failed validation",
+    "testing_validation: Failed validation"
+  ],
+  "production_readiness": false,
+  "next_actions": [
+    "URGENT: Address all critical security vulnerabilities immediately",
+    "Address high-severity security issues before production",
+    "Improve overall security posture to achieve 85+ score",
+    "Increase test coverage by adding more test files",
+    "Consider breaking down large modules into smaller ones",
+    "Refactor complex modules to improve maintainability"
+  ]
+}
