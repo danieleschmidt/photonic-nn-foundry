@@ -1,0 +1,78 @@
+{
+  "status": "SUCCESS",
+  "generation": 2,
+  "timestamp": 1756225016.0529134,
+  "error_details": null,
+  "metrics": {
+    "energy_per_op": 70425.59999999999,
+    "latency": 90,
+    "area": 187.8016,
+    "power": 19719.16800005349,
+    "throughput": 11111111111.11111,
+    "accuracy": 0.98
+  },
+  "efficiency_score": 50.707551799345694,
+  "power_management": {
+    "name": "optimized_mlp_4_layers",
+    "layer_count": 3,
+    "component_count": 234752,
+    "connection_count": 2,
+    "power_budget": 2000.0,
+    "power_used": 19719.168000053494,
+    "power_efficiency": -885.9584000026747,
+    "budget_utilization": 985.9584000026747,
+    "layer_statistics": [
+      {
+        "input_size": 784,
+        "output_size": 256,
+        "requested_precision": 8,
+        "effective_precision": 4,
+        "component_count": 200704,
+        "power_budget": 666.6666666666666,
+        "actual_power": 16859.13600005447,
+        "power_efficiency": -2428.8704000081707,
+        "optimization_strategies": [
+          "low_power_mode",
+          "adaptive_precision",
+          "time_multiplexing"
+        ]
+      },
+      {
+        "input_size": 256,
+        "output_size": 128,
+        "requested_precision": 8,
+        "effective_precision": 4,
+        "component_count": 32768,
+        "power_budget": 108.84353741496597,
+        "actual_power": 2752.5119999990193,
+        "power_efficiency": -2428.8703999991,
+        "optimization_strategies": [
+          "low_power_mode",
+          "adaptive_precision",
+          "time_multiplexing"
+        ]
+      },
+      {
+        "input_size": 128,
+        "output_size": 10,
+        "requested_precision": 8,
+        "effective_precision": 4,
+        "component_count": 1280,
+        "power_budget": 4.2517006802721085,
+        "actual_power": 107.52000000000274,
+        "power_efficiency": -2428.8704000000644,
+        "optimization_strategies": [
+          "low_power_mode",
+          "adaptive_precision",
+          "time_multiplexing"
+        ]
+      }
+    ],
+    "security_enabled": true
+  },
+  "files_generated": [
+    "robust_demo_results.json",
+    "robust_demo_summary.txt"
+  ],
+  "ready_for_generation3": true
+}

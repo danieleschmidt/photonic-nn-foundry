@@ -1,0 +1,24 @@
+{
+  "status": "SUCCESS",
+  "generation": 1,
+  "metrics": {
+    "energy_per_op": 117376.0,
+    "latency": 150,
+    "area": 234.752,
+    "power": 117376000000.0,
+    "throughput": 6666666666.666667,
+    "accuracy": 0.98
+  },
+  "circuit_info": {
+    "name": "simple_mlp",
+    "layers": 3,
+    "components": 234752,
+    "connections": 2
+  },
+  "files_generated": [
+    "simple_mlp_example.v",
+    "simple_mlp_example_config.txt"
+  ],
+  "timestamp": 1756224660.0306668,
+  "ready_for_generation2": true
+}

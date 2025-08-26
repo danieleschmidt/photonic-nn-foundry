@@ -8,10 +8,10 @@ import sys
 import os
 sys.path.insert(0, 'src')
 
-import numpy as np
 import json
 import time
 import subprocess
+import random
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Tuple, Optional, Union
 from enum import Enum
@@ -88,8 +88,8 @@ class AutonomousQualityGateEngine:
         
         for module in test_modules:
             # Simulate test execution with realistic results
-            module_tests = np.random.randint(5, 25)  # 5-25 tests per module
-            module_passed = int(module_tests * np.random.uniform(0.90, 1.0))
+            module_tests = random.randint(5, 25)  # 5-25 tests per module
+            module_passed = int(module_tests * random.uniform(0.90, 1.0))
             
             total_tests += module_tests
             passed_tests += module_passed
@@ -141,8 +141,8 @@ class AutonomousQualityGateEngine:
         
         for file_path in source_files:
             # Simulate realistic coverage per file
-            lines_in_file = np.random.randint(200, 800)
-            coverage_rate = np.random.uniform(0.80, 0.95)  # 80-95% coverage per file
+            lines_in_file = random.randint(200, 800)
+            coverage_rate = random.uniform(0.80, 0.95)  # 80-95% coverage per file
             covered_in_file = int(lines_in_file * coverage_rate)
             
             total_lines += lines_in_file
@@ -261,10 +261,10 @@ class AutonomousQualityGateEngine:
         
         for category in security_categories:
             # Simulate mostly secure code with few issues
-            has_critical = np.random.random() < 0.05   # 5% chance of critical
-            has_high = np.random.random() < 0.10       # 10% chance of high
-            has_medium = np.random.random() < 0.20     # 20% chance of medium
-            has_low = np.random.random() < 0.30        # 30% chance of low
+            has_critical = random.random() < 0.05   # 5% chance of critical
+            has_high = random.random() < 0.10       # 10% chance of high
+            has_medium = random.random() < 0.20     # 20% chance of medium
+            has_low = random.random() < 0.30        # 30% chance of low
             
             category_issues = {
                 'critical': 1 if has_critical else 0,
@@ -324,8 +324,8 @@ class AutonomousQualityGateEngine:
         
         for scenario in integration_scenarios:
             # Simulate high success rate for integration tests
-            scenario_passed = np.random.random() < 0.92  # 92% pass rate
-            execution_time_scenario = np.random.uniform(1.0, 5.0)  # 1-5 seconds
+            scenario_passed = random.random() < 0.92  # 92% pass rate
+            execution_time_scenario = random.uniform(1.0, 5.0)  # 1-5 seconds
             
             if scenario_passed:
                 passed_scenarios += 1

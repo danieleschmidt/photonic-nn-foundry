@@ -1,93 +1,77 @@
+/*
+ * Generated Photonic Neural Network Circuit: simple_mlp
+ * PDK: skywater130
+ * Operating Wavelength: 1550 nm
+ * Total Layers: 3
+ * Total Components: 234752
+ */
 
-// Generated Photonic Neural Network: simple_mlp_example
-// Target PDK: skywater130
-// Operating Wavelength: 1550nm
-// Total Layers: 3
-// Total Components: 101760
-
-module simple_mlp_example (
-    input clk,
-    input rst_n,
-    input [31:0] data_in,
-    input valid_in,
-    output [31:0] data_out,
-    output valid_out
+module simple_mlp_photonic (
+    input wire clk,
+    input wire rst_n,
+    input wire [7:0] data_in [783:0],  // 784 input features
+    input wire valid_in,
+    output wire [7:0] data_out [9:0],  // 10 output classes  
+    output wire valid_out
 );
 
-// Parameters
-parameter INPUT_WIDTH = 32;
-parameter OUTPUT_WIDTH = 32;
-parameter PRECISION = 8;
+// Layer 1: 784 → 256 (MZI Mesh)
+wire [7:0] layer1_out [255:0];
+wire layer1_valid;
 
-// Internal signals
-wire [PRECISION-1:0] layer_interconnect [3:0];
-wire layer_valid [3:0];
+mzi_layer_784x256 layer1_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .data_in(data_in),
+    .valid_in(valid_in),
+    .data_out(layer1_out),
+    .valid_out(layer1_valid)
+);
 
-// Input assignment
-assign layer_interconnect[0] = data_in[PRECISION-1:0];
-assign layer_valid[0] = valid_in;
+// Layer 2: 256 → 128 (MZI Mesh)
+wire [7:0] layer2_out [127:0];
+wire layer2_valid;
 
-// Layer instantiations
-genvar i;
-generate
-    for (i = 0; i < 3; i = i + 1) begin: layer_gen
-        photonic_layer #(
-            .LAYER_TYPE(i),
-            .INPUT_SIZE(784),
-            .OUTPUT_SIZE(128),
-            .PRECISION(PRECISION)
-        ) layer_inst (
-            .clk(clk),
-            .rst_n(rst_n),
-            .data_in(layer_interconnect[i]),
-            .valid_in(layer_valid[i]),
-            .data_out(layer_interconnect[i+1]),
-            .valid_out(layer_valid[i+1])
-        );
-    end
-endgenerate
+mzi_layer_256x128 layer2_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .data_in(layer1_out),
+    .valid_in(layer1_valid),
+    .data_out(layer2_out),
+    .valid_out(layer2_valid)
+);
 
-// Output assignment
-assign data_out = layer_interconnect[3];
-assign valid_out = layer_valid[3];
+// Layer 3: 128 → 10 (MZI Mesh)
+mzi_layer_128x10 layer3_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .data_in(layer2_out),
+    .valid_in(layer2_valid),
+    .data_out(data_out),
+    .valid_out(valid_out)
+);
 
 endmodule
 
-// Basic photonic layer module
-module photonic_layer #(
-    parameter LAYER_TYPE = 0,
-    parameter INPUT_SIZE = 128,
-    parameter OUTPUT_SIZE = 128,
+// MZI-based matrix multiplication unit template
+module mzi_unit #(
     parameter PRECISION = 8
 ) (
-    input clk,
-    input rst_n,
-    input [PRECISION-1:0] data_in,
-    input valid_in,
-    output [PRECISION-1:0] data_out,
-    output valid_out
+    input wire clk,
+    input wire rst_n,
+    input wire [PRECISION-1:0] data_in,
+    input wire [PRECISION-1:0] weight_config,
+    output reg [PRECISION-1:0] data_out
 );
 
-// Simplified photonic processing
-reg [PRECISION-1:0] processed_data;
-reg valid_reg;
-
+// Simplified MZI operation: multiplication with phase shift
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-        processed_data <= 0;
-        valid_reg <= 1'b0;
+        data_out <= 0;
     end else begin
-        if (valid_in) begin
-            // Simulate photonic processing with delay
-            processed_data <= data_in + 1; // Simplified transformation
-            valid_reg <= 1'b1;
-        end else begin
-            valid_reg <= 1'b0;
-        end
+        // Simulate photonic matrix multiplication
+        data_out <= (data_in * weight_config) >> (PRECISION - 4);
     end
 end
-
-assign data_out = processed_data;
-assign valid_out = valid_reg;
 
 endmodule
