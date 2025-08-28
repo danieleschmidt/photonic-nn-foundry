@@ -1,78 +1,86 @@
 {
-  "status": "SUCCESS",
   "generation": 2,
-  "timestamp": 1756225016.0529134,
-  "error_details": null,
-  "metrics": {
-    "energy_per_op": 70425.59999999999,
-    "latency": 90,
-    "area": 187.8016,
-    "power": 19719.16800005349,
-    "throughput": 11111111111.11111,
-    "accuracy": 0.98
-  },
-  "efficiency_score": 50.707551799345694,
-  "power_management": {
-    "name": "optimized_mlp_4_layers",
-    "layer_count": 3,
-    "component_count": 234752,
-    "connection_count": 2,
-    "power_budget": 2000.0,
-    "power_used": 19719.168000053494,
-    "power_efficiency": -885.9584000026747,
-    "budget_utilization": 985.9584000026747,
-    "layer_statistics": [
-      {
-        "input_size": 784,
-        "output_size": 256,
-        "requested_precision": 8,
-        "effective_precision": 4,
-        "component_count": 200704,
-        "power_budget": 666.6666666666666,
-        "actual_power": 16859.13600005447,
-        "power_efficiency": -2428.8704000081707,
-        "optimization_strategies": [
-          "low_power_mode",
-          "adaptive_precision",
-          "time_multiplexing"
-        ]
-      },
-      {
-        "input_size": 256,
-        "output_size": 128,
-        "requested_precision": 8,
-        "effective_precision": 4,
-        "component_count": 32768,
-        "power_budget": 108.84353741496597,
-        "actual_power": 2752.5119999990193,
-        "power_efficiency": -2428.8703999991,
-        "optimization_strategies": [
-          "low_power_mode",
-          "adaptive_precision",
-          "time_multiplexing"
-        ]
-      },
-      {
-        "input_size": 128,
-        "output_size": 10,
-        "requested_precision": 8,
-        "effective_precision": 4,
-        "component_count": 1280,
-        "power_budget": 4.2517006802721085,
-        "actual_power": 107.52000000000274,
-        "power_efficiency": -2428.8704000000644,
-        "optimization_strategies": [
-          "low_power_mode",
-          "adaptive_precision",
-          "time_multiplexing"
-        ]
-      }
-    ],
-    "security_enabled": true
-  },
-  "files_generated": [
-    "robust_demo_results.json",
-    "robust_demo_summary.txt"
+  "timestamp": 1756353146.1407902,
+  "tests": [
+    {
+      "name": "circuit_creation",
+      "status": "passed",
+      "time_ms": 388.72432708740234
+    },
+    {
+      "name": "health_monitoring",
+      "status": "passed",
+      "time_ms": 0.03695487976074219
+    },
+    {
+      "name": "performance_analysis",
+      "status": "passed",
+      "time_ms": 0.05698204040527344
+    },
+    {
+      "name": "robust_inference",
+      "status": "passed",
+      "time_ms": 245.64409255981445
+    },
+    {
+      "name": "quantum_optimization",
+      "status": "passed",
+      "time_ms": 0.6742477416992188
+    },
+    {
+      "name": "error_recovery",
+      "status": "passed",
+      "time_ms": 0.10848045349121094
+    }
   ],
-  "ready_for_generation3": true
+  "performance": {
+    "energy_per_op": 117376.0,
+    "latency": 150.0,
+    "throughput": 6666666666.666667,
+    "reliability": 1.0
+  },
+  "inference_results": [
+    {
+      "case": "zero_input",
+      "status": "passed"
+    },
+    {
+      "case": "large_input",
+      "status": "passed"
+    },
+    {
+      "case": "small_input",
+      "status": "passed"
+    }
+  ],
+  "optimization": {
+    "original_energy": 457.51631061181786,
+    "optimized_energy": 258.9665251487478,
+    "improvement_percent": 43.397313026405016
+  },
+  "recovery_tests": [
+    {
+      "test": "invalid_layer",
+      "status": "correctly_handled"
+    },
+    {
+      "test": "invalid_input",
+      "status": "correctly_handled"
+    },
+    {
+      "test": "degradation_detection",
+      "status": "passed"
+    }
+  ],
+  "summary": {
+    "total_time_ms": 635.4508399963379,
+    "passed_tests": 6,
+    "total_tests": 6,
+    "success_rate": 100.0
+  },
+  "logging_stats": {
+    "errors": 6,
+    "warnings": 0,
+    "performance_events": 14
+  }
 }
